@@ -1,29 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <parent>
+        <groupId>net.shibboleth</groupId>
+        <artifactId>parent-v3</artifactId>
+        <version>TRUNK-SNAPSHOT</version>
+    </parent>
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.shibboleth</groupId>
     <artifactId>java-idp-testbed</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-
         <idp.groupId>net.shibboleth.idp</idp.groupId>
         <idp.version>3.0-SNAPSHOT</idp.version>
-        <logback.groupId>ch.qos.logback</logback.groupId>
-        <logback.version>1.0.11</logback.version>
         <opensaml.groupId>org.opensaml</opensaml.groupId>
         <opensaml.version>3.0-SNAPSHOT</opensaml.version>
-        <slf4j.groupId>org.slf4j</slf4j.groupId>
-        <slf4j.version>1.7.5</slf4j.version>
-        <spring.groupId>org.springframework</spring.groupId>
-        <spring.version>3.2.2.RELEASE</spring.version>
-        <spring-webflow.groupId>org.springframework.webflow</spring-webflow.groupId>
-        <spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
     </properties>
 
     <repositories>
@@ -122,11 +115,6 @@
         -->
 
         <dependency>
-            <groupId>${logback.groupId}</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-        <dependency>
             <groupId>${slf4j.groupId}</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -148,9 +136,19 @@
         </dependency>
 
         <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>14.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>1.0.2</version>
         </dependency>
 
         <!-- Provided scope -->
@@ -163,7 +161,6 @@
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
-            <version>2.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
