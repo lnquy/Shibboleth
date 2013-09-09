@@ -1,0 +1,23 @@
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+    
+    <!-- Resolves view from same dir as flow definition. -->
+    <view-state id="hello">
+        <transition on="next" to="stage1" />
+    </view-state>
+    
+    <view-state id="stage1">
+        <transition on="next" to="stage2" />
+        <transition on="back" to="hello" />
+    </view-state>
+    
+    <view-state id="stage2">
+        <transition on="next" to="end" />
+        <transition on="back" to="stage1" />
+    </view-state>
+
+    <end-state id="end" view="done.jsp" />
+
+</flow>

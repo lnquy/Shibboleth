@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context    http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/util  http://www.springframework.org/schema/util/spring-util.xsd
+       ">
+
+    <!-- Expose some common beans for convenient global wiring -->
+    
+    <bean id="testbed.HttpServletRequest" class="net.shibboleth.utilities.java.support.net.ThreadLocalHttpServletRequestProxy" />
+    
+    <bean id="testbed.HttpServletResponse" class="net.shibboleth.utilities.java.support.net.ThreadLocalHttpServletResponseProxy" />
+    
+    <bean id="testbed.BuilderFactory" factory-method="getBuilderFactory" class="org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport" depends-on="shibboleth.OpensamlConfig"/>
+    
+    <bean id="testbed.MarshallerFactory" factory-method="getMarshallerFactory" class="org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport" depends-on="shibboleth.OpensamlConfig"/>
+    
+    <bean id="testbed.UnmarshallerFactory" factory-method="getUnmarshallerFactory" class="org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport" depends-on="shibboleth.OpensamlConfig"/>
+    
+    <bean id="testbed.IdGenerator" class="net.shibboleth.utilities.java.support.security.Type4UuidIdentifierGenerationStrategy" />
+    
+    <bean id="testbed.GlobalSecurityConfiguration" factory-method="getGlobalXMLSecurityConfiguration" class="org.opensaml.xmlsec.SecurityConfigurationSupport" />
+    
+    <bean id="testbed.KeyInfoCredentialResolver" factory-method="getDefaultKeyInfoCredentialResolver" factory-bean="testbed.GlobalSecurityConfiguration" />
+    
+    
+    <!-- Specific testbed-related beans -->
+    
+    <!-- TODO: for the file references, might be preferable to make these resolved as classpath resources,
+         instead of relative filesystem references. -->
+    
+    <bean id="testbed.idp.EntityID" class="java.lang.String">
+        <constructor-arg value="https://idp.example.org" />
+    </bean>
+    
+    <bean id="testbed.idp.PrivateKey" class="net.shibboleth.ext.spring.factory.PrivateKeyFactoryBean">
+        <property name="privateKeyFile">
+            <bean class="java.io.File">
+                <constructor-arg value="src/main/resources/creds/idp.key" />
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="testbed.idp.X509Certificate" class="net.shibboleth.ext.spring.factory.X509CertificateFactoryBean">
+        <property name="certificateFile">
+            <bean class="java.io.File">
+                <constructor-arg value="src/main/resources/creds/idp.crt" />
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="testbed.sp.EntityID" class="java.lang.String">
+        <constructor-arg value="https://sp.example.org" />
+    </bean>
+    
+    <bean id="testbed.sp.PrivateKey" class="net.shibboleth.ext.spring.factory.PrivateKeyFactoryBean">
+        <property name="privateKeyFile">
+            <bean class="java.io.File">
+                <constructor-arg value="src/main/resources/creds/sp.key" />
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="testbed.sp.X509Certificate" class="net.shibboleth.ext.spring.factory.X509CertificateFactoryBean">
+        <property name="certificateFile">
+            <bean class="java.io.File">
+                <constructor-arg value="src/main/resources/creds/sp.crt" />
+            </bean>
+        </property>
+    </bean>
+
+</beans>

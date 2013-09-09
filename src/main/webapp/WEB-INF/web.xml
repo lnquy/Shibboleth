@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+
+    <!-- Context config params -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/internal.xml /WEB-INF/globalAppContext.xml</param-value>
+    </context-param>
+
+    <!-- Listeners -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    
+    <!-- Filters and filter mappings -->
+    <filter>
+        <filter-name>RequestResponseContextFilter</filter-name>
+        <filter-class>net.shibboleth.utilities.java.support.net.RequestResponseContextFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>RequestResponseContextFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
+    <!-- Servlets and servlet mappings -->
+
+    <!-- The /test app space -->
+    <servlet>
+        <servlet-name>test</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/test/test-servlet.xml /WEB-INF/test/webflow-config.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>test</servlet-name>
+        <url-pattern>/test/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- The /idp app space -->
+    <servlet>
+        <servlet-name>idp</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/idp/idp-servlet.xml /WEB-INF/idp/testbed.xml /WEB-INF/idp/webflow-config.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>idp</servlet-name>
+        <url-pattern>/idp/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- The /sp app space -->
+    <servlet>
+        <servlet-name>sp</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/sp/sp-servlet.xml /WEB-INF/sp/testbed.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>sp</servlet-name>
+        <url-pattern>/sp/*</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- Container security config -->
+
+    <!-- Just used for testing stuff that ought to require authentication. -->
+    <security-constraint>
+        <display-name>Shib Testbed Web Authentication</display-name>
+        <web-resource-collection>
+            <web-resource-name>protected actions</web-resource-name>
+            <url-pattern>/test/protected/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
+        <!--
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+        -->
+    </security-constraint>
+
+    <security-role>
+        <role-name>*</role-name>
+    </security-role>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>Shib Testbed Web Authentication</realm-name>
+    </login-config>
+
+</web-app>

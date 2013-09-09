@@ -1,0 +1,227 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.shibboleth</groupId>
+    <artifactId>java-idp-testbed</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+
+        <idp.groupId>net.shibboleth.idp</idp.groupId>
+        <idp.version>3.0-SNAPSHOT</idp.version>
+        <logback.groupId>ch.qos.logback</logback.groupId>
+        <logback.version>1.0.11</logback.version>
+        <opensaml.groupId>org.opensaml</opensaml.groupId>
+        <opensaml.version>3.0-SNAPSHOT</opensaml.version>
+        <slf4j.groupId>org.slf4j</slf4j.groupId>
+        <slf4j.version>1.7.5</slf4j.version>
+        <spring.groupId>org.springframework</spring.groupId>
+        <spring.version>3.2.2.RELEASE</spring.version>
+        <spring-webflow.groupId>org.springframework.webflow</spring-webflow.groupId>
+        <spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>shib-release</id>
+            <url>https://build.shibboleth.net/nexus/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>shib-snapshot</id>
+            <url>https://build.shibboleth.net/nexus/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <dependencies>
+    
+        <!-- Compile scope -->
+        
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-profile-impl</artifactId>
+            <version>${idp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-authn-impl</artifactId>
+            <version>${idp.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-saml-impl</artifactId>
+            <version>${idp.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${opensaml.groupId}</groupId>
+            <artifactId>opensaml-saml-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${opensaml.groupId}</groupId>
+            <artifactId>opensaml-xmlsec-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${opensaml.groupId}</groupId>
+            <artifactId>opensaml-messaging-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${opensaml.groupId}</groupId>
+            <artifactId>opensaml-storage-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>net.shibboleth.ext</groupId>
+            <artifactId>spring-extensions</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    
+        <dependency>
+            <groupId>${spring-webflow.groupId}</groupId>
+            <artifactId>spring-webflow</artifactId>
+            <version>${spring-webflow.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!--
+        <dependency>
+            <groupId>${spring.groupId}</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        -->
+
+        <dependency>
+            <groupId>${logback.groupId}</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${slf4j.groupId}</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${slf4j.groupId}</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${slf4j.groupId}</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${slf4j.groupId}</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0.1</version>
+        </dependency>
+
+        <!-- Provided scope -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Runtime scope -->
+
+        <!-- Test scope -->
+
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.0.3.v20130506</version>
+
+                <configuration>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <webApp>
+                        <contextPath>/</contextPath>
+                        <overrideDescriptor>src/test/config/override-web.xml</overrideDescriptor>
+                    </webApp>
+                    <loginServices>
+                        <loginService implementation="org.eclipse.jetty.security.HashLoginService">
+                        <name>Shib Testbed Web Authentication</name>
+                        <config>src/test/config/jetty-realm.properties</config>
+                        </loginService>
+                    </loginServices>
+                    <!-- TODO need to port this config from the older version of the plugin 
+                          to the newer plugin style using a jetty.xml  Need https for testing 
+                          client TLS authN. -->
+                    <!--
+                    <connectors>
+                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+                            <port>8080</port>
+                            <confidentialPort>8443</confidentialPort>
+                        </connector>
+                        <connector implementation="org.mortbay.jetty.security.SslSocketConnector">
+                            <port>8443</port>
+                            <keystore>src/test/config/jetty.jks</keystore>
+                            <password>jettypw</password>
+                            <keyPassword>jettypw</keyPassword>
+                        </connector>
+                    </connectors>
+                    -->
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>

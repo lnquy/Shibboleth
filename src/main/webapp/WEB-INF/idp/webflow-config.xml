@@ -1,0 +1,46 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
+       ">
+    
+    <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF/idp/flows" flow-builder-services="flowBuilderServices">
+    
+        <!-- Use dot-separated convention for abstract flows. -->
+        <webflow:flow-location id="SAML2.SSO.Abstract" path="/saml2/sso-abstract-flow.xml"  />
+        
+        <!-- Use slash-separated convention for web-executable flows. -->
+        <webflow:flow-location id="SAML2/Redirect/SSO" path="/saml2/sso-redirect-flow.xml"  />
+        <webflow:flow-location id="SAML2/POST/SSO" path="/saml2/sso-post-flow.xml"  />
+        <webflow:flow-location id="SAML2/Unsolicited/SSO" path="/saml2/sso-unsolicited-flow.xml"  />
+        
+        <webflow:flow-location id="Authentication" path="/authn/authn-flow.xml" />
+        
+        <!-- Login methods. -->
+        <webflow:flow-location id="AuthenticationFlow/IPAddress" path="/authn/ipaddress-authn-flow.xml" />
+        <webflow:flow-location id="AuthenticationFlow/RemoteUser" path="/authn/remoteuser-authn-flow.xml" />
+        <webflow:flow-location id="AuthenticationFlow/JAASForm" path="/authn/jaas-form-authn-flow.xml" />
+        <webflow:flow-location id="AuthenticationFlow/JAASBasic" path="/authn/jaas-basic-authn-flow.xml" />
+        
+        <!-- C14N methods. -->
+        <webflow:flow-location id="SubjectC14N/Simple" path="/authn/simple-subject-c14n-flow.xml" />
+    </webflow:flow-registry>
+
+    <webflow:flow-executor id="flowExecutor">
+        <webflow:flow-execution-repository max-execution-snapshots="0"/>
+    </webflow:flow-executor>
+    
+    <webflow:flow-builder-services id="flowBuilderServices" view-factory-creator="mvcViewFactoryCreator" />
+    
+    <bean id="mvcViewFactoryCreator" class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
+        <property name="viewResolvers">
+            <list>
+                <ref bean="velocityViewResolver" />
+                <ref bean="internalViewResolver" />
+            </list>
+        </property>
+    </bean>
+        
+</beans>

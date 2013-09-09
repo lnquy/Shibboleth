@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context    http://www.springframework.org/schema/context/spring-context.xsd
+       ">
+
+
+    <context:component-scan base-package="test"/>
+    
+    
+    
+    <!-- HandlerMappings: Prefer first the WebFlow one, then the standard Spring MVC default ones.
+         Have to enumerate them all explicitly b/c we're overriding the built-in defaults. -->
+    
+    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
+        <property name="flowRegistry" ref="flowRegistry"/>
+        <property name="order" value="0"/>
+    </bean>
+    
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <property name="order" value="1"/>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="2"/>
+    </bean>
+
+
+
+    <!-- HandlerAdapters: These aren't ordered. Add the WebFlow one, then the standard Spring MVC default ones. 
+         Have to enumerate them all explicitly b/c we're overriding the built-in defaults. -->
+    
+    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
+        <property name="flowExecutor" ref="flowExecutor" />
+    </bean>
+    
+    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
+    
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
+    
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+    
+    
+    
+    <!-- ViewResolvers -->
+    
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/test/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+</beans>

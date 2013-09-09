@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context    http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/util       http://www.springframework.org/schema/util/spring-util.xsd
+       ">
+    
+    
+    <!-- Testbed-related beans -->
+    
+    <bean id="idp.StorageService" class="org.opensaml.storage.impl.MemoryStorageService" depends-on="shibboleth.LogbackLogging" init-method="initialize" destroy-method="destroy" />
+    
+    <bean id="idp.ReplayCache" class="org.opensaml.storage.ReplayCache" depends-on="shibboleth.LogbackLogging" init-method="initialize" destroy-method="destroy">
+        <property name="storage" ref="idp.StorageService"/>
+        <property name="strict" value="true" />
+    </bean>
+    
+    <bean id="idp.Credential" class="org.opensaml.security.x509.BasicX509Credential" >
+        <constructor-arg ref="testbed.idp.X509Certificate" />
+        <constructor-arg ref="testbed.idp.PrivateKey" />
+        <property name="entityId" ref="testbed.idp.EntityID" />
+    </bean>
+    
+    <bean id="idp.CredentialResolver" class="org.opensaml.security.credential.impl.CollectionCredentialResolver">
+        <constructor-arg>
+            <util:set>
+                <bean class="org.opensaml.security.x509.BasicX509Credential" >
+                    <constructor-arg ref="testbed.sp.X509Certificate" />
+                    <property name="entityId" ref="testbed.sp.EntityID" />
+                </bean>
+            </util:set>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="idp.SignatureTrustEngine" class="org.opensaml.xmlsec.signature.support.impl.ExplicitKeySignatureTrustEngine">
+        <constructor-arg ref="idp.CredentialResolver" />
+        <constructor-arg ref="testbed.KeyInfoCredentialResolver" />
+    </bean>
+
+</beans>

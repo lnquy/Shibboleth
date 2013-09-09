@@ -1,0 +1,24 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
+       ">
+    
+    <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF/test/flows" flow-builder-services="flowBuilderServices">
+        <webflow:flow-location-pattern value="/**/*-flow.xml"/>
+        <webflow:flow-location id="test123" path="/testflow.xml"  />
+    </webflow:flow-registry>
+
+    <webflow:flow-executor id="flowExecutor" />
+    
+    <webflow:flow-builder-services id="flowBuilderServices" development="true" />
+    
+    <!--
+    <bean id="mvcViewFactoryCreator" class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
+        <property name="viewResolvers" ref="viewResolver"/>
+    </bean>
+    -->
+        
+</beans>

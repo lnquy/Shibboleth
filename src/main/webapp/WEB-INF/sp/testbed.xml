@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context    http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/util       http://www.springframework.org/schema/util/spring-util.xsd
+       ">
+    
+    
+    <!-- Testbed-related beans -->
+    
+    <bean id="sp.Credential" class="org.opensaml.security.x509.BasicX509Credential" >
+        <constructor-arg ref="testbed.sp.X509Certificate" />
+        <constructor-arg ref="testbed.sp.PrivateKey" />
+        <property name="entityId" ref="testbed.sp.EntityID" />
+    </bean>
+    
+    <bean id="sp.CredentialResolver" class="org.opensaml.security.credential.impl.CollectionCredentialResolver">
+        <constructor-arg>
+            <util:set>
+                <bean class="org.opensaml.security.x509.BasicX509Credential" >
+                    <constructor-arg ref="testbed.idp.X509Certificate" />
+                    <property name="entityId" ref="testbed.idp.EntityID" />
+                </bean>
+            </util:set>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="sp.SignatureTrustEngine" class="org.opensaml.xmlsec.signature.support.impl.ExplicitKeySignatureTrustEngine">
+        <constructor-arg ref="sp.CredentialResolver" />
+        <constructor-arg ref="testbed.KeyInfoCredentialResolver" />
+    </bean>
+
+</beans>
