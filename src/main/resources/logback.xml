@@ -17,6 +17,10 @@
   <logger name="net.shibboleth.idp" level="WARN"/>
   
   <logger name="org.opensaml" level="WARN"/>
+  
+  <logger name="org.eclipse.jetty" level="WARN"/>
+  
+  <logger name="org.ldaptive" level="WARN"/>
     
   <logger name="PROTOCOL_MESSAGE" level="DEBUG" />
 

@@ -12,6 +12,12 @@
     <bean class="net.shibboleth.idp.profile.impl.ProfileActionBeanPostProcessor" />
     
     <bean id="ExtractUsernamePasswordFromFormRequest" class="net.shibboleth.idp.authn.impl.ExtractUsernamePasswordFromFormRequest" scope="prototype" />
+
+    <bean id="JAASConfig" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg type="java.lang.String" value="conf/jaas.config" />
+    </bean>
+
+    <util:property-path id="JAASConfigURI" path="JAASConfig.URI" />
         
     <bean id="ValidateUsernamePasswordAgainstJAAS" class="net.shibboleth.idp.authn.impl.ValidateUsernamePasswordAgainstJAAS" scope="prototype"
             p:loginConfigName="ShibUserPassAuth" p:loginConfigType="JavaLoginConfig">
@@ -19,7 +25,7 @@
             <bean class="java.security.URIParameter">
                 <constructor-arg>
                     <bean class="java.net.URI">
-                        <constructor-arg value="file:///Users/scantor/Documents/workspace/3.0/java-shib-testbed/src/main/resources/conf/jaas.config" />
+                        <constructor-arg ref="JAASConfigURI" />
                     </bean>
                 </constructor-arg>
             </bean>
