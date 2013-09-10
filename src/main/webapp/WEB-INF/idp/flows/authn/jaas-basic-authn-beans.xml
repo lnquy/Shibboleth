@@ -23,11 +23,7 @@
             p:loginConfigName="ShibUserPassAuth" p:loginConfigType="JavaLoginConfig">
         <property name="loginConfigParameters">
             <bean class="java.security.URIParameter">
-                <constructor-arg>
-                    <bean class="java.net.URI">
-                       <constructor-arg ref="JAASConfigURI" />
-                    </bean>
-                </constructor-arg>
+                <constructor-arg ref="JAASConfigURI" />
             </bean>
         </property>
     </bean>
