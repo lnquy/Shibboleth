@@ -40,11 +40,11 @@
                 </bean>
                 
                 <bean class="org.opensaml.saml.common.binding.security.ReceivedEndpointSecurityHandler" scope="prototype">
-                    <property name="httpServletRequest" ref="testbed.HttpServletRequest" />
+                    <property name="httpServletRequest" ref="shibboleth.HttpServletRequest" />
                 </bean>
                 
                 <bean class="org.opensaml.saml.common.binding.security.MessageReplaySecurityHandler" >
-                    <property name="replayCache" ref="idp.ReplayCache" />
+                    <property name="replayCache" ref="shibboleth.ReplayCache" />
                 </bean>
                 
                 <bean class="org.opensaml.saml.common.binding.security.MessageLifetimeSecurityHandler" />
@@ -57,12 +57,12 @@
                 
                 <bean class="org.opensaml.saml.saml2.binding.security.SAML2HTTPRedirectDeflateSignatureSecurityHandler" scope="prototype">
                     <property name="trustEngine" ref="idp.SignatureTrustEngine" />
-                    <property name="httpServletRequest" ref="testbed.HttpServletRequest" />
+                    <property name="httpServletRequest" ref="shibboleth.HttpServletRequest" />
                 </bean>
                 
                 <bean class="org.opensaml.saml.saml2.binding.security.SAML2HTTPPostSimpleSignSecurityHandler" scope="prototype">
                     <property name="trustEngine" ref="idp.SignatureTrustEngine" />
-                    <property name="httpServletRequest" ref="testbed.HttpServletRequest" />
+                    <property name="httpServletRequest" ref="shibboleth.HttpServletRequest" />
                     <property name="parser" ref="shibboleth.ParserPool" />
                     <property name="keyInfoResolver" ref="testbed.KeyInfoCredentialResolver" />
                 </bean>
@@ -146,7 +146,7 @@
     <!-- The 'name' alias is only used with the "translate URI to bean name" approach. -->
     <bean id="encoders.saml.SAML2PostEncoder" name="encoders.saml.urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
           class="org.opensaml.saml.saml2.binding.encoding.HTTPPostEncoder" scope="prototype" init-method="">
-        <property name="httpServletResponse" ref="testbed.HttpServletResponse" />
+        <property name="httpServletResponse" ref="shibboleth.HttpServletResponse" />
         <property name="velocityEngine" ref="shibboleth.VelocityEngine" />
     </bean>
 

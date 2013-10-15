@@ -12,13 +12,6 @@
     
     <!-- Testbed-related beans -->
     
-    <bean id="idp.StorageService" class="org.opensaml.storage.impl.MemoryStorageService" depends-on="shibboleth.LogbackLogging" init-method="initialize" destroy-method="destroy" />
-    
-    <bean id="idp.ReplayCache" class="org.opensaml.storage.ReplayCache" depends-on="shibboleth.LogbackLogging" init-method="initialize" destroy-method="destroy">
-        <property name="storage" ref="idp.StorageService"/>
-        <property name="strict" value="true" />
-    </bean>
-    
     <bean id="idp.Credential" class="org.opensaml.security.x509.BasicX509Credential" >
         <constructor-arg ref="testbed.idp.X509Certificate" />
         <constructor-arg ref="testbed.idp.PrivateKey" />

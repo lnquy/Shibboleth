@@ -14,7 +14,7 @@
         <constructor-arg>
             <bean id="messageDecoder" class="org.opensaml.saml.saml2.binding.decoding.HTTPRedirectDeflateDecoder" scope="prototype">
                 <property name="parserPool" ref="shibboleth.ParserPool" />
-                <property name="httpServletRequest" ref="testbed.HttpServletRequest" />
+                <property name="httpServletRequest" ref="shibboleth.HttpServletRequest" />
             </bean>
         </constructor-arg>
     </bean>

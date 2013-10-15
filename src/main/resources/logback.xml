@@ -1,29 +1,5 @@
 <configuration>
 
-  <logger name="idp" level="DEBUG"/>
-  
-  <logger name="org.opensaml.saml.saml2.binding" level="DEBUG"/>
-  
-  <logger name="org.opensaml.saml.common.binding" level="DEBUG"/>
-  
-  <logger name="net.shibboleth.idp.profile" level="DEBUG"/>
-
-  <logger name="net.shibboleth.idp.authn" level="DEBUG"/>
-  
-  <logger name="org.springframework.web" level="WARN"/>
-  
-  <logger name="org.springframework.webflow" level="WARN"/>
-  
-  <logger name="net.shibboleth.idp" level="WARN"/>
-  
-  <logger name="org.opensaml" level="WARN"/>
-  
-  <logger name="org.eclipse.jetty" level="WARN"/>
-  
-  <logger name="org.ldaptive" level="WARN"/>
-    
-  <logger name="PROTOCOL_MESSAGE" level="DEBUG" />
-
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
         <charset>UTF-8</charset>

@@ -12,7 +12,9 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <body>
-        
+    
+    <h2>Testbed Login</h2>
+
 #if ( $errorContext && $errorContext.getExceptions().size() > 0 )
 		<p>ERROR: $errorContext.getExceptions().get(0).getMessage()</p>
 #end

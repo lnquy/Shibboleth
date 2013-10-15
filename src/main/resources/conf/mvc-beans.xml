@@ -3,41 +3,28 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="
-            http://www.springframework.org/schema/beans      http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/context    http://www.springframework.org/schema/context/spring-context.xsd
-            http://www.springframework.org/schema/util       http://www.springframework.org/schema/util/spring-util.xsd
-       ">
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans classpath:/org/springframework/beans/factory/xml/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context classpath:/org/springframework/context/config/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/util classpath:/org/springframework/beans/factory/xml/spring-util-3.2.xsd">
 
-
-    <context:component-scan base-package="idp"/>
-    
-    
+    <context:property-placeholder system-properties-mode="OVERRIDE" location="classpath:conf/idp.properties" />
     
     <!-- HandlerMappings: Prefer first the WebFlow one, then the standard Spring MVC default ones.
          Have to enumerate them all explicitly b/c we're overriding the built-in defaults. -->
     
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping">
-        <property name="flowRegistry" ref="flowRegistry"/>
-        <property name="order" value="0"/>
-    </bean>
-    
-    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
-        <property name="order" value="1"/>
-    </bean>
+    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerMapping" p:order="0" p:flowRegistry-ref="flowRegistry" />
 
-    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-        <property name="order" value="2"/>
-    </bean>
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" p:order="1" />
 
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" p:order="2" />
 
 
     <!-- HandlerAdapters: These aren't ordered. Add the WebFlow one, then the standard Spring MVC default ones. 
          Have to enumerate them all explicitly b/c we're overriding the built-in defaults. -->
     
-    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter">
-        <property name="flowExecutor" ref="flowExecutor" />
-    </bean>
+    <bean class="org.springframework.webflow.mvc.servlet.FlowHandlerAdapter" p:flowExecutor-ref="flowExecutor" />
     
     <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
     
@@ -60,33 +47,29 @@
     
     <!-- ViewResolvers -->
     
-    <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+    <bean id="shibboleth.VelocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
         <property name="velocityProperties">
             <props>
-                <prop key="runtime.log.logsystem.class">
-                    net.shibboleth.utilities.java.support.velocity.Slf4JLogChute
-                </prop>
+                <prop key="runtime.log.logsystem.class">net.shibboleth.utilities.java.support.velocity.Slf4JLogChute</prop>
                 <prop key="input.encoding">UTF-8</prop>
                 <prop key="output.encoding">UTF-8</prop>
                 <prop key="resource.loader">file</prop>
-                <prop key="file.resource.loader.class">
-                org.apache.velocity.runtime.resource.loader.FileResourceLoader
-                </prop>
-                <prop key="file.resource.loader.path">/Users/scantor/Documents/workspace/3.0/java-shib-testbed/src/main/webapp/WEB-INF/templates</prop>
+                <prop key="file.resource.loader.class">org.apache.velocity.runtime.resource.loader.FileResourceLoader</prop>
+                <prop key="file.resource.loader.path">${idp.home}/views</prop>
                 <prop key="file.resource.loader.cache">false</prop>
             </props>
         </property>
     </bean>
     
-    <bean id="velocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+    <bean id="shibboleth.VelocityViewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
         <property name="cache" value="true"/>
         <property name="prefix" value=""/>
         <property name="suffix" value=".vm"/>
     </bean>
 
-    <bean id="internalViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <bean id="shibboleth.InternalViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/idp/jsp/"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
 

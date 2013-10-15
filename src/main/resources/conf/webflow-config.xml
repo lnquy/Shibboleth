@@ -1,13 +1,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:webflow="http://www.springframework.org/schema/webflow-config"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-            http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd
-       ">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans classpath:/org/springframework/beans/factory/xml/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/context classpath:/org/springframework/context/config/spring-context-3.2.xsd
+                           http://www.springframework.org/schema/webflow-config classpath:/org/springframework/webflow/config/spring-webflow-config-2.3.xsd">
     
-    <webflow:flow-registry id="flowRegistry" base-path="/WEB-INF/idp/flows" flow-builder-services="flowBuilderServices">
+    <context:property-placeholder system-properties-mode="OVERRIDE" location="classpath:conf/idp.properties" />
     
+    <webflow:flow-registry id="flowRegistry" base-path="file://${idp.home}/flows" flow-builder-services="flowBuilderServices">
+
         <!-- Use dot-separated convention for abstract flows. -->
         <webflow:flow-location id="SAML2.SSO.Abstract" path="/saml2/sso-abstract-flow.xml"  />
         
@@ -15,7 +17,7 @@
         <webflow:flow-location id="SAML2/Redirect/SSO" path="/saml2/sso-redirect-flow.xml"  />
         <webflow:flow-location id="SAML2/POST/SSO" path="/saml2/sso-post-flow.xml"  />
         <webflow:flow-location id="SAML2/Unsolicited/SSO" path="/saml2/sso-unsolicited-flow.xml"  />
-        
+    
         <webflow:flow-location id="Authentication" path="/authn/authn-flow.xml" />
         
         <!-- Login methods. -->
@@ -37,8 +39,8 @@
     <bean id="mvcViewFactoryCreator" class="org.springframework.webflow.mvc.builder.MvcViewFactoryCreator">
         <property name="viewResolvers">
             <list>
-                <ref bean="velocityViewResolver" />
-                <ref bean="internalViewResolver" />
+                <ref bean="shibboleth.VelocityViewResolver" />
+                <ref bean="shibboleth.InternalViewResolver" />
             </list>
         </property>
     </bean>
