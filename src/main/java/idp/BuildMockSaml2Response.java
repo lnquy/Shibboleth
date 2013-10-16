@@ -19,6 +19,7 @@ import org.opensaml.saml.saml2.core.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -30,6 +31,7 @@ public class BuildMockSaml2Response extends AbstractProfileAction<SAMLObject, SA
 	private XMLObjectBuilderFactory builderFactory;
 	
 	@Autowired
+	@Qualifier("testbed.IdGenerator")
 	private IdentifierGenerationStrategy idGenerator;
 
 

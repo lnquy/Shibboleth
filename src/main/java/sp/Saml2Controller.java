@@ -37,6 +37,7 @@ import org.opensaml.xmlsec.messaging.SecurityParametersContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,7 @@ public class Saml2Controller {
 	private MarshallerFactory marshallerFactory;
 	
 	@Autowired
+	@Qualifier("testbed.IdGenerator")
 	private IdentifierGenerationStrategy idGenerator;
 	
 	@Autowired
