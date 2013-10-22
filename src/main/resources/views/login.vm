@@ -23,7 +23,8 @@
             Username: <input type="text" name="username" value=""/> <br/>
             Password: <input type="password" name="password" value=""/> <br/>
             
-            <input type="submit" name="_eventId_proceed" value="Login"/>
+            <input type="submit" name="_eventId_proceed" value="Login"/> <br/>
+            <input type="checkbox" name="donotcache" value="1" /> Don't Remember Login
         </form>
         
     </body>
