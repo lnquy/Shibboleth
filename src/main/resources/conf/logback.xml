@@ -20,7 +20,7 @@
   
   <logger name="org.opensaml" level="WARN"/>
   
-  <logger name="org.opensaml.storage" level="DEBUG"/>
+  <logger name="org.opensaml.storage" level="TRACE"/>
   
   <logger name="org.eclipse.jetty" level="WARN"/>
   
