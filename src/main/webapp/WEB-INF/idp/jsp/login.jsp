@@ -2,20 +2,20 @@
 
 <%@ page import="net.shibboleth.idp.authn.context.*" %>
 <%@ page import="org.opensaml.profile.context.ProfileRequestContext" %>
-<%@ page import="org.springframework.webflow.execution.RequestContext" %>
+<%@ page import="org.owasp.esapi.Encoder" %>
 
 <%
-RequestContext flowRequestContext = (RequestContext) request.getAttribute("flowRequestContext");
-ProfileRequestContext profileRequestContext = (ProfileRequestContext) flowRequestContext.getConversationScope().get("org.opensaml.profile.context.ProfileRequestContext");
-AuthenticationContext authnContext = profileRequestContext.getSubcontext(AuthenticationContext.class, false);
-AuthenticationErrorContext errorContext = authnContext.getSubcontext(AuthenticationErrorContext.class, false);
+Encoder encoder = (Encoder) request.getAttribute("esapiEncoder");
+AuthenticationErrorContext authenticationErrorContext = (AuthenticationErrorContext) request.getAttribute("authenticationErrorContext");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <body>
+    
+    	<h2>Testbed Login</h2>
         
-<% if ( errorContext != null && !errorContext.getExceptions().isEmpty()) { %>
-		<p>ERROR: <%= errorContext.getExceptions().get(0).getMessage() %></p>
+<% if ( authenticationErrorContext != null && !authenticationErrorContext.getExceptions().isEmpty()) { %>
+		<p>ERROR: <%= encoder.encodeForHTML(authenticationErrorContext.getExceptions().get(0).getMessage()) %></p>
 <% } %>
         
         <form action="<%= request.getAttribute("flowExecutionUrl") %>" method="post">
@@ -23,6 +23,7 @@ AuthenticationErrorContext errorContext = authnContext.getSubcontext(Authenticat
             Password: <input type="password" name="password" value=""/> <br/>
             
             <input type="submit" name="_eventId_proceed" value="Login"/>
+            <input type="checkbox" name="donotcache" value="1" /> Don't Remember Login
         </form>
         
     </body>
