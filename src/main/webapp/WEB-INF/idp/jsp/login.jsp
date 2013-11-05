@@ -17,6 +17,10 @@ AuthenticationErrorContext authenticationErrorContext = (AuthenticationErrorCont
 <% if ( authenticationErrorContext != null && !authenticationErrorContext.getExceptions().isEmpty()) { %>
 		<p>ERROR: <%= encoder.encodeForHTML(authenticationErrorContext.getExceptions().get(0).getMessage()) %></p>
 <% } %>
+
+<% if ( authenticationErrorContext != null && !authenticationErrorContext.getClassifiedErrors().isEmpty()) { %>
+        <p>Classified errors: <%= encoder.encodeForHTML(authenticationErrorContext.getClassifiedErrors().toString()) %></p>
+<% } %>
         
         <form action="<%= request.getAttribute("flowExecutionUrl") %>" method="post">
             Username: <input type="text" name="username" value=""/> <br/>
