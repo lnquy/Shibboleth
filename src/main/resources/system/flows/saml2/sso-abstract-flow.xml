@@ -31,7 +31,7 @@
     </action-state>
     
     <subflow-state id="DoAuthenticationSubflow" subflow="Authentication">
-        <transition on="proceed" to="BuildResponse" />
+        <transition on="#{true}" to="BuildResponse" />
     </subflow-state>
     
     <action-state id="BuildResponse">
