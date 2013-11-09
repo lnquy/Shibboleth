@@ -5,7 +5,7 @@
     <!-- Context config params -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>file:///Users/scantor/Documents/workspace/3.0/java-idp-testbed/src/main/resources/system/conf/global-system.xml file:///Users/scantor/Documents/workspace/3.0/java-idp-testbed/src/main/resources/conf/global-user.xml file:///Users/scantor/Documents/workspace/3.0/java-idp-testbed/src/main/resources/system/conf/testbed-beans.xml</param-value>
+        <param-value>classpath:/system/conf/global-system.xml classpath:/conf/global-user.xml classpath:/system/conf/testbed-beans.xml</param-value>
     </context-param>
 
     <!-- Listeners -->
@@ -67,7 +67,7 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>file:///Users/scantor/Documents/workspace/3.0/java-idp-testbed/src/main/resources/system/conf/mvc-beans.xml /WEB-INF/idp/testbed.xml file:///Users/scantor/Documents/workspace/3.0/java-idp-testbed/src/main/resources/conf/webflow-config.xml</param-value>
+            <param-value>classpath:/system/conf/mvc-beans.xml /WEB-INF/idp/testbed.xml classpath:/conf/webflow-config.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

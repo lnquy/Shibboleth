@@ -211,7 +211,15 @@
                     <webApp>
                         <contextPath>/</contextPath>
                         <overrideDescriptor>src/test/config/override-web.xml</overrideDescriptor>
+                        <!-- Startup faster. https://jira.codehaus.org/browse/JETTY-1503 -->
+                        <webInfIncludeJarPattern>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</webInfIncludeJarPattern>
                     </webApp>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>idp.home</name>
+                            <value>${project.basedir}/src/main/resources</value>
+                        </systemProperty>    
+                     </systemProperties>
                     <loginServices>
                         <loginService implementation="org.eclipse.jetty.security.HashLoginService">
                         <name>Shib Testbed Web Authentication</name>
