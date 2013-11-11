@@ -26,13 +26,17 @@
         <webflow:flow-location id="Authentication.Abstract" path="/authn/authn-abstract-flow.xml" />
         <webflow:flow-location id="Authentication.Subflow.Abstract" path="/authn/authn-subflow-abstract-flow.xml" />
         <webflow:flow-location id="Authentication" path="/authn/authn-flow.xml" />
+
+        <!-- Login error subflows. -->
+        <webflow:flow-location id="Authentication.ExpiredPassword" path="/authn/placeholder-flow.xml" />
+        <webflow:flow-location id="Authentication.AccountLocked" path="/authn/placeholder-flow.xml" />
         
         <!-- Login methods. -->
         <webflow:flow-location id="AuthenticationFlow/IPAddress" path="/authn/ipaddress-authn-flow.xml" />
         <webflow:flow-location id="AuthenticationFlow/RemoteUser" path="/authn/remoteuser-authn-flow.xml" />
         <webflow:flow-location id="AuthenticationFlow/JAASForm" path="/authn/jaas-form-authn-flow.xml" />
         <webflow:flow-location id="AuthenticationFlow/JAASBasic" path="/authn/jaas-basic-authn-flow.xml" />
-        
+                
         <!-- C14N methods. -->
         <webflow:flow-location id="SubjectC14N/Simple" path="/authn/simple-subject-c14n-flow.xml" />
                 
