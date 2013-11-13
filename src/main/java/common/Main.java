@@ -17,9 +17,14 @@
 
 package common;
 
+import java.io.FileInputStream;
+import java.util.Properties;
+
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.xml.XmlConfiguration;
 
 /** Start Jetty */
 public class Main {
@@ -28,9 +33,18 @@ public class Main {
      * @param args
      */
     public static void main(String[] args) {
-
         try {
-            Server server = new Server(8080);
+            // Add system properties from idp.properties.
+            Properties idpProperties = new Properties();
+            idpProperties.load(new FileInputStream("src/main/config/conf/idp.properties"));
+            for (String propertyName : idpProperties.stringPropertyNames()) {
+                System.setProperty(propertyName, idpProperties.getProperty(propertyName));
+            }
+
+            // Configure Jetty from jetty.xml.
+            Resource fileserver_xml = Resource.newResource("src/main/jetty/jetty.xml");
+            XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
+            Server server = (Server) configuration.configure();
 
             HashLoginService loginService = new HashLoginService();
             loginService.setName("Shib Testbed Web Authentication");

@@ -214,12 +214,16 @@
                         <!-- Startup faster. https://jira.codehaus.org/browse/JETTY-1503 -->
                         <webInfIncludeJarPattern>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</webInfIncludeJarPattern>
                     </webApp>
+                    <jettyXml>
+                        ${project.basedir}/src/main/jetty/jetty.xml
+                    </jettyXml>
                     <systemProperties>
                         <systemProperty>
                             <name>idp.home</name>
                             <value>${project.basedir}/src/main/config</value>
                         </systemProperty>    
-                     </systemProperties>
+                    </systemProperties>
+                    <systemPropertiesFile>${project.basedir}/src/main/config/conf/idp.properties</systemPropertiesFile>
                     <loginServices>
                         <loginService implementation="org.eclipse.jetty.security.HashLoginService">
                         <name>Shib Testbed Web Authentication</name>
