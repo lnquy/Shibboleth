@@ -37,9 +37,7 @@
     </repositories>
 
     <dependencies>
-    
         <!-- Compile scope -->
-        
         <dependency>
             <groupId>${idp.groupId}</groupId>
             <artifactId>idp-profile-impl</artifactId>
@@ -57,42 +55,42 @@
             <artifactId>idp-session-impl</artifactId>
             <version>${idp.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>${idp.groupId}</groupId>
             <artifactId>idp-saml-impl</artifactId>
             <version>${idp.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-saml-impl</artifactId>
             <version>${opensaml.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-xmlsec-impl</artifactId>
             <version>${opensaml.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-messaging-impl</artifactId>
             <version>${opensaml.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-storage-impl</artifactId>
             <version>${opensaml.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>net.shibboleth.ext</groupId>
             <artifactId>spring-extensions</artifactId>
-            </dependency>
-    
+        </dependency>
+
         <dependency>
             <groupId>${spring-webflow.groupId}</groupId>
             <artifactId>spring-webflow</artifactId>
@@ -199,13 +197,11 @@
 
     <build>
         <finalName>${project.artifactId}</finalName>
-
         <plugins>
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
-
                 <configuration>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <webApp>
@@ -221,37 +217,18 @@
                         <systemProperty>
                             <name>idp.home</name>
                             <value>${project.basedir}/src/main/config</value>
-                        </systemProperty>    
+                        </systemProperty>
                     </systemProperties>
                     <systemPropertiesFile>${project.basedir}/src/main/config/conf/idp.properties</systemPropertiesFile>
                     <loginServices>
                         <loginService implementation="org.eclipse.jetty.security.HashLoginService">
-                        <name>Shib Testbed Web Authentication</name>
-                        <config>src/test/config/jetty-realm.properties</config>
+                            <name>Shib Testbed Web Authentication</name>
+                            <config>src/test/config/jetty-realm.properties</config>
                         </loginService>
                     </loginServices>
-                    <!-- TODO need to port this config from the older version of the plugin 
-                          to the newer plugin style using a jetty.xml  Need https for testing 
-                          client TLS authN. -->
-                    <!--
-                    <connectors>
-                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-                            <port>8080</port>
-                            <confidentialPort>8443</confidentialPort>
-                        </connector>
-                        <connector implementation="org.mortbay.jetty.security.SslSocketConnector">
-                            <port>8443</port>
-                            <keystore>src/test/config/jetty.jks</keystore>
-                            <password>jettypw</password>
-                            <keyPassword>jettypw</keyPassword>
-                        </connector>
-                    </connectors>
-                    -->
                 </configuration>
             </plugin>
-
         </plugins>
-
     </build>
 
 </project>
