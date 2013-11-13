@@ -11,5 +11,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="common.Main"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="java-idp-testbed"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Didp.home=${workspace_loc:java-idp-testbed}/src/main/resources"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Didp.home=${workspace_loc:java-idp-testbed}/src/main/config"/>
 </launchConfiguration>

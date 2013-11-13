@@ -32,7 +32,7 @@
     <bean id="testbed.idp.PrivateKey" class="net.shibboleth.ext.spring.factory.PrivateKeyFactoryBean">
         <property name="privateKeyFile">
             <bean class="java.io.File">
-                <constructor-arg value="src/main/resources/creds/idp.key" />
+                <constructor-arg value="${idp.home}/creds/idp.key" />
             </bean>
         </property>
     </bean>
@@ -40,7 +40,7 @@
     <bean id="testbed.idp.X509Certificate" class="net.shibboleth.ext.spring.factory.X509CertificateFactoryBean">
         <property name="certificateFile">
             <bean class="java.io.File">
-                <constructor-arg value="src/main/resources/creds/idp.crt" />
+                <constructor-arg value="${idp.home}/creds/idp.crt" />
             </bean>
         </property>
     </bean>
@@ -52,7 +52,7 @@
     <bean id="testbed.sp.PrivateKey" class="net.shibboleth.ext.spring.factory.PrivateKeyFactoryBean">
         <property name="privateKeyFile">
             <bean class="java.io.File">
-                <constructor-arg value="src/main/resources/creds/sp.key" />
+                <constructor-arg value="${idp.home}/creds/sp.key" />
             </bean>
         </property>
     </bean>
@@ -60,7 +60,7 @@
     <bean id="testbed.sp.X509Certificate" class="net.shibboleth.ext.spring.factory.X509CertificateFactoryBean">
         <property name="certificateFile">
             <bean class="java.io.File">
-                <constructor-arg value="src/main/resources/creds/sp.crt" />
+                <constructor-arg value="${idp.home}/creds/sp.crt" />
             </bean>
         </property>
     </bean>

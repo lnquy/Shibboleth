@@ -217,7 +217,7 @@
                     <systemProperties>
                         <systemProperty>
                             <name>idp.home</name>
-                            <value>${project.basedir}/src/main/resources</value>
+                            <value>${project.basedir}/src/main/config</value>
                         </systemProperty>    
                      </systemProperties>
                     <loginServices>
