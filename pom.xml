@@ -43,6 +43,12 @@
             <artifactId>idp-profile-impl</artifactId>
             <version>${idp.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-attribute-resolver-spring</artifactId>
+            <version>${idp.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>${idp.groupId}</groupId>

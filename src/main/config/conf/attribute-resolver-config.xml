@@ -14,9 +14,16 @@
 
     <context:property-placeholder location="file://${idp.home}/conf/idp.properties" />
 
-    <import resource="authn-comparison.xml" />
-    <import resource="authn-flow-descriptors.xml" />
-    
-    <import resource="attribute-resolver-config.xml" />
+    <bean id="AttributeResolverService" p:id="AttributeResolverService" class="net.shibboleth.idp.attribute.resolver.spring.AttributeResolverService" init-method="start">
+        <property name="serviceConfigurations">
+            <util:list>
+                <bean id="AttributeResolverResource" class="idp.SpringResource">
+                    <constructor-arg value="file://${idp.home}/conf/attribute-resolver.xml" />
+                </bean>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="AttributeResolver" factory-bean="AttributeResolverService" factory-method="getAttributeResolver" />
      
 </beans>

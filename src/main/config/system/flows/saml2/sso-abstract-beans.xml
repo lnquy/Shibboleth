@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
@@ -149,5 +151,43 @@
         <property name="httpServletResponse" ref="shibboleth.HttpServletResponse" />
         <property name="velocityEngine" ref="shibboleth.VelocityEngine" />
     </bean>
+    
+    <bean id="AddBasicMessageMetadataContext" class="idp.AddBasicMessageMetadataContext" />
+    
+    <bean id="AddProfileConfiguration" class="idp.AddProfileConfiguration" />
+            
+    <bean id="CheckMandatoryIssuer" class="net.shibboleth.idp.profile.impl.CheckMandatoryIssuer" />
+    
+    <bean id="InitializeRelyingPartyContextBasedOnInboundMessageIssuer" class="net.shibboleth.idp.saml.impl.profile.InitializeRelyingPartyContextBasedOnInboundMessageIssuer" />
+    
+    <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" >
+       <constructor-arg ref="AttributeResolver"/>
+    </bean>
+
+    <!-- TODO replace always true with something else -->
+    <bean id="ActivatedRelyingPartyConfiguration" class="net.shibboleth.idp.relyingparty.impl.ActivatedRelyingPartyConfiguration">
+        <constructor-arg value="ActivatedRelyingPartyConfiguration" />
+        <constructor-arg value="ALWAYS_TRUE" />
+        <constructor-arg>
+            <null />
+        </constructor-arg>
+        <constructor-arg>
+            <bean id="ActivatedRelyingPartyPredicate" class="idp.AlwaysTrueActivatedRelyingPartyPredicate" />
+        </constructor-arg>
+    </bean>
+
+    <bean id="ActivatedRelyingPartyConfigurationResolver" p:id="ActivatedRelyingPartyConfigurationResolver" class="net.shibboleth.idp.relyingparty.impl.ActivatedRelyingPartyConfigurationResolver">
+        <property name="relyingPartyConfigurations">
+            <util:list>
+                <ref bean="ActivatedRelyingPartyConfiguration" />
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="SelectRelyingPartyConfiguration" class="net.shibboleth.idp.profile.impl.SelectRelyingPartyConfiguration">
+        <constructor-arg ref="ActivatedRelyingPartyConfigurationResolver" />
+    </bean>
+
+    <bean id="AddAttributeStatementToAssertion" class="net.shibboleth.idp.saml.impl.profile.saml2.AddAttributeStatementToAssertion" />
 
 </beans>
