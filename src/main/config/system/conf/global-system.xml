@@ -123,5 +123,32 @@
     
     <bean id="shibboleth.ReplayCache" class="org.opensaml.storage.ReplayCache" depends-on="shibboleth.LogbackLogging"
         p:storage-ref="shibboleth.StorageService" p:strict="true" />
+
+    <bean id="shibboleth.AttributeFilterService" class="net.shibboleth.idp.attribute.filter.spring.AttributeFilterService" init-method="start" destroy-method="stop">
+        <property name="id" value="shibboleth.AttributeFilterService" />
+        <property name="serviceConfigurations">
+            <util:list>
+                <bean id="shibboleth.AttributeFilterConfigurationResource" class="idp.SpringResource">
+                    <constructor-arg value="file://${idp.home}/conf/attribute-filter.xml" />
+                </bean>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="shibboleth.AttributeFilter" factory-bean="shibboleth.AttributeFilterService" factory-method="getAttributeFilter" />
+
+    <bean id="shibboleth.AttributeResolverService" class="net.shibboleth.idp.attribute.resolver.spring.AttributeResolverService" init-method="start" destroy-method="stop"
+        depends-on="shibboleth.VelocityEngine">
+        <property name="id" value="shibboleth.AttributeResolverService" />
+        <property name="serviceConfigurations">
+            <util:list>
+                <bean id="shibboleth.AttributeResolverConfigurationResource" class="idp.SpringResource">
+                    <constructor-arg value="file://${idp.home}/conf/attribute-resolver.xml" />
+                </bean>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="shibboleth.AttributeResolver" factory-bean="shibboleth.AttributeResolverService" factory-method="getAttributeResolver" />
     
 </beans>

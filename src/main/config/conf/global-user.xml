@@ -16,7 +16,5 @@
 
     <import resource="authn-comparison.xml" />
     <import resource="authn-flow-descriptors.xml" />
-    <import resource="attribute-resolver-service.xml" />
-    <import resource="attribute-filter-service.xml" />
      
 </beans>
