@@ -56,8 +56,13 @@
     </action-state>
     
     <subflow-state id="DoAuthenticationSubflow" subflow="Authentication">
-        <transition on="#{true}" to="ResolveAttributes" />
+        <transition on="#{true}" to="AddAttributeRecipientContext" />
     </subflow-state>
+        
+    <action-state id="AddAttributeRecipientContext">
+        <evaluate expression="AddAttributeRecipientContext" />
+        <transition on="proceed" to="ResolveAttributes"/>
+    </action-state>
     
     <action-state id="ResolveAttributes">
         <evaluate expression="ResolveAttributes" />
