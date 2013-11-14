@@ -21,10 +21,10 @@ import javax.annotation.Nonnull;
 
 import net.shibboleth.idp.attribute.resolver.AttributeRecipientContext;
 import net.shibboleth.idp.attribute.resolver.AttributeResolutionContext;
+import net.shibboleth.idp.authn.context.SubjectContext;
 import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.ActionSupport;
 import net.shibboleth.idp.session.IdPSession;
-import net.shibboleth.idp.session.context.SessionContext;
 
 import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.action.EventIds;
@@ -46,19 +46,13 @@ public class AddAttributeRecipientContext extends AbstractProfileAction {
     protected org.springframework.webflow.execution.Event doExecute(@Nonnull final RequestContext springRequestContext,
             @Nonnull final ProfileRequestContext profileRequestContext) throws ProfileException {
 
-        SessionContext sessionCtx = profileRequestContext.getSubcontext(SessionContext.class);
-        if (sessionCtx == null) {
-            log.debug("Action {}: No session context available.", getId());
+        SubjectContext subjectCtx = profileRequestContext.getSubcontext(SubjectContext.class);
+        if (subjectCtx == null) {
+            log.debug("Action {}: No subject context available.", getId());
             return ActionSupport.buildEvent(this, EventIds.INVALID_PROFILE_CTX);
         }
 
-        IdPSession idpSession = sessionCtx.getIdPSession();
-        if (idpSession == null) {
-            log.debug("Action {}: No IdP session available.", getId());
-            return ActionSupport.buildEvent(this, EventIds.INVALID_PROFILE_CTX);
-        }
-
-        String principalName = idpSession.getPrincipalName();
+        String principalName = subjectCtx.getPrincipalName();
         if (principalName == null) {
             log.debug("Action {}: No principal name available.", getId());
             return ActionSupport.buildEvent(this, EventIds.INVALID_PROFILE_CTX);
@@ -66,9 +60,9 @@ public class AddAttributeRecipientContext extends AbstractProfileAction {
 
         AttributeResolutionContext attributeResolutionContext =
                 profileRequestContext.getSubcontext(AttributeResolutionContext.class, true);
-
         AttributeRecipientContext attributeRecipientContext = new AttributeRecipientContext();
         attributeRecipientContext.setPrincipal(principalName);
+        // TODO where to get the rest of the data for the attribute recipient context ?
         attributeResolutionContext.addSubcontext(attributeRecipientContext);
 
         return ActionSupport.buildProceedEvent(this);
