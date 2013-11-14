@@ -66,6 +66,11 @@
     
     <action-state id="ResolveAttributes">
         <evaluate expression="ResolveAttributes" />
+        <transition on="proceed" to="FilterAttributes"/>
+    </action-state>
+    
+    <action-state id="FilterAttributes">
+        <evaluate expression="FilterAttributes" />
         <transition on="proceed" to="BuildResponse"/>
     </action-state>
     

@@ -163,6 +163,10 @@
     <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" >
        <constructor-arg ref="shibboleth.AttributeResolver"/>
     </bean>
+    
+    <bean id="FilterAttributes" class="net.shibboleth.idp.profile.impl.FilterAttributes" >
+       <constructor-arg ref="shibboleth.AttributeFilter"/>
+    </bean>
 
     <!-- TODO replace responderId "https://idp.example.org" with something else -->
     <bean id="ActivatedRelyingPartyConfiguration" class="net.shibboleth.idp.relyingparty.impl.ActivatedRelyingPartyConfiguration">
