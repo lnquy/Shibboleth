@@ -42,7 +42,7 @@ public class Main {
             }
 
             // Configure Jetty from jetty.xml.
-            Resource fileserver_xml = Resource.newResource("src/main/jetty/jetty.xml");
+            Resource fileserver_xml = Resource.newResource("src/main/config/system/conf/jetty.xml");
             XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
             Server server = (Server) configuration.configure();
 

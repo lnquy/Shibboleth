@@ -161,13 +161,13 @@
     <bean id="InitializeRelyingPartyContextBasedOnInboundMessageIssuer" class="net.shibboleth.idp.saml.impl.profile.InitializeRelyingPartyContextBasedOnInboundMessageIssuer" />
     
     <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" >
-       <constructor-arg ref="AttributeResolver"/>
+       <constructor-arg ref="shibboleth.AttributeResolver"/>
     </bean>
 
-    <!-- TODO replace always true with something else -->
+    <!-- TODO replace responderId "https://idp.example.org" with something else -->
     <bean id="ActivatedRelyingPartyConfiguration" class="net.shibboleth.idp.relyingparty.impl.ActivatedRelyingPartyConfiguration">
         <constructor-arg value="ActivatedRelyingPartyConfiguration" />
-        <constructor-arg value="ALWAYS_TRUE" />
+        <constructor-arg value="https://idp.example.org" />
         <constructor-arg>
             <null />
         </constructor-arg>

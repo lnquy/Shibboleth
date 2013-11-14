@@ -25,7 +25,7 @@
   <logger name="org.eclipse.jetty" level="WARN"/>
   
   <logger name="org.ldaptive" level="WARN"/>
-    
+
   <logger name="PROTOCOL_MESSAGE" level="DEBUG" />
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
