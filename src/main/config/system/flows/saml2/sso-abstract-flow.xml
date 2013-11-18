@@ -56,7 +56,8 @@
     </action-state>
     
     <subflow-state id="DoAuthenticationSubflow" subflow="Authentication">
-        <transition on="#{true}" to="AddAttributeRecipientContext" />
+        <transition on="proceed" to="AddAttributeRecipientContext" />
+        <transition on="#{true}" to="BuildResponse" />
     </subflow-state>
         
     <action-state id="AddAttributeRecipientContext">
@@ -88,7 +89,7 @@
     
     <action-state id="AddAttributeStatementToAssertion">
         <evaluate expression="AddAttributeStatementToAssertion" />
-        <transition on="proceed" to="HandleOutboundMessage"/>
+        <transition on="#{true}" to="HandleOutboundMessage"/>
     </action-state>
     
     <action-state id="HandleOutboundMessage">
