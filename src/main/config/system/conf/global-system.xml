@@ -126,11 +126,9 @@
 
     <bean id="shibboleth.AttributeFilterService" class="net.shibboleth.idp.attribute.filter.spring.AttributeFilterService" init-method="start" destroy-method="stop">
         <property name="id" value="shibboleth.AttributeFilterService" />
-        <property name="serviceConfigurations">
+        <property name="configurations">
             <util:list>
-                <bean id="shibboleth.AttributeFilterConfigurationResource" class="idp.SpringResource">
-                    <constructor-arg value="file://${idp.home}/conf/attribute-filter.xml" />
-                </bean>
+                <value>file://${idp.home}/conf/attribute-filter.xml</value>
             </util:list>
         </property>
     </bean>
@@ -140,11 +138,9 @@
     <bean id="shibboleth.AttributeResolverService" class="net.shibboleth.idp.attribute.resolver.spring.AttributeResolverService" init-method="start" destroy-method="stop"
         depends-on="shibboleth.VelocityEngine">
         <property name="id" value="shibboleth.AttributeResolverService" />
-        <property name="serviceConfigurations">
+        <property name="configurations">
             <util:list>
-                <bean id="shibboleth.AttributeResolverConfigurationResource" class="idp.SpringResource">
-                    <constructor-arg value="file://${idp.home}/conf/attribute-resolver.xml" />
-                </bean>
+                <value>file://${idp.home}/conf/attribute-resolver.xml</value>
             </util:list>
         </property>
     </bean>
