@@ -28,9 +28,7 @@
     
     <bean id="shibboleth.LogbackLogging" class="net.shibboleth.idp.log.LogbackLoggingService" init-method="start" destroy-method="stop">
         <property name="id" value="shibboleth.LogbackLogging" />
-        <property name="loggingConfiguration">
-            <bean class="net.shibboleth.utilities.java.support.resource.FilesystemResource" c:resourcePath="${idp.home}/conf/logback.xml" />
-        </property>
+        <property name="loggingConfiguration" value="file:${idp.home}/conf/logback.xml" />
         <property name="reloadCheckDelay" value="0" />
     </bean>
     
