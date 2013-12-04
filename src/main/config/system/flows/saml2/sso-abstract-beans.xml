@@ -169,27 +169,27 @@
     </bean>
 
     <!-- TODO replace responderId "https://idp.example.org" with something else -->
-    <bean id="ActivatedRelyingPartyConfiguration" class="net.shibboleth.idp.relyingparty.impl.ActivatedRelyingPartyConfiguration">
+    <bean id="ConditionalRelyingPartyConfiguration" class="net.shibboleth.idp.relyingparty.impl.ConditionalRelyingPartyConfiguration">
         <constructor-arg value="ActivatedRelyingPartyConfiguration" />
         <constructor-arg value="https://idp.example.org" />
         <constructor-arg>
             <null />
         </constructor-arg>
         <constructor-arg>
-            <bean id="ActivatedRelyingPartyPredicate" class="idp.AlwaysTrueActivatedRelyingPartyPredicate" />
+            <bean id="AlwaysTrueRelyingPartyPredicate" class="idp.AlwaysTrueActivatedRelyingPartyPredicate" />
         </constructor-arg>
     </bean>
 
-    <bean id="ActivatedRelyingPartyConfigurationResolver" p:id="ActivatedRelyingPartyConfigurationResolver" class="net.shibboleth.idp.relyingparty.impl.ActivatedRelyingPartyConfigurationResolver">
+    <bean id="ConditionalRelyingPartyConfigurationResolver" p:id="ConditionalRelyingPartyConfigurationResolver" class="net.shibboleth.idp.relyingparty.impl.ConditionalRelyingPartyConfigurationResolver">
         <property name="relyingPartyConfigurations">
             <util:list>
-                <ref bean="ActivatedRelyingPartyConfiguration" />
+                <ref bean="ConditionalRelyingPartyConfiguration" />
             </util:list>
         </property>
     </bean>
 
     <bean id="SelectRelyingPartyConfiguration" class="net.shibboleth.idp.profile.impl.SelectRelyingPartyConfiguration">
-        <constructor-arg ref="ActivatedRelyingPartyConfigurationResolver" />
+        <constructor-arg ref="ConditionalRelyingPartyConfigurationResolver" />
     </bean>
 
     <bean id="AddAttributeStatementToAssertion" class="net.shibboleth.idp.saml.impl.profile.saml2.AddAttributeStatementToAssertion" />
