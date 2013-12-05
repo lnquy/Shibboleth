@@ -115,7 +115,7 @@
     </bean>
     
     <!-- This is used with the "encoder selected in WebFlow" style. -->
-    <bean id="EncodeMessageSAML2Post" class="net.shibboleth.idp.profile.impl.EncodeMessage" scope="prototype">
+    <bean id="EncodeMessageSAML2Post" class="org.opensaml.profile.action.impl.EncodeMessage" scope="prototype">
         <constructor-arg ref="encoders.saml.SAML2PostEncoder" />
     </bean>
     
@@ -156,7 +156,7 @@
     
     <bean id="AddProfileConfiguration" class="idp.AddProfileConfiguration" />
             
-    <bean id="CheckMandatoryIssuer" class="net.shibboleth.idp.profile.impl.CheckMandatoryIssuer" />
+    <bean id="CheckMandatoryIssuer" class="org.opensaml.profile.action.impl.CheckMandatoryIssuer" />
     
     <bean id="InitializeRelyingPartyContextBasedOnInboundMessageIssuer" class="net.shibboleth.idp.saml.impl.profile.InitializeRelyingPartyContextBasedOnInboundMessageIssuer" />
     
