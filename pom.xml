@@ -94,6 +94,12 @@
 
         <dependency>
             <groupId>${opensaml.groupId}</groupId>
+            <artifactId>opensaml-profile-impl</artifactId>
+            <version>${opensaml.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${opensaml.groupId}</groupId>
             <artifactId>opensaml-storage-impl</artifactId>
             <version>${opensaml.version}</version>
         </dependency>
