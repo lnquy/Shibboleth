@@ -145,8 +145,4 @@
 
     <bean id="shibboleth.AttributeResolver" factory-bean="shibboleth.AttributeResolverService" factory-method="getAttributeResolver" />
 
-    <bean id="shibboleth.DirectoryService" class="common.InMemoryDirectory" init-method="start" destroy-method="stop">
-      <constructor-arg><value>src/test/config/ldap.ldif</value></constructor-arg>
-    </bean>    
-
  </beans>
