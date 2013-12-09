@@ -78,7 +78,7 @@ public class Saml2Controller {
 		MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_REDIRECT_BINDING_URI);
 		encodeOutboundMessageContextRedirect(messageContext, servletResponse);
 	}
-	
+
 	@RequestMapping(value="/InitSSO/POST", method=RequestMethod.GET)
 	public void initSsoRequestPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
 		AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
@@ -88,6 +88,24 @@ public class Saml2Controller {
 		encodeOutboundMessageContextPost(messageContext, servletResponse);
 	}
 
+    @RequestMapping(value="/InitSSO/Passive", method=RequestMethod.GET)
+    public void initSSORequestPassive(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
+        authnRequest.setDestination(getDestinationRedirect(servletRequest));
+        authnRequest.setIsPassive(true);
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+        encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+    }
+
+    @RequestMapping(value="/InitSSO/ForceAuthn", method=RequestMethod.GET)
+    public void initSSORequestForceAuthn(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
+        authnRequest.setDestination(getDestinationRedirect(servletRequest));
+        authnRequest.setForceAuthn(true);
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+        encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+    }
+    
 	@RequestMapping(value="/POST/ACS", method=RequestMethod.POST)
 	public ResponseEntity<String> handleSSOResponsePOST(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
 		MessageContext<SAMLObject> messageContext = decodeInboundMessageContextPost(servletRequest);

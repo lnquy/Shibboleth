@@ -2,6 +2,7 @@ package idp;
 
 import javax.annotation.Nonnull;
 
+import net.shibboleth.idp.authn.context.AuthenticationContext;
 import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.ActionSupport;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
@@ -75,6 +76,11 @@ public class BuildMockSaml2Response extends AbstractProfileAction<SAMLObject, SA
 		
 		if (springRequestContext.getCurrentEvent().getId().equals(EventIds.PROCEED_EVENT_ID)) {
 		    statusCode.setValue(StatusCode.SUCCESS_URI);
+		} else if (profileRequestContext.getSubcontext(AuthenticationContext.class, true).isPassive()) {
+            statusCode.setValue(StatusCode.REQUESTER_URI);
+            StatusCode subCode = (StatusCode) builderFactory.getBuilder(StatusCode.DEFAULT_ELEMENT_NAME).buildObject(StatusCode.DEFAULT_ELEMENT_NAME);
+            subCode.setValue(StatusCode.NO_PASSIVE_URI);
+            statusCode.setStatusCode(subCode);
 		} else {
 		    statusCode.setValue(StatusCode.RESPONDER_URI);
 		    StatusMessage msg = (StatusMessage) builderFactory.getBuilder(StatusMessage.DEFAULT_ELEMENT_NAME).buildObject(StatusMessage.DEFAULT_ELEMENT_NAME);
