@@ -165,7 +165,7 @@
     </bean>
     
     <bean id="FilterAttributes" class="net.shibboleth.idp.profile.impl.FilterAttributes" >
-       <constructor-arg ref="shibboleth.AttributeFilter"/>
+       <constructor-arg ref="shibboleth.AttributeFilterService"/>
     </bean>
 
     <!-- TODO replace responderId "https://idp.example.org" with something else -->
