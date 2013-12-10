@@ -15,6 +15,13 @@
     <import resource="../../../conf/ldap-authn-config.xml" />
 
     <bean class="net.shibboleth.idp.profile.impl.ProfileActionBeanPostProcessor" />
+
+    <bean id="ExtractUsernamePasswordFromBasicAuth" class="net.shibboleth.idp.authn.impl.ExtractUsernamePasswordFromBasicAuth" scope="prototype"
+        p:httpServletRequest-ref="shibboleth.HttpServletRequest"
+        p:lowercase-ref="shibboleth.authn.LDAP.Lowercase"
+        p:uppercase-ref="shibboleth.authn.LDAP.Uppercase"
+        p:trim-ref="shibboleth.authn.LDAP.Trim"
+        p:transforms-ref="shibboleth.authn.LDAP.Transforms" />
     
     <bean id="ExtractUsernamePasswordFromFormRequest" class="net.shibboleth.idp.authn.impl.ExtractUsernamePasswordFromFormRequest" scope="prototype"
         p:httpServletRequest-ref="shibboleth.HttpServletRequest"
@@ -29,23 +36,16 @@
     <bean id="ValidateUsernamePasswordAgainstLDAP" class="net.shibboleth.idp.authn.impl.ValidateUsernamePasswordAgainstLDAP" scope="prototype"
             p:authenticator-ref="authenticator"
             p:classifiedMessages-ref="shibboleth.ClassifiedMessageMap"
-            p:resultCachingPredicate="#{getObject('shibboleth.authn.LDAP.resultCachingPredicate')}">
-        <property name="returnAttributes">
-          <array>
-            <value>cn</value>
-            <value>businessCategory</value>
-            <value>mail</value>
-          </array>
-        </property>
-    </bean>
+            p:resultCachingPredicate="#{getObject('shibboleth.authn.LDAP.resultCachingPredicate')}"
+            p:returnAttributes-ref="shibboleth.authn.LDAP.returnAttributes" />
 
     <bean name="authenticator" class="org.ldaptive.auth.Authenticator"
           p:resolveEntryOnFailure="true">
         <constructor-arg index="0">
             <bean class="org.ldaptive.auth.SearchDnResolver"
-                p:baseDn="${idp.authn.ldap.baseDn}"
-                p:subtreeSearch="${idp.authn.ldap.subtreeSearch}"
-                p:userFilter="${idp.authn.ldap.userFilter}"
+                p:baseDn-ref="shibboleth.authn.LDAP.baseDn"
+                p:subtreeSearch-ref="shibboleth.authn.LDAP.subtreeSearch"
+                p:userFilter-ref="shibboleth.authn.LDAP.userFilter"
                 p:connectionFactory-ref="connectionFactory" />
         </constructor-arg>
         <constructor-arg index="1">
@@ -85,7 +85,7 @@
     <bean name="connectionFactory" class="org.ldaptive.DefaultConnectionFactory">
         <constructor-arg>
             <bean class="org.ldaptive.ConnectionConfig"
-                p:ldapUrl="${idp.authn.ldap.ldapUrl}" />
+                p:ldapUrl-ref="shibboleth.authn.LDAP.ldapUrl" />
         </constructor-arg>
     </bean>
 </beans>

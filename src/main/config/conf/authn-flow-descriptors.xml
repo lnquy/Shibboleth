@@ -65,7 +65,7 @@
 
         <bean c:id="AuthenticationFlow/LDAP" class="net.shibboleth.idp.authn.AuthenticationFlowDescriptor"
                 p:resultSerializer-ref="shibboleth.DefaultAuthenticationResultSerializer"
-                p:passiveAuthenticationSupported="false"
+                p:passiveAuthenticationSupported="true"
                 p:forcedAuthenticationSupported="true"
                 p:lifetime="${idp.authn.defaultLifetime}" p:inactivityTimeout="${idp.authn.defaultTimeout}">
             <property name="supportedPrincipals">
