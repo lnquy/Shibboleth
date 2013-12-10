@@ -26,11 +26,14 @@
 
     <import resource="session-manager.xml" />
     
-    <bean id="shibboleth.LogbackLogging" class="net.shibboleth.idp.log.LogbackLoggingService" init-method="start" destroy-method="stop">
-        <property name="id" value="shibboleth.LogbackLogging" />
-        <property name="loggingConfiguration" value="file:${idp.home}/conf/logback.xml" />
-        <property name="reloadCheckDelay" value="0" />
-    </bean>
+    <bean id="shibboleth.TaskTimer" class="java.util.Timer" destroy-method="cancel"/> <!--  only needed if you do reloading -->
+    
+    <bean id="shibboleth.LogbackLogging" class="net.shibboleth.idp.log.LogbackLoggingService" init-method="start" destroy-method="stop"
+          p:id="shibboleth.LogbackLogging"
+          p:loggingConfiguration="file:${idp.home}/conf/logback.xml"
+          p:reloadCheckDelay="${idp.service.logging.checkInterval}"
+          p:reloadTaskTimer-ref="shibboleth.TaskTimer"
+          p:failFast="${idp.service.logging.failFast}"/>
     
     <bean id="shibboleth.OpensamlConfig" class="common.OpensamlConfigBean"
         depends-on="shibboleth.LogbackLogging" p:parserPool-ref="shibboleth.ParserPool" />
@@ -133,16 +136,18 @@
 
     <bean id="shibboleth.AttributeFilter" factory-bean="shibboleth.AttributeFilterService" factory-method="getAttributeFilter" />
 
-    <bean id="shibboleth.AttributeResolverService" class="net.shibboleth.idp.attribute.resolver.spring.AttributeResolverService" init-method="start" destroy-method="stop"
+    <bean id="shibboleth.AttributeResolverService" class="net.shibboleth.idp.service.ReloadableSpringService" init-method="start" destroy-method="stop"
         depends-on="shibboleth.VelocityEngine">
+        <constructor-arg><value>net.shibboleth.idp.attribute.resolver.AttributeResolver</value></constructor-arg>
         <property name="id" value="shibboleth.AttributeResolverService" />
-        <property name="configurations">
+        <property name="serviceConfigurations">
             <util:list>
                 <value>file://${idp.home}/conf/attribute-resolver.xml</value>
             </util:list>
         </property>
+        <property name="failFast" value="${idp.service.attribute.resolver.failFast}" />
+        <property name="reloadCheckDelay" value="${idp.service.attribute.resolver.checkInterval}" />
+        <property name="reloadTaskTimer" ref="shibboleth.TaskTimer" />
     </bean>
-
-    <bean id="shibboleth.AttributeResolver" factory-bean="shibboleth.AttributeResolverService" factory-method="getAttributeResolver" />
 
  </beans>

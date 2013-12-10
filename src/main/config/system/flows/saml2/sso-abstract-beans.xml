@@ -161,7 +161,7 @@
     <bean id="InitializeRelyingPartyContextBasedOnInboundMessageIssuer" class="net.shibboleth.idp.saml.impl.profile.InitializeRelyingPartyContextBasedOnInboundMessageIssuer" />
     
     <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" >
-       <constructor-arg ref="shibboleth.AttributeResolver"/>
+       <constructor-arg ref="shibboleth.AttributeResolverService"/>
     </bean>
     
     <bean id="FilterAttributes" class="net.shibboleth.idp.profile.impl.FilterAttributes" >
