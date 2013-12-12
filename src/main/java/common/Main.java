@@ -18,6 +18,10 @@
 package common;
 
 import java.io.FileInputStream;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.ProtectionDomain;
 import java.util.Properties;
 
 import org.eclipse.jetty.security.HashLoginService;
@@ -34,27 +38,54 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
+            // Hack. If protection domain location ends with ".war", then assume we are running from a CLI, otherwise
+            // assume we are running from within Eclipse.
+            ProtectionDomain protectionDomain = Main.class.getProtectionDomain();
+            URL location = protectionDomain.getCodeSource().getLocation();
+
+            // Set idp.home system property if it has not been set as a command line option.
+            String idpHome = System.getProperty("idp.home");
+            if (idpHome == null) {
+                if (protectionDomain.getCodeSource().getLocation().toString().endsWith(".war")) {
+                    // Running from command line.
+                    idpHome = Paths.get("").toAbsolutePath().toString();
+                } else {
+                    // Running from Eclipse.
+                    idpHome = Paths.get("src", "main", "config").toAbsolutePath().toString();
+                }
+                System.setProperty("idp.home", idpHome);
+            }
+
             // Add system properties from idp.properties.
+            Path pathToIdPProperties = Paths.get(idpHome, "conf", "idp.properties");
             Properties idpProperties = new Properties();
-            idpProperties.load(new FileInputStream("src/main/config/conf/idp.properties"));
+            idpProperties.load(new FileInputStream(pathToIdPProperties.toFile()));
             for (String propertyName : idpProperties.stringPropertyNames()) {
                 System.setProperty(propertyName, idpProperties.getProperty(propertyName));
             }
 
             // Configure Jetty from jetty.xml.
-            Resource fileserver_xml = Resource.newResource("src/main/config/system/conf/jetty.xml");
+            Path pathToJettyXML = Paths.get(idpHome, "system", "conf", "jetty.xml");
+            Resource fileserver_xml = Resource.newResource(pathToJettyXML.toString());
             XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
             Server server = (Server) configuration.configure();
 
+            Path pathToRealm = Paths.get(idpHome, "test", "jetty-realm.properties");
             HashLoginService loginService = new HashLoginService();
             loginService.setName("Shib Testbed Web Authentication");
-            loginService.setConfig("src/test/config/jetty-realm.properties");
+            loginService.setConfig(pathToRealm.toString());
             server.addBean(loginService);
 
             WebAppContext webapp = new WebAppContext();
             webapp.setContextPath("/");
-            webapp.setWar("src/main/webapp");
             server.setHandler(webapp);
+            if (protectionDomain.getCodeSource().getLocation().toString().endsWith(".war")) {
+                // Running from command line.
+                webapp.setWar(location.toExternalForm());
+            } else {
+                // Running from Eclipse.
+                webapp.setWar("src/main/webapp");
+            }
 
             server.start();
             server.join();
