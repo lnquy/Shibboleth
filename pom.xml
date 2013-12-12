@@ -17,6 +17,8 @@
         <idp.version>3.0-SNAPSHOT</idp.version>
         <opensaml.groupId>org.opensaml</opensaml.groupId>
         <opensaml.version>3.0-SNAPSHOT</opensaml.version>
+        <!-- The assembly-directory is where the testbed is built before being archived. -->
+        <assembly-directory>${project.build.directory}/${project.artifactId}-${project.version}-distribution</assembly-directory>
     </properties>
 
     <repositories>
@@ -220,8 +222,8 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}</finalName>
         <plugins>
+            <!-- Set Logback configuration file system property. -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
@@ -242,6 +244,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- mvn:jetty run -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
@@ -267,16 +270,119 @@
                     <loginServices>
                         <loginService implementation="org.eclipse.jetty.security.HashLoginService">
                             <name>Shib Testbed Web Authentication</name>
-                            <config>src/test/config/jetty-realm.properties</config>
+                            <config>src/main/config/test/jetty-realm.properties</config>
                         </loginService>
                     </loginServices>
+                </configuration>
+            </plugin>
+            <!-- Copy src/main/config to assembly directory. -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-base-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/config</directory>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${assembly-directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Copy Main.class to war build directory before war is built. -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>main-class-placement</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <tasks>
+                                <move todir="${project.build.directory}/${project.artifactId}-${project.version}/">
+                                    <fileset dir="${project.build.directory}/classes/">
+                                        <include name="Main.class" />
+                                    </fileset>
+                                </move>
+                                <copy todir="${project.build.directory}/${project.artifactId}-${project.version}/">
+                                    <fileset dir="src/main/config/conf">
+                                        <include name="logback.xml" />
+                                    </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Make war executable. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- Add Jetty to executable war. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jetty-classpath</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeGroupIds>org.eclipse.jetty,javax.servlet</includeGroupIds>
+                            <excludeArtifactIds>jsp-api,jstl</excludeArtifactIds>
+                            <excludes>META-INF/ECLIPSEF.*,META-INF/ECLIPSE_.*</excludes>
+                            <outputDirectory>
+                                ${project.build.directory}/${project.artifactId}-${project.version}
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Assemble. -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/idp-testbed-assembly.xml</descriptor>
+                    </descriptors>
+                    <tarLongFileMode>gnu</tarLongFileMode>
                 </configuration>
             </plugin>
         </plugins>
 
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>

@@ -1,15 +1,15 @@
-dn: dc=shibboleth,dc=net
-dc: shibboleth
+dn: dc=example,dc=org
+dc: example
 objectClass: dcObject
 objectClass: organization
-o: Shibboleth, Inc.
+o: example
 
-dn: ou=people,dc=shibboleth,dc=net
+dn: ou=people,dc=example,dc=org
 ou: people
 description: All people in organization
 objectclass: organizationalunit
 
-dn: cn=John Doe,ou=people,dc=shibboleth,dc=net
+dn: cn=John Doe,ou=people,dc=example,dc=org
 objectclass: inetOrgPerson
 cn: John Doe
 cn: J Doe
@@ -22,4 +22,3 @@ mail: jdoe@shibboleth.net
 description: test user
 #businessCategory: accountStateWarning
 #businessCategory: accountStateError
-

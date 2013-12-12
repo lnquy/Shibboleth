@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package common;
+
 
 import java.io.FileInputStream;
 import java.net.URL;
