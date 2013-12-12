@@ -16,15 +16,15 @@
   
   <logger name="org.springframework.webflow" level="WARN"/>
   
-  <logger name="net.shibboleth.idp" level="WARN"/>
+  <logger name="net.shibboleth.idp" level="INFO"/>
   
   <logger name="org.opensaml" level="WARN"/>
   
   <logger name="org.opensaml.storage" level="TRACE"/>
   
-  <logger name="org.eclipse.jetty" level="WARN"/>
+  <logger name="org.eclipse.jetty" level="INFO"/>
   
-  <logger name="org.ldaptive" level="WARN"/>
+  <logger name="org.ldaptive" level="INFO"/>
 
   <logger name="PROTOCOL_MESSAGE" level="DEBUG" />
 
