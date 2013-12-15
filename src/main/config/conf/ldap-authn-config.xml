@@ -54,7 +54,7 @@
     </util:list>
 
     <!--
-    Define entries here to map error messages thrown by JAAS modules and classify them as particular
+    Define entries here to map error messages thrown by LDAP module and classify them as particular
     kinds of errors for use in your templates and as events in flows.
     -->
     <util:map id="shibboleth.authn.LDAP.ClassifiedMessageMap">
