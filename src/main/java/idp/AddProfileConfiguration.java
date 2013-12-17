@@ -23,7 +23,7 @@ import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.ActionSupport;
 import net.shibboleth.idp.profile.config.SecurityConfiguration;
 import net.shibboleth.idp.relyingparty.RelyingPartyContext;
-import net.shibboleth.idp.saml.profile.config.saml2.SsoProfileConfiguration;
+import net.shibboleth.idp.saml.profile.config.saml2.BrowserSSOProfileConfiguration;
 
 import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.context.ProfileRequestContext;
@@ -35,7 +35,7 @@ public class AddProfileConfiguration extends AbstractProfileAction {
     protected org.springframework.webflow.execution.Event doExecute(@Nonnull final RequestContext springRequestContext,
             @Nonnull final ProfileRequestContext profileRequestContext) throws ProfileException {
 
-        SsoProfileConfiguration profileConfiguration = new SsoProfileConfiguration();
+        BrowserSSOProfileConfiguration profileConfiguration = new BrowserSSOProfileConfiguration();
         profileConfiguration.setSecurityConfiguration(new SecurityConfiguration());
         profileRequestContext.getSubcontext(RelyingPartyContext.class).setProfileConfiguration(profileConfiguration);
 
