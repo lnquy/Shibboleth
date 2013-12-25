@@ -20,6 +20,9 @@
         <opensaml.version>3.0-SNAPSHOT</opensaml.version>
         <!-- The assembly-directory is where the testbed is built before being archived. -->
         <assembly-directory>${project.build.directory}/${project.artifactId}-${project.version}-distribution</assembly-directory>
+        <!-- TODO tz These paths are fragile. -->
+        <idp.home>${project.basedir}/../java-identity-provider/idp-conf/src/main/resources</idp.home>
+        <app.home>${project.basedir}/src/main/resources</app.home>
     </properties>
 
     <repositories>
@@ -237,7 +240,7 @@
                             <properties>
                                 <property>
                                     <name>logback.configurationFile</name>
-                                    <value>${project.baseUri}/src/main/config/conf/logback.xml</value>
+                                    <value>${project.baseUri}/src/main/resources/conf/logback.xml</value>
                                 </property>
                             </properties>
                         </configuration>
@@ -253,49 +256,39 @@
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/</contextPath>
-                        <overrideDescriptor>src/test/config/override-web.xml</overrideDescriptor>
+                        <overrideDescriptor>src/main/resources/test/override-web.xml</overrideDescriptor>
                         <!-- Startup faster. https://jira.codehaus.org/browse/JETTY-1503 -->
                         <webInfIncludeJarPattern>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</webInfIncludeJarPattern>
                     </webApp>
                     <jettyXml>
-                        ${project.basedir}/src/main/config/system/conf/jetty.xml
+                        ${idp.home}/system/conf/jetty.xml
                     </jettyXml>
                     <systemProperties>
                         <systemProperty>
                             <name>idp.home</name>
-                            <value>${project.basedir}/src/main/config</value>
+                            <value>${idp.home}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>app.home</name>
+                            <value>${app.home}</value>
                         </systemProperty>
                     </systemProperties>
-                    <systemPropertiesFile>${project.basedir}/src/main/config/conf/idp.properties</systemPropertiesFile>
+                    <systemPropertiesFile>${idp.home}/conf/idp.properties</systemPropertiesFile>
                     <loginServices>
                         <loginService implementation="org.eclipse.jetty.security.HashLoginService">
                             <name>Shib Testbed Web Authentication</name>
-                            <config>src/main/config/test/jetty-realm.properties</config>
+                            <config>src/main/resources/test/jetty-realm.properties</config>
                         </loginService>
                     </loginServices>
                 </configuration>
             </plugin>
-            <!-- Copy src/main/config to assembly directory. -->
+            <!-- Copy src/main/resources to assembly directory. -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-base-resources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <includeEmptyDirs>true</includeEmptyDirs>
-                            <resources>
-                                <resource>
-                                    <directory>${basedir}/src/main/config</directory>
-                                </resource>
-                            </resources>
-                            <outputDirectory>${assembly-directory}</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                    <outputDirectory>${assembly-directory}</outputDirectory>
+                </configuration>
             </plugin>
             <!-- Copy Main.class to war build directory before war is built. -->
             <plugin>
@@ -312,7 +305,7 @@
                                     </fileset>
                                 </move>
                                 <copy todir="${project.build.directory}/${project.artifactId}-${project.version}/">
-                                    <fileset dir="src/main/config/conf">
+                                    <fileset dir="src/main/resources/conf">
                                         <include name="logback.xml" />
                                     </fileset>
                                 </copy>
@@ -337,11 +330,31 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!-- Add Jetty to executable war. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
+                    <!-- Unpack idp-conf dependency to assembly directory. -->
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>net.shibboleth.idp</groupId>
+                                    <artifactId>idp-conf</artifactId>
+                                    <version>${idp.version}</version>
+                                    <type>jar</type>
+                                    <excludes>META-INF/**</excludes>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${assembly-directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <!-- Add Jetty to executable war. -->
                     <execution>
                         <id>jetty-classpath</id>
                         <phase>prepare-package</phase>
@@ -397,6 +410,19 @@
                                         <versionRange>[1.0-alpha-2,)</versionRange>
                                         <goals>
                                             <goal>set-system-properties</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-dependency-plugin</artifactId>
+                                        <versionRange>[2.8,)</versionRange>
+                                        <goals>
+                                            <goal>unpack</goal>
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>

@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-
-
 import java.io.FileInputStream;
 import java.net.URL;
 import java.nio.file.Path;
@@ -51,9 +49,24 @@ public class Main {
                     idpHome = Paths.get("").toAbsolutePath().toString();
                 } else {
                     // Running from Eclipse.
-                    idpHome = Paths.get("src", "main", "config").toAbsolutePath().toString();
+                    idpHome =
+                            Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
+                                    "java-identity-provider", "idp-conf", "src", "main", "resources").toString();
                 }
                 System.setProperty("idp.home", idpHome);
+            }
+
+            // Set app.home system property if it has not been set as a command line option.
+            String appHome = System.getProperty("app.home");
+            if (appHome == null) {
+                if (protectionDomain.getCodeSource().getLocation().toString().endsWith(".war")) {
+                    // Running from command line.
+                    appHome = Paths.get("").toAbsolutePath().toString();
+                } else {
+                    // Running from Eclipse.
+                    appHome = Paths.get("src", "main", "resources").toAbsolutePath().toString();
+                }
+                System.setProperty("app.home", appHome);
             }
 
             // Add system properties from idp.properties.
