@@ -9,8 +9,8 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.handler.AbstractMessageHandler;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.SAMLObject;
-import org.opensaml.saml.common.messaging.context.SamlPeerEntityContext;
-import org.opensaml.saml.common.messaging.context.SamlProtocolContext;
+import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
+import org.opensaml.saml.common.messaging.context.SAMLProtocolContext;
 
 public class MockPopulateContextData extends AbstractMessageHandler<SAMLObject> {
 	
@@ -53,8 +53,8 @@ public class MockPopulateContextData extends AbstractMessageHandler<SAMLObject> 
 	}
 	
 	protected void doInvoke(MessageContext<SAMLObject> messageContext) throws MessageHandlerException {
-		messageContext.getSubcontext(SamlProtocolContext.class, true).setProtocol(samlProtocol);
-		messageContext.getSubcontext(SamlPeerEntityContext.class, true).setRole(peerSamlRole);
+		messageContext.getSubcontext(SAMLProtocolContext.class, true).setProtocol(samlProtocol);
+		messageContext.getSubcontext(SAMLPeerEntityContext.class, true).setRole(peerSamlRole);
 	}
 	
 }

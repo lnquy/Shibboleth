@@ -19,9 +19,9 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.decoder.MessageDecodingException;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.saml.common.SAMLObject;
-import org.opensaml.saml.common.messaging.SamlMessageSecuritySupport;
-import org.opensaml.saml.common.messaging.context.SamlEndpointContext;
-import org.opensaml.saml.common.messaging.context.SamlPeerEntityContext;
+import org.opensaml.saml.common.messaging.SAMLMessageSecuritySupport;
+import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
+import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.binding.decoding.HTTPPostDecoder;
 import org.opensaml.saml.saml2.binding.encoding.HTTPPostEncoder;
@@ -84,7 +84,7 @@ public class Saml2Controller {
 		AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
 		authnRequest.setDestination(getDestinationPost(servletRequest));
 		MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_POST_BINDING_URI);
-		SamlMessageSecuritySupport.signMessage(messageContext);
+		SAMLMessageSecuritySupport.signMessage(messageContext);
 		encodeOutboundMessageContextPost(messageContext, servletResponse);
 	}
 
@@ -149,10 +149,10 @@ public class Saml2Controller {
 		MessageContext<SAMLObject> messageContext = new MessageContext<>();
 		messageContext.setMessage(authnRequest);
 		
-		SamlPeerEntityContext peerContext = messageContext.getSubcontext(SamlPeerEntityContext.class, true);
+		SAMLPeerEntityContext peerContext = messageContext.getSubcontext(SAMLPeerEntityContext.class, true);
 		peerContext.setEntityId(getIdpEntityId());
 		
-		SamlEndpointContext endpointContext = peerContext.getSubcontext(SamlEndpointContext.class, true);
+		SAMLEndpointContext endpointContext = peerContext.getSubcontext(SAMLEndpointContext.class, true);
 		endpointContext.setEndpoint(buildIdpSsoEndpoint(bindingUri, authnRequest.getDestination()));
 		
 		SignatureSigningParameters signingParameters = new SignatureSigningParameters();

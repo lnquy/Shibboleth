@@ -36,7 +36,7 @@ import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.action.EventIds;
 import org.opensaml.profile.context.ProfileRequestContext;
-import org.opensaml.saml.common.messaging.context.SamlBindingContext;
+import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.webflow.execution.RequestContext;
@@ -148,7 +148,7 @@ public class EncodeSAMLMessageFromBindingURI extends AbstractProfileAction {
     }
     
     private MessageEncoder lookupMessageEncoder(ProfileRequestContext profileRequestContext) throws ProfileException {
-    	SamlBindingContext bindingContext = profileRequestContext.getOutboundMessageContext().getSubcontext(SamlBindingContext.class, false);
+    	SAMLBindingContext bindingContext = profileRequestContext.getOutboundMessageContext().getSubcontext(SAMLBindingContext.class, false);
     	if (bindingContext == null || bindingContext.getBindingUri() == null) {
     		throw new ProfileException("Binding URI was not available, unable to lookup message encoder");
     	}

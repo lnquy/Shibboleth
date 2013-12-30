@@ -9,9 +9,9 @@ import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
-import org.opensaml.saml.common.messaging.context.SamlBindingContext;
-import org.opensaml.saml.common.messaging.context.SamlEndpointContext;
-import org.opensaml.saml.common.messaging.context.SamlPeerEntityContext;
+import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
+import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
+import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
@@ -64,10 +64,10 @@ public class PrepareOutboundMessageContext extends AbstractProfileAction<SAMLObj
 		
 		MessageContext<SAMLObject> messageContext = profileRequestContext.getOutboundMessageContext();
 		
-		SamlPeerEntityContext peerContext = messageContext.getSubcontext(SamlPeerEntityContext.class, true);
+		SAMLPeerEntityContext peerContext = messageContext.getSubcontext(SAMLPeerEntityContext.class, true);
 		peerContext.setEntityId(getSpEntityId());
 		
-		SamlEndpointContext endpointContext = peerContext.getSubcontext(SamlEndpointContext.class, true);
+		SAMLEndpointContext endpointContext = peerContext.getSubcontext(SAMLEndpointContext.class, true);
 		endpointContext.setEndpoint(buildSpAcsEndpoint(bindingURI, acsURL));
 		
 		return messageContext;
@@ -83,10 +83,10 @@ public class PrepareOutboundMessageContext extends AbstractProfileAction<SAMLObj
 	
 	private void addBindingInfo(ProfileRequestContext<SAMLObject, SAMLObject> profileRequestContext) {
 		MessageContext<SAMLObject> messageContext = profileRequestContext.getOutboundMessageContext();
-		Endpoint endpoint = messageContext.getSubcontext(SamlPeerEntityContext.class).getSubcontext(SamlEndpointContext.class).getEndpoint();
+		Endpoint endpoint = messageContext.getSubcontext(SAMLPeerEntityContext.class).getSubcontext(SAMLEndpointContext.class).getEndpoint();
 		String bindingURI = endpoint.getBinding();
 		
-		SamlBindingContext bindingContext = messageContext.getSubcontext(SamlBindingContext.class, true);
+		SAMLBindingContext bindingContext = messageContext.getSubcontext(SAMLBindingContext.class, true);
 		bindingContext.setBindingUri(bindingURI);
 		bindingContext.setRelayState(SAMLBindingSupport.getRelayState(profileRequestContext.getInboundMessageContext()));
 	}
