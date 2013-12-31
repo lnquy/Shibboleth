@@ -38,7 +38,7 @@ public class InMemoryDirectory {
      * @throws LDAPException if the in-memory directory server cannot be created
      */
     public InMemoryDirectory(final String path) throws LDAPException {
-        InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig("dc=example,dc=org");
+        InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig("dc=example,dc=org", "ou=system");
         config.setListenerConfigs(InMemoryListenerConfig.createLDAPConfig("default", 10389));
         config.addAdditionalBindCredentials("cn=Directory Manager", "password");
         directoryServer = new InMemoryDirectoryServer(config);

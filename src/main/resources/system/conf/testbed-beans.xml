@@ -21,10 +21,6 @@
     
     
     <!-- Specific testbed-related beans -->
-
-    <bean id="testbed.DirectoryService" class="common.InMemoryDirectory" init-method="start" destroy-method="stop">
-        <constructor-arg value="${app.home}/test/ldap.ldif" />
-    </bean>
     
     <!-- TODO: for the file references, might be preferable to make these resolved as classpath resources,
          instead of relative filesystem references. -->

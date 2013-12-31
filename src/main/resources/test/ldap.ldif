@@ -22,3 +22,17 @@ mail: jdoe@shibboleth.net
 description: test user
 #businessCategory: accountStateWarning
 #businessCategory: accountStateError
+
+dn: ou=system
+ou: system
+description: System accounts
+objectclass: organizationalunit
+
+dn: uid=myservice,ou=system
+ou: system
+description: Service account
+objectclass: inetOrgPerson
+cn: myservice
+sn: myservice
+uid: myservice
+userpassword: myServicePassword
