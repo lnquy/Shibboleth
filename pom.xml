@@ -304,11 +304,6 @@
                                         <include name="Main.class" />
                                     </fileset>
                                 </move>
-                                <copy todir="${project.build.directory}/${project.artifactId}-${project.version}/">
-                                    <fileset dir="src/main/resources/conf">
-                                        <include name="logback.xml" />
-                                    </fileset>
-                                </copy>
                             </tasks>
                         </configuration>
                         <goals>
