@@ -84,7 +84,8 @@ public class BuildMockSaml2Response extends AbstractProfileAction<SAMLObject, SA
 		} else {
 		    statusCode.setValue(StatusCode.RESPONDER_URI);
 		    StatusMessage msg = (StatusMessage) builderFactory.getBuilder(StatusMessage.DEFAULT_ELEMENT_NAME).buildObject(StatusMessage.DEFAULT_ELEMENT_NAME);
-		    msg.setMessage(springRequestContext.getCurrentEvent().getId());
+		    msg.setMessage(getMessage(springRequestContext.getCurrentEvent().getId(), null,
+		            springRequestContext.getCurrentEvent().getId(), springRequestContext.getExternalContext().getLocale()));
 		    status.setStatusMessage(msg);
 		}
 		
