@@ -43,6 +43,7 @@ public class AddAttributeRecipientContext extends AbstractProfileAction {
     private Logger log = LoggerFactory.getLogger(AddAttributeRecipientContext.class);
 
     /** {@inheritDoc} */
+    @Override
     protected org.springframework.webflow.execution.Event doExecute(@Nonnull final RequestContext springRequestContext,
             @Nonnull final ProfileRequestContext profileRequestContext) throws ProfileException {
 
@@ -52,16 +53,9 @@ public class AddAttributeRecipientContext extends AbstractProfileAction {
             return ActionSupport.buildEvent(this, EventIds.INVALID_PROFILE_CTX);
         }
 
-        String principalName = subjectCtx.getPrincipalName();
-        if (principalName == null) {
-            log.debug("Action {}: No principal name available.", getId());
-            return ActionSupport.buildEvent(this, EventIds.INVALID_PROFILE_CTX);
-        }
-
         AttributeResolutionContext attributeResolutionContext =
                 profileRequestContext.getSubcontext(AttributeResolutionContext.class, true);
         AttributeRecipientContext attributeRecipientContext = new AttributeRecipientContext();
-        attributeRecipientContext.setPrincipal(principalName);
         // TODO where to get the rest of the data for the attribute recipient context ?
         attributeResolutionContext.addSubcontext(attributeRecipientContext);
 
