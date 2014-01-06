@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.nio.file.Path;
@@ -30,6 +31,44 @@ import org.eclipse.jetty.xml.XmlConfiguration;
 
 /** Start Jetty */
 public class Main {
+
+    /**
+     * Normalize a path for windows.<br/>
+     * 
+     * On operating systems which present filesystems not rooted in '\', we need to be careful about the construction of
+     * URLS. According to RFC 1738 a url of the form file://foo/bar is for <em>host</em>foo and <em>path</em> bar. Hence
+     * if we take a path of the form c:\foo\bar and (or normalized to c:/foo/bar) and prepend 'file://' the URL code
+     * will, quite correctly take this as host 'C:'. This will at best end up with a timeout because 'C:' cannot be
+     * found and at worst with getting the completely the wrong info. Contrast the case of passing in /opt/idp/config,
+     * this yields file:///opt/idp/config which the URL code interprets as '/opt/idp/config' on the null host.
+     * 
+     * 
+     * <br/>
+     * The canonical solution on windows is to prepend a '/'. We can deal with other operatring systems as the need
+     * arises.
+     * 
+     * @param path the input path
+     * @return the normalized path.
+     */
+    static private String normalizePath(String path) {
+
+        if (needsNormalized(path)) {
+            return '/' + path;
+        } 
+        return path;
+    }
+    
+    /**
+     * Does the path need to be normalized? <br/>
+     * Yes if it doesn't start with '/' (or '\') and the second character is ':'
+     * @param path the path to inspect
+     * @return whether we need to normalize.
+     */
+    static private boolean needsNormalized(String path) {
+        
+        return path.length() >= 2 && path.charAt(0) != '/' && path.charAt(0) != File.pathSeparatorChar && path.charAt(1) == ':';
+        
+    }
 
     /**
      * @param args
@@ -49,11 +88,12 @@ public class Main {
                     idpHome = Paths.get("").toAbsolutePath().toString();
                 } else {
                     // Running from Eclipse.
-                    idpHome =
-                            Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
+                    idpHome = Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
                                     "java-identity-provider", "idp-conf", "src", "main", "resources").toString();
                 }
-                System.setProperty("idp.home", idpHome);
+                System.setProperty("idp.home", normalizePath(idpHome));
+            } else if (needsNormalized(idpHome)) {
+                System.setProperty("idp.home", normalizePath(idpHome));
             }
 
             // Set app.home system property if it has not been set as a command line option.
@@ -66,7 +106,9 @@ public class Main {
                     // Running from Eclipse.
                     appHome = Paths.get("src", "main", "resources").toAbsolutePath().toString();
                 }
-                System.setProperty("app.home", appHome);
+                System.setProperty("app.home", normalizePath(appHome));
+            } else if (needsNormalized(appHome)) {
+                System.setProperty("app.home", normalizePath(appHome));
             }
 
             // Add system properties from idp.properties.
