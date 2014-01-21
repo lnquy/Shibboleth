@@ -248,10 +248,24 @@
             <!-- Copy src/main/resources to assembly directory. -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <includeEmptyDirs>true</includeEmptyDirs>
-                    <outputDirectory>${assembly-directory}</outputDirectory>
-                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <outputDirectory>${assembly-directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- Copy Main.class to war build directory before war is built. -->
             <plugin>
