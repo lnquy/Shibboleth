@@ -27,8 +27,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.springframework.webflow.executor.FlowExecutor;
@@ -40,6 +42,8 @@ import org.testng.annotations.Test;
  * Stub integration test for SAML1 flow.
  */
 // TODO context hierarchies ? more annotations ?
+@ActiveProfiles("dev")
+@WebAppConfiguration
 @ContextConfiguration({"/system/conf/testbed-ldap.xml", "/system/conf/global-system.xml", "/conf/global-user.xml",
         "/system/conf/mvc-beans.xml", "/conf/webflow-config.xml"})
 public class UnsolicitedFlowTest extends AbstractTestNGSpringContextTests {
@@ -72,10 +76,11 @@ public class UnsolicitedFlowTest extends AbstractTestNGSpringContextTests {
 
             FlowExecutionOutcome outcome = result.getOutcome();
             log.debug("flow outcome {}", outcome);
-            Assert.assertEquals(outcome.getId(), "end");            
-            
+            Assert.assertNotNull(outcome);
+            Assert.assertEquals(outcome.getId(), "end");
+
             // TODO meaningful asserts
-            
+
             Assert.assertTrue(result.isEnded());
 
         } finally {
