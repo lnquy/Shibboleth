@@ -46,6 +46,12 @@
         <!-- Compile scope -->
         <dependency>
             <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-conf</artifactId>
+            <version>${idp.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
             <artifactId>idp-profile-impl</artifactId>
             <version>${idp.version}</version>
         </dependency>
@@ -127,20 +133,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        <!--
-        <dependency>
-            <groupId>${spring.groupId}</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -162,7 +154,7 @@
             <artifactId>unboundid-ldapsdk</artifactId>
             <scope>compile</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
@@ -201,6 +193,18 @@
         </dependency>
 
         <!-- Test scope -->
+        <dependency>
+            <groupId>${spring.groupId}</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
     </dependencies>
 
@@ -349,7 +353,8 @@
 
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven 
+                    build itself. -->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
