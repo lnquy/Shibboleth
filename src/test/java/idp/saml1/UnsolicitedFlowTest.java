@@ -17,6 +17,7 @@
 
 package idp.saml1;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -28,6 +29,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
+import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.springframework.webflow.executor.FlowExecutor;
 import org.springframework.webflow.test.MockExternalContext;
@@ -42,8 +44,11 @@ import org.testng.annotations.Test;
         "/system/conf/mvc-beans.xml", "/conf/webflow-config.xml"})
 public class UnsolicitedFlowTest extends AbstractTestNGSpringContextTests {
 
+    /** Flow id. */
+    @Nonnull public final static String flowId = "Shibboleth/SSO";
+
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(UnsolicitedFlowTest.class);
+    @Nonnull private final Logger log = LoggerFactory.getLogger(UnsolicitedFlowTest.class);
 
     @Test public void testFlow() {
         try {
@@ -62,10 +67,15 @@ public class UnsolicitedFlowTest extends AbstractTestNGSpringContextTests {
 
             FlowExecutor flowExecutor = applicationContext.getBean("flowExecutor", FlowExecutor.class);
 
-            FlowExecutionResult result = flowExecutor.launchExecution("Shibboleth/SSO", null, mockCtx);
-            log.debug("flow result {}", result);
+            FlowExecutionResult result = flowExecutor.launchExecution(flowId, null, mockCtx);
+            Assert.assertEquals(result.getFlowId(), flowId);
 
+            FlowExecutionOutcome outcome = result.getOutcome();
+            log.debug("flow outcome {}", outcome);
+            Assert.assertEquals(outcome.getId(), "end");            
+            
             // TODO meaningful asserts
+            
             Assert.assertTrue(result.isEnded());
 
         } finally {
