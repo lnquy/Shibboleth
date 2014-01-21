@@ -226,27 +226,6 @@
 
     <build>
         <plugins>
-            <!-- Set Logback configuration file system property. -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>set-system-properties</goal>
-                        </goals>
-                        <configuration>
-                            <properties>
-                                <property>
-                                    <name>logback.configurationFile</name>
-                                    <value>${project.baseUri}/src/main/resources/conf/logback.xml</value>
-                                </property>
-                            </properties>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- mvn:jetty run -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
