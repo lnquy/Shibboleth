@@ -3,7 +3,11 @@
     
     <!-- Do not log exception when schemaLocation begins with 'classpath:' and root level is DEBUG. -->
     <logger name="org.springframework.beans.factory.xml.ResourceEntityResolver" level="INFO" />
-
+    
+    <!-- Log property resolution at INFO. -->
+    <logger name="org.springframework.core.env.PropertySourcesPropertyResolver" level="INFO" />
+    <logger name="org.springframework.jndi" level="INFO" />
+    
     <logger name="PROTOCOL_MESSAGE" level="DEBUG" />
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
