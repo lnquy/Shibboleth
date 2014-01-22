@@ -210,6 +210,17 @@
 
     <build>
         <plugins>
+            <!-- Set idp.home and app.home system properties to assembly directory for tests. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <idp.home>${assembly-directory}</idp.home>
+                        <app.home>${assembly-directory}</app.home>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
             <!-- mvn:jetty run -->
             <plugin>
                 <groupId>org.eclipse.jetty</groupId>
@@ -309,7 +320,7 @@
                     <!-- Unpack idp-conf dependency to assembly directory. -->
                     <execution>
                         <id>unpack</id>
-                        <phase>package</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
