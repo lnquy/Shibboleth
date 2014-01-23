@@ -18,12 +18,25 @@
 package idp;
 
 import javax.annotation.Nonnull;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.webflow.executor.FlowExecutor;
+import org.springframework.webflow.test.MockExternalContext;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
 import com.unboundid.ldap.sdk.LDAPException;
@@ -33,16 +46,64 @@ import common.InMemoryDirectory;
  * Abstract flow test.
  */
 @ActiveProfiles("dev")
-@WebAppConfiguration
 @ContextConfiguration({"/system/conf/global-system.xml", "/conf/global-user.xml", "/system/conf/mvc-beans.xml",
         "/conf/webflow-config.xml"})
+@WebAppConfiguration
 public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests {
+
+    /** Class logger. */
+    @Nonnull private final Logger log = LoggerFactory.getLogger(AbstractFlowTest.class);
 
     /** Path to LDIF file to be imported into directory server. */
     @Nonnull public final static String LDIF_FILE = "src/main/resources/test/ldap.ldif";
 
     /** In-memory directory server. */
     @Nonnull protected InMemoryDirectory directoryServer;
+
+    /** Mock external context. */
+    @Nonnull protected MockExternalContext externalContext;
+
+    /** The web flow executor. */
+    @Nonnull protected FlowExecutor flowExecutor;
+
+    /** Mock request. */
+    @Nonnull protected MockHttpServletRequest request;
+
+    /** Mock response. */
+    @Nonnull protected MockHttpServletResponse response;
+
+    /**
+     * {@link HttpServletRequestResponseContext#clearCurrent()}
+     */
+    @AfterMethod public void clearThreadLocals() {
+        HttpServletRequestResponseContext.clearCurrent();
+    }
+
+    /**
+     * Initialize the web flow executor.
+     */
+    @BeforeMethod public void initializeFlowExecutor() {
+        flowExecutor = applicationContext.getBean("flowExecutor", FlowExecutor.class);
+        Assert.assertNotNull(flowExecutor);
+    }
+
+    /**
+     * Initialize mock request, response, and external context.
+     */
+    @BeforeMethod public void initializeMocks() {
+        request = new MockHttpServletRequest();
+        response = new MockHttpServletResponse();
+        externalContext = new MockExternalContext();
+        externalContext.setNativeRequest(request);
+        externalContext.setNativeResponse(response);
+    }
+
+    /**
+     * {@link HttpServletRequestResponseContext#loadCurrent(HttpServletRequest, HttpServletResponse)}
+     */
+    @BeforeMethod public void initializeThreadLocals() {
+        HttpServletRequestResponseContext.loadCurrent((HttpServletRequest) request, (HttpServletResponse) response);
+    }
 
     /**
      * Creates an UnboundID in-memory directory server. Leverages LDIF found at {@value #LDIF_FILE}.

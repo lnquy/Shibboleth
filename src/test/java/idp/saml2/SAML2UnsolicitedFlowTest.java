@@ -20,21 +20,13 @@ package idp.saml2;
 import idp.AbstractFlowTest;
 
 import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.execution.ActionExecutionException;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
-import org.springframework.webflow.executor.FlowExecutor;
-import org.springframework.webflow.test.MockExternalContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -52,22 +44,9 @@ public class SAML2UnsolicitedFlowTest extends AbstractFlowTest {
 
     @Test public void testFlow() {
         try {
-            // TODO more request parameters
-            MockHttpServletRequest request = new MockHttpServletRequest();
             request.addParameter("providerId", "https://sp.example.org");
 
-            // TODO use mock contexts from Spring TestContext ?
-            HttpServletResponse response = new MockHttpServletResponse();
-            MockExternalContext mockCtx = new MockExternalContext();
-            mockCtx.setNativeRequest(request);
-            mockCtx.setNativeResponse(response);
-
-            // TODO replace with wired-up filter
-            HttpServletRequestResponseContext.loadCurrent((HttpServletRequest) request, (HttpServletResponse) response);
-
-            FlowExecutor flowExecutor = applicationContext.getBean("flowExecutor", FlowExecutor.class);
-
-            FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, mockCtx);
+            FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
             Assert.assertEquals(result.getFlowId(), FLOW_ID);
 
             FlowExecutionOutcome outcome = result.getOutcome();
@@ -85,8 +64,6 @@ public class SAML2UnsolicitedFlowTest extends AbstractFlowTest {
             // org.opensaml.saml.saml2.binding.security.SAML2AuthnRequestsSignedSecurityHandler: SPSSODescriptor for
             // entity ID 'https://sp.example.org' indicates AuthnRequests must be signed, but inbound message was not
             // signed
-        } finally {
-            HttpServletRequestResponseContext.clearCurrent();
         }
     }
 }

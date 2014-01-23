@@ -20,19 +20,11 @@ package idp.saml1;
 import idp.AbstractFlowTest;
 
 import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
-import org.springframework.webflow.executor.FlowExecutor;
-import org.springframework.webflow.test.MockExternalContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -43,42 +35,24 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(SAML1UnsolicitedFlowTest.class);
-    
+
     /** Flow id. */
     @Nonnull public final static String FLOW_ID = "Shibboleth/SSO";
 
     @Test public void testFlow() {
-        try {
-            // TODO more request parameters
-            MockHttpServletRequest request = new MockHttpServletRequest();
-            request.addParameter("providerId", "https://sp.example.org");
+        // TODO more request parameters
+        request.addParameter("providerId", "https://sp.example.org");
 
-            // TODO use mock contexts from Spring TestContext ?
-            HttpServletResponse response = new MockHttpServletResponse();
-            MockExternalContext mockCtx = new MockExternalContext();
-            mockCtx.setNativeRequest(request);
-            mockCtx.setNativeResponse(response);
+        FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
+        Assert.assertEquals(result.getFlowId(), FLOW_ID);
 
-            // TODO replace with wired-up filter
-            HttpServletRequestResponseContext.loadCurrent((HttpServletRequest) request, (HttpServletResponse) response);
+        FlowExecutionOutcome outcome = result.getOutcome();
+        log.debug("flow outcome {}", outcome);
+        Assert.assertNotNull(outcome);
+        Assert.assertEquals(outcome.getId(), "end");
 
-            FlowExecutor flowExecutor = applicationContext.getBean("flowExecutor", FlowExecutor.class);
+        // TODO meaningful asserts
 
-            FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, mockCtx);
-            Assert.assertEquals(result.getFlowId(), FLOW_ID);
-
-            FlowExecutionOutcome outcome = result.getOutcome();
-            log.debug("flow outcome {}", outcome);
-            Assert.assertNotNull(outcome);
-            Assert.assertEquals(outcome.getId(), "end");
-
-            // TODO meaningful asserts
-
-            Assert.assertTrue(result.isEnded());
-
-        } finally {
-            HttpServletRequestResponseContext.clearCurrent();
-        }
+        Assert.assertTrue(result.isEnded());
     }
-
 }
