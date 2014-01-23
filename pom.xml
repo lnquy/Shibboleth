@@ -287,11 +287,12 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <tasks>
-                                <move todir="${project.build.directory}/${project.artifactId}-${project.version}/">
+                                <copy todir="${project.build.directory}/${project.artifactId}-${project.version}/">
                                     <fileset dir="${project.build.directory}/classes/">
                                         <include name="Main.class" />
+                                        <include name="common/PathPropertySupport.class" />
                                     </fileset>
-                                </move>
+                                </copy>
                             </tasks>
                         </configuration>
                         <goals>

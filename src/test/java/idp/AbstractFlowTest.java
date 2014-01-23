@@ -41,6 +41,7 @@ import org.testng.annotations.BeforeTest;
 
 import com.unboundid.ldap.sdk.LDAPException;
 import common.InMemoryDirectory;
+import common.PathPropertySupport;
 
 /**
  * Abstract flow test.
@@ -71,6 +72,11 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** Mock response. */
     @Nonnull protected MockHttpServletResponse response;
+
+    static {
+        PathPropertySupport.setupIdPHomeProperty();
+        PathPropertySupport.setupAppHomeProperty();
+    }
 
     /**
      * {@link HttpServletRequestResponseContext#clearCurrent()}
