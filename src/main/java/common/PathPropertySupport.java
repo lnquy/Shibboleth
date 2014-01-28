@@ -33,26 +33,46 @@ import javax.annotation.Nullable;
  */
 public class PathPropertySupport {
 
+    /** The name of the system property defining the path to configuration files for the IdP. Defaults to 'idp.home'. */
+    public final static String IDP_HOME = "idp.home";
+
     /**
-     * Set the 'idp.home' system property.
+     * The name of the system property defining the path to configuration files external to the IdP. Defaults to
+     * 'app.home'.
+     */
+    public final static String APP_HOME = "app.home";
+
+    /**
+     * Set the 'idp.home' system property if not already set.
      * 
      * @return the 'idp.home' property
      */
     public static String setupIdPHomeProperty() {
+
+        if (System.getProperty(IDP_HOME) != null) {
+            return System.getProperty(IDP_HOME);
+        }
+
         String idpHome =
                 Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
                         "java-identity-provider", "idp-conf", "src", "main", "resources").toString();
-        return setupProperty("idp.home", idpHome);
+
+        return setupProperty(IDP_HOME, idpHome);
     }
 
     /**
-     * Set the 'app.home' system property.
+     * Set the 'app.home' system property if not already set.
      * 
      * @return the 'app.home' system property
      */
     public static String setupAppHomeProperty() {
+
+        if (System.getProperty(APP_HOME) != null) {
+            return System.getProperty(APP_HOME);
+        }
+
         String appHome = Paths.get("src", "main", "resources").toAbsolutePath().toString();
-        return setupProperty("app.home", appHome);
+        return setupProperty(APP_HOME, appHome);
     }
 
     /**
@@ -87,7 +107,8 @@ public class PathPropertySupport {
         String value = path;
 
         if (System.getProperty(name) == null
-                && PathPropertySupport.class.getProtectionDomain().getCodeSource().getLocation().toString().endsWith(".war")) {
+                && PathPropertySupport.class.getProtectionDomain().getCodeSource().getLocation().toString()
+                        .endsWith(".war")) {
             // Running from command line.
             value = Paths.get("").toAbsolutePath().toString();
         }
