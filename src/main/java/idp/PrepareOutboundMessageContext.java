@@ -23,6 +23,7 @@ import org.opensaml.xmlsec.keyinfo.KeyInfoGenerator;
 import org.opensaml.xmlsec.messaging.SecurityParametersContext;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.webflow.execution.Event;
 import org.springframework.webflow.execution.RequestContext;
 
@@ -32,6 +33,7 @@ public class PrepareOutboundMessageContext extends AbstractProfileAction<SAMLObj
 	private XMLObjectBuilderFactory builderFactory;
 	
 	@Autowired
+	@Qualifier("idp.Credential")
 	private Credential signingCredential;
 	
 	@Autowired

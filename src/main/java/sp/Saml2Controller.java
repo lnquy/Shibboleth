@@ -69,6 +69,7 @@ public class Saml2Controller {
 	private ParserPool parserPool;
 	
 	@Autowired
+	@Qualifier("sp.Credential")
 	private Credential spCredential;
 
 	@RequestMapping(value="/InitSSO/Redirect", method=RequestMethod.GET)
