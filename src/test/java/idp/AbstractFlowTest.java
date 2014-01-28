@@ -57,6 +57,9 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** Path to LDIF file to be imported into directory server. */
     @Nonnull public final static String LDIF_FILE = "src/main/resources/test/ldap.ldif";
+    
+    /** Name of flow output attribute containing the profile request context. */
+    public final static String OUTPUT_ATTR_NAME = "ProfileRequestContext";
 
     /** In-memory directory server. */
     @Nonnull protected InMemoryDirectory directoryServer;
