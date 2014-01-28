@@ -21,8 +21,10 @@ import idp.AbstractFlowTest;
 
 import javax.annotation.Nonnull;
 
+import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.testng.Assert;
@@ -31,6 +33,8 @@ import org.testng.annotations.Test;
 /**
  * Test for SAML1 flow.
  */
+// TODO Remove ContextConfiguration once credentials are figured out.
+@ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/idp/testbed.xml"})
 public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
 
     /** Class logger. */
@@ -50,9 +54,14 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         log.debug("flow outcome {}", outcome);
         Assert.assertNotNull(outcome);
         Assert.assertEquals(outcome.getId(), "end");
+        Assert.assertTrue(result.isEnded());
+
+        Assert.assertTrue(outcome.getOutput().contains(OUTPUT_ATTR_NAME));
+        Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
+        ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(OUTPUT_ATTR_NAME);
+
+        Assert.assertNotNull(prc.getOutboundMessageContext());
 
         // TODO meaningful asserts
-
-        Assert.assertTrue(result.isEnded());
     }
 }
