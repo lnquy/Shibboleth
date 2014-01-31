@@ -28,6 +28,9 @@ import org.opensaml.saml.saml1.core.Assertion;
 import org.opensaml.saml.saml1.core.Attribute;
 import org.opensaml.saml.saml1.core.AttributeStatement;
 import org.opensaml.saml.saml1.core.AuthenticationStatement;
+import org.opensaml.saml.saml1.core.Conditions;
+import org.opensaml.saml.saml1.core.ConfirmationMethod;
+import org.opensaml.saml.saml1.core.NameIdentifier;
 import org.opensaml.saml.saml1.core.Response;
 import org.opensaml.saml.saml1.core.StatusCode;
 import org.slf4j.Logger;
@@ -85,47 +88,82 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         Assert.assertEquals(assertion.getMinorVersion(), SAMLVersion.VERSION_11.getMinorVersion());
         Assert.assertEquals(assertion.getIssuer(), "https://idp.example.org");
 
-        // TODO assertion conditions ?
+        // TODO are these tests sufficient ?
+        Assert.assertNotNull(assertion.getConditions());
+        Assert.assertNotNull(assertion.getConditions().getNotBefore());
+        Assert.assertNotNull(assertion.getConditions().getNotOnOrAfter());
+
+        Assert.assertNotNull(assertion.getConditions().getAudienceRestrictionConditions());
+        Assert.assertEquals(assertion.getConditions().getAudienceRestrictionConditions().size(), 1);
 
         Assert.assertNotNull(assertion.getAuthenticationStatements());
         Assert.assertFalse(assertion.getAuthenticationStatements().isEmpty());
         Assert.assertEquals(assertion.getAuthenticationStatements().size(), 1);
         Assert.assertNotNull(assertion.getAuthenticationStatements().get(0));
 
-        AuthenticationStatement authnStatement = assertion.getAuthenticationStatements().get(0);
+        AuthenticationStatement authnStmt = assertion.getAuthenticationStatements().get(0);
         // TODO authn method ?
-        Assert.assertEquals(authnStatement.getAuthenticationMethod(), AuthenticationStatement.UNSPECIFIED_AUTHN_METHOD);
+        Assert.assertEquals(authnStmt.getAuthenticationMethod(), AuthenticationStatement.UNSPECIFIED_AUTHN_METHOD);
         // TODO subject locality, etc
+
+        // TODO is this correct ?
+        Assert.assertNotNull(authnStmt.getSubject());
+        Assert.assertNotNull(authnStmt.getSubject().getNameIdentifier());
+        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
+        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
+        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getNameQualifier(), "https://idp.example.org");
+
+        // TODO is this correct ?
+        Assert.assertNotNull(authnStmt.getSubject().getSubjectConfirmation());
+        Assert.assertNotNull(authnStmt.getSubject().getSubjectConfirmation().getConfirmationMethods());
+        Assert.assertEquals(authnStmt.getSubject().getSubjectConfirmation().getConfirmationMethods().size(), 1);
+        Assert.assertEquals(authnStmt.getSubject().getSubjectConfirmation().getConfirmationMethods().get(0)
+                .getConfirmationMethod(), ConfirmationMethod.METHOD_BEARER);
 
         Assert.assertNotNull(assertion.getAttributeStatements());
         Assert.assertFalse(assertion.getAttributeStatements().isEmpty());
         Assert.assertEquals(assertion.getAttributeStatements().size(), 1);
         Assert.assertNotNull(assertion.getAttributeStatements().get(0));
 
-        AttributeStatement attributeStatement = assertion.getAttributeStatements().get(0);
+        AttributeStatement attrStmt = assertion.getAttributeStatements().get(0);
 
-        Assert.assertNotNull(attributeStatement.getAttributes());
-        Assert.assertFalse(attributeStatement.getAttributes().isEmpty());
-        Assert.assertEquals(attributeStatement.getAttributes().size(), 2);
+        // TODO is this correct ?
+        Assert.assertNotNull(attrStmt.getSubject());
+        Assert.assertNotNull(attrStmt.getSubject().getNameIdentifier());
+        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
+        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
+        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getNameQualifier(), "https://idp.example.org");
+
+        // TODO is this correct ?
+        Assert.assertNotNull(attrStmt.getSubject().getSubjectConfirmation());
+        Assert.assertNotNull(attrStmt.getSubject().getSubjectConfirmation().getConfirmationMethods());
+        Assert.assertEquals(attrStmt.getSubject().getSubjectConfirmation().getConfirmationMethods().size(), 1);
+        Assert.assertEquals(attrStmt.getSubject().getSubjectConfirmation().getConfirmationMethods().get(0)
+                .getConfirmationMethod(), ConfirmationMethod.METHOD_BEARER);
+
+        Assert.assertNotNull(attrStmt.getAttributes());
+        Assert.assertFalse(attrStmt.getAttributes().isEmpty());
+        Assert.assertEquals(attrStmt.getAttributes().size(), 2);
 
         // TODO attribute ordering ?
-        Attribute eduPersonAffiliation = attributeStatement.getAttributes().get(0);
-        Assert.assertEquals(eduPersonAffiliation.getAttributeName(), "urn:mace:dir:attribute-def:eduPersonAffiliation");
-        Assert.assertEquals(eduPersonAffiliation.getAttributeNamespace(),
-                "urn:mace:shibboleth:1.0:attributeNamespace:uri");
-        // Assert.assertEquals("eduPersonAffiliation", eduPersonAffiliation.);
-        Assert.assertEquals(eduPersonAffiliation.getAttributeValues().size(), 1);
-        Assert.assertTrue(eduPersonAffiliation.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals(((XSString) eduPersonAffiliation.getAttributeValues().get(0)).getValue(), "member");
+        Attribute epaAttr = attrStmt.getAttributes().get(0);
+        Assert.assertEquals(epaAttr.getAttributeName(), "urn:mace:dir:attribute-def:eduPersonAffiliation");
+        Assert.assertEquals(epaAttr.getAttributeNamespace(), "urn:mace:shibboleth:1.0:attributeNamespace:uri");
+        Assert.assertEquals(epaAttr.getAttributeValues().size(), 1);
+        Assert.assertTrue(epaAttr.getAttributeValues().get(0) instanceof XSString);
+        Assert.assertEquals(((XSString) epaAttr.getAttributeValues().get(0)).getValue(), "member");
 
-        Attribute mail = attributeStatement.getAttributes().get(1);
-        Assert.assertEquals(mail.getAttributeName(), "urn:mace:dir:attribute-def:mail");
-        Assert.assertEquals(mail.getAttributeNamespace(), "urn:mace:shibboleth:1.0:attributeNamespace:uri");
-        // Assert.assertEquals("mail", mail.getFriendlyName());
-        Assert.assertEquals(mail.getAttributeValues().size(), 1);
-        Assert.assertTrue(mail.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals(((XSString) mail.getAttributeValues().get(0)).getValue(), "jdoe@shibboleth.net");
+        Attribute mailAttr = attrStmt.getAttributes().get(1);
+        Assert.assertEquals(mailAttr.getAttributeName(), "urn:mace:dir:attribute-def:mail");
+        Assert.assertEquals(mailAttr.getAttributeNamespace(), "urn:mace:shibboleth:1.0:attributeNamespace:uri");
+        Assert.assertEquals(mailAttr.getAttributeValues().size(), 1);
+        Assert.assertTrue(mailAttr.getAttributeValues().get(0) instanceof XSString);
+        Assert.assertEquals(((XSString) mailAttr.getAttributeValues().get(0)).getValue(), "jdoe@shibboleth.net");
 
-        // TODO meaningful asserts
+        // TODO test SignAssertions
+
+        // TODO test outbound message handling
+
+        // TODO test message encoding
     }
 }
