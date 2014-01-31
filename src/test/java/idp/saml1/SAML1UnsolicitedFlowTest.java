@@ -56,7 +56,7 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         request.addParameter("providerId", "https://sp.example.org");
 
         FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
-        Assert.assertEquals(result.getFlowId(), FLOW_ID);
+        Assert.assertEquals(FLOW_ID, result.getFlowId());
 
         FlowExecutionOutcome outcome = result.getOutcome();
         log.debug("flow outcome {}", outcome);
@@ -73,40 +73,40 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
 
         Response response = (Response) prc.getOutboundMessageContext().getMessage();
         Assert.assertEquals(response.getVersion(), SAMLVersion.VERSION_11);
-        Assert.assertEquals(StatusCode.SUCCESS, response.getStatus().getStatusCode().getValue());
+        Assert.assertEquals(response.getStatus().getStatusCode().getValue(), StatusCode.SUCCESS);
 
         Assert.assertNotNull(response.getAssertions());
         Assert.assertFalse(response.getAssertions().isEmpty());
-        Assert.assertEquals(1, response.getAssertions().size());
+        Assert.assertEquals(response.getAssertions().size(), 1);
         Assert.assertNotNull(response.getAssertions().get(0));
 
         Assertion assertion = response.getAssertions().get(0);
-        Assert.assertEquals(SAMLVersion.VERSION_11.getMajorVersion(), assertion.getMajorVersion());
-        Assert.assertEquals(SAMLVersion.VERSION_11.getMinorVersion(), assertion.getMinorVersion());
-        Assert.assertEquals("https://idp.example.org", assertion.getIssuer());
+        Assert.assertEquals(assertion.getMajorVersion(), SAMLVersion.VERSION_11.getMajorVersion());
+        Assert.assertEquals(assertion.getMinorVersion(), SAMLVersion.VERSION_11.getMinorVersion());
+        Assert.assertEquals(assertion.getIssuer(), "https://idp.example.org");
 
         // TODO assertion conditions ?
 
         Assert.assertNotNull(assertion.getAuthenticationStatements());
         Assert.assertFalse(assertion.getAuthenticationStatements().isEmpty());
-        Assert.assertEquals(1, assertion.getAuthenticationStatements().size());
+        Assert.assertEquals(assertion.getAuthenticationStatements().size(), 1);
         Assert.assertNotNull(assertion.getAuthenticationStatements().get(0));
 
         AuthenticationStatement authnStatement = assertion.getAuthenticationStatements().get(0);
         // TODO authn method ?
-        Assert.assertEquals(AuthenticationStatement.UNSPECIFIED_AUTHN_METHOD, authnStatement.getAuthenticationMethod());
+        Assert.assertEquals(authnStatement.getAuthenticationMethod(), AuthenticationStatement.UNSPECIFIED_AUTHN_METHOD);
         // TODO subject locality, etc
 
         Assert.assertNotNull(assertion.getAttributeStatements());
         Assert.assertFalse(assertion.getAttributeStatements().isEmpty());
-        Assert.assertEquals(1, assertion.getAttributeStatements().size());
+        Assert.assertEquals(assertion.getAttributeStatements().size(), 1);
         Assert.assertNotNull(assertion.getAttributeStatements().get(0));
 
         AttributeStatement attributeStatement = assertion.getAttributeStatements().get(0);
 
         Assert.assertNotNull(attributeStatement.getAttributes());
         Assert.assertFalse(attributeStatement.getAttributes().isEmpty());
-        Assert.assertEquals(2, attributeStatement.getAttributes().size());
+        Assert.assertEquals(attributeStatement.getAttributes().size(), 2);
 
         // TODO attribute ordering ?
         Attribute eduPersonAffiliation = attributeStatement.getAttributes().get(0);
@@ -114,17 +114,17 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         Assert.assertEquals(eduPersonAffiliation.getAttributeNamespace(),
                 "urn:mace:shibboleth:1.0:attributeNamespace:uri");
         // Assert.assertEquals("eduPersonAffiliation", eduPersonAffiliation.);
-        Assert.assertEquals(1, eduPersonAffiliation.getAttributeValues().size());
+        Assert.assertEquals(eduPersonAffiliation.getAttributeValues().size(), 1);
         Assert.assertTrue(eduPersonAffiliation.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals("member", ((XSString) eduPersonAffiliation.getAttributeValues().get(0)).getValue());
+        Assert.assertEquals(((XSString) eduPersonAffiliation.getAttributeValues().get(0)).getValue(), "member");
 
         Attribute mail = attributeStatement.getAttributes().get(1);
         Assert.assertEquals(mail.getAttributeName(), "urn:mace:dir:attribute-def:mail");
         Assert.assertEquals(mail.getAttributeNamespace(), "urn:mace:shibboleth:1.0:attributeNamespace:uri");
         // Assert.assertEquals("mail", mail.getFriendlyName());
-        Assert.assertEquals(1, mail.getAttributeValues().size());
+        Assert.assertEquals(mail.getAttributeValues().size(), 1);
         Assert.assertTrue(mail.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals("jdoe@shibboleth.net", ((XSString) mail.getAttributeValues().get(0)).getValue());
+        Assert.assertEquals(((XSString) mail.getAttributeValues().get(0)).getValue(), "jdoe@shibboleth.net");
 
         // TODO meaningful asserts
     }

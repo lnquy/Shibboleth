@@ -75,7 +75,7 @@ public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
 
     /** Flow id. */
     @Nonnull public final static String FLOW_ID = "SAML2/Redirect/SSO";
-    
+
     @Autowired private XMLObjectBuilderFactory builderFactory;
 
     @Autowired @Qualifier("testbed.IdGenerator") private IdentifierGenerationStrategy idGenerator;
@@ -130,38 +130,38 @@ public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
 
         Assert.assertNotNull(response.getAssertions());
         Assert.assertFalse(response.getAssertions().isEmpty());
-        Assert.assertEquals(1, response.getAssertions().size());
+        Assert.assertEquals(response.getAssertions().size(), 1);
         Assert.assertNotNull(response.getAssertions().get(0));
 
         Assertion assertion = response.getAssertions().get(0);
 
         Assert.assertNotNull(assertion.getAttributeStatements());
         Assert.assertFalse(assertion.getAttributeStatements().isEmpty());
-        Assert.assertEquals(1, assertion.getAttributeStatements().size());
+        Assert.assertEquals(assertion.getAttributeStatements().size(), 1);
         Assert.assertNotNull(assertion.getAttributeStatements().get(0));
 
         AttributeStatement attributeStatement = assertion.getAttributeStatements().get(0);
 
         Assert.assertNotNull(attributeStatement.getAttributes());
         Assert.assertFalse(attributeStatement.getAttributes().isEmpty());
-        Assert.assertEquals(2, attributeStatement.getAttributes().size());
+        Assert.assertEquals(attributeStatement.getAttributes().size(), 2);
 
         // TODO attribute ordering ?
         Attribute eduPersonAffiliation = attributeStatement.getAttributes().get(0);
-        Assert.assertEquals("urn:oid:1.3.6.1.4.1.5923.1.1.1.1", eduPersonAffiliation.getName());
-        Assert.assertEquals("urn:oasis:names:tc:SAML:2.0:attrname-format:uri", eduPersonAffiliation.getNameFormat());
-        Assert.assertEquals("eduPersonAffiliation", eduPersonAffiliation.getFriendlyName());
-        Assert.assertEquals(1, eduPersonAffiliation.getAttributeValues().size());
+        Assert.assertEquals(eduPersonAffiliation.getName(), "urn:oid:1.3.6.1.4.1.5923.1.1.1.1");
+        Assert.assertEquals(eduPersonAffiliation.getNameFormat(), "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Assert.assertEquals(eduPersonAffiliation.getFriendlyName(), "eduPersonAffiliation");
+        Assert.assertEquals(eduPersonAffiliation.getAttributeValues().size(), 1);
         Assert.assertTrue(eduPersonAffiliation.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals("member", ((XSString) eduPersonAffiliation.getAttributeValues().get(0)).getValue());
+        Assert.assertEquals(((XSString) eduPersonAffiliation.getAttributeValues().get(0)).getValue(), "member");
 
         Attribute mail = attributeStatement.getAttributes().get(1);
-        Assert.assertEquals("urn:oid:0.9.2342.19200300.100.1.3", mail.getName());
-        Assert.assertEquals("urn:oasis:names:tc:SAML:2.0:attrname-format:uri", mail.getNameFormat());
-        Assert.assertEquals("mail", mail.getFriendlyName());
-        Assert.assertEquals(1, mail.getAttributeValues().size());
+        Assert.assertEquals(mail.getName(), "urn:oid:0.9.2342.19200300.100.1.3");
+        Assert.assertEquals(mail.getNameFormat(), "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Assert.assertEquals(mail.getFriendlyName(), "mail");
+        Assert.assertEquals(mail.getAttributeValues().size(), 1);
         Assert.assertTrue(mail.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals("jdoe@shibboleth.net", ((XSString) mail.getAttributeValues().get(0)).getValue());
+        Assert.assertEquals(((XSString) mail.getAttributeValues().get(0)).getValue(), "jdoe@shibboleth.net");
 
         // TODO meaningful asserts
     }
