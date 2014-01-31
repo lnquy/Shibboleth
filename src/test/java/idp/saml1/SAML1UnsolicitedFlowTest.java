@@ -22,6 +22,9 @@ import idp.AbstractFlowTest;
 import javax.annotation.Nonnull;
 
 import org.opensaml.profile.context.ProfileRequestContext;
+import org.opensaml.saml.common.SAMLVersion;
+import org.opensaml.saml.saml1.core.Response;
+import org.opensaml.saml.saml1.core.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
@@ -59,9 +62,14 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         Assert.assertTrue(outcome.getOutput().contains(OUTPUT_ATTR_NAME));
         Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
         ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(OUTPUT_ATTR_NAME);
-
         Assert.assertNotNull(prc.getOutboundMessageContext());
-
+        Assert.assertNotNull(prc.getOutboundMessageContext().getMessage());        
+        Assert.assertTrue(prc.getOutboundMessageContext().getMessage() instanceof Response);        
+        
+        Response response = (Response) prc.getOutboundMessageContext().getMessage();        
+        Assert.assertEquals(response.getVersion(), SAMLVersion.VERSION_11);
+        Assert.assertEquals(StatusCode.SUCCESS, response.getStatus().getStatusCode().getValue());
+        
         // TODO meaningful asserts
     }
 }
