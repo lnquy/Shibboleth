@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLVersion;
+import org.opensaml.saml.saml1.core.Assertion;
+import org.opensaml.saml.saml1.core.AuthenticationStatement;
 import org.opensaml.saml.saml1.core.Response;
 import org.opensaml.saml.saml1.core.StatusCode;
 import org.slf4j.Logger;
@@ -63,13 +65,35 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
         ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(OUTPUT_ATTR_NAME);
         Assert.assertNotNull(prc.getOutboundMessageContext());
-        Assert.assertNotNull(prc.getOutboundMessageContext().getMessage());        
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage() instanceof Response);        
-        
-        Response response = (Response) prc.getOutboundMessageContext().getMessage();        
+        Assert.assertNotNull(prc.getOutboundMessageContext().getMessage());
+        Assert.assertTrue(prc.getOutboundMessageContext().getMessage() instanceof Response);
+
+        Response response = (Response) prc.getOutboundMessageContext().getMessage();
         Assert.assertEquals(response.getVersion(), SAMLVersion.VERSION_11);
         Assert.assertEquals(StatusCode.SUCCESS, response.getStatus().getStatusCode().getValue());
-        
+
+        Assert.assertNotNull(response.getAssertions());
+        Assert.assertFalse(response.getAssertions().isEmpty());
+        Assert.assertEquals(1, response.getAssertions().size());
+        Assert.assertNotNull(response.getAssertions().get(0));
+
+        Assertion assertion = response.getAssertions().get(0);
+        Assert.assertEquals(SAMLVersion.VERSION_11.getMajorVersion(), assertion.getMajorVersion());
+        Assert.assertEquals(SAMLVersion.VERSION_11.getMinorVersion(), assertion.getMinorVersion());
+        Assert.assertEquals("https://idp.example.org", assertion.getIssuer());
+
+        // TODO assertion conditions ?
+
+        Assert.assertNotNull(assertion.getAuthenticationStatements());
+        Assert.assertFalse(assertion.getAuthenticationStatements().isEmpty());
+        Assert.assertEquals(1, assertion.getAuthenticationStatements().size());
+        Assert.assertNotNull(assertion.getAuthenticationStatements().get(0));
+
+        AuthenticationStatement authnStatement = assertion.getAuthenticationStatements().get(0);
+        // TODO authn method ?
+        Assert.assertEquals(AuthenticationStatement.UNSPECIFIED_AUTHN_METHOD, authnStatement.getAuthenticationMethod());
+        // TODO subject locality, etc
+
         // TODO meaningful asserts
     }
 }
