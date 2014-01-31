@@ -21,9 +21,12 @@ import idp.AbstractFlowTest;
 
 import javax.annotation.Nonnull;
 
+import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.saml1.core.Assertion;
+import org.opensaml.saml.saml1.core.Attribute;
+import org.opensaml.saml.saml1.core.AttributeStatement;
 import org.opensaml.saml.saml1.core.AuthenticationStatement;
 import org.opensaml.saml.saml1.core.Response;
 import org.opensaml.saml.saml1.core.StatusCode;
@@ -93,6 +96,35 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         // TODO authn method ?
         Assert.assertEquals(AuthenticationStatement.UNSPECIFIED_AUTHN_METHOD, authnStatement.getAuthenticationMethod());
         // TODO subject locality, etc
+
+        Assert.assertNotNull(assertion.getAttributeStatements());
+        Assert.assertFalse(assertion.getAttributeStatements().isEmpty());
+        Assert.assertEquals(1, assertion.getAttributeStatements().size());
+        Assert.assertNotNull(assertion.getAttributeStatements().get(0));
+
+        AttributeStatement attributeStatement = assertion.getAttributeStatements().get(0);
+
+        Assert.assertNotNull(attributeStatement.getAttributes());
+        Assert.assertFalse(attributeStatement.getAttributes().isEmpty());
+        Assert.assertEquals(2, attributeStatement.getAttributes().size());
+
+        // TODO attribute ordering ?
+        Attribute eduPersonAffiliation = attributeStatement.getAttributes().get(0);
+        Assert.assertEquals(eduPersonAffiliation.getAttributeName(), "urn:mace:dir:attribute-def:eduPersonAffiliation");
+        Assert.assertEquals(eduPersonAffiliation.getAttributeNamespace(),
+                "urn:mace:shibboleth:1.0:attributeNamespace:uri");
+        // Assert.assertEquals("eduPersonAffiliation", eduPersonAffiliation.);
+        Assert.assertEquals(1, eduPersonAffiliation.getAttributeValues().size());
+        Assert.assertTrue(eduPersonAffiliation.getAttributeValues().get(0) instanceof XSString);
+        Assert.assertEquals("member", ((XSString) eduPersonAffiliation.getAttributeValues().get(0)).getValue());
+
+        Attribute mail = attributeStatement.getAttributes().get(1);
+        Assert.assertEquals(mail.getAttributeName(), "urn:mace:dir:attribute-def:mail");
+        Assert.assertEquals(mail.getAttributeNamespace(), "urn:mace:shibboleth:1.0:attributeNamespace:uri");
+        // Assert.assertEquals("mail", mail.getFriendlyName());
+        Assert.assertEquals(1, mail.getAttributeValues().size());
+        Assert.assertTrue(mail.getAttributeValues().get(0) instanceof XSString);
+        Assert.assertEquals("jdoe@shibboleth.net", ((XSString) mail.getAttributeValues().get(0)).getValue());
 
         // TODO meaningful asserts
     }
