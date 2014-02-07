@@ -21,6 +21,8 @@ import idp.AbstractFlowTest;
 
 import javax.annotation.Nonnull;
 
+import net.shibboleth.idp.saml.impl.profile.BaseIdPInitiatedSSORequestMessageDecoder;
+
 import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLVersion;
@@ -53,9 +55,17 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
     /** Flow id. */
     @Nonnull public final static String FLOW_ID = "Shibboleth/SSO";
 
+    private String entityId = "http://sp.example.org";
+
+    private String acsUrl = "http://sp.example.org/acs";
+
+    private String relayState = "myRelayState";
+
     @Test public void testFlow() {
-        // TODO more request parameters
-        request.addParameter("providerId", "https://sp.example.org");
+        // TODO time request parameter ?
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.PROVIDER_ID_PARAM, entityId);
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.SHIRE_PARAM, acsUrl);
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.TARGET_PARAM, relayState);
 
         FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
         Assert.assertEquals(FLOW_ID, result.getFlowId());
