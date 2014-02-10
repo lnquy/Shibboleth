@@ -113,11 +113,14 @@ public class PathPropertySupport {
             value = Paths.get("").toAbsolutePath().toString();
         }
 
+        final String normalizedValue;
         if (needsNormalized(value)) {
-            value = normalizePath(value);
+            normalizedValue = normalizePath(value);
+        } else {
+            normalizedValue = value;
         }
 
-        System.setProperty(name, value);
+        System.setProperty(name, normalizedValue);
 
         return value;
     }
