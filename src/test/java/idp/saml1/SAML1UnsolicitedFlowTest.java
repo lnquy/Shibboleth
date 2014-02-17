@@ -57,7 +57,7 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
 
     private String entityId = "http://sp.example.org";
 
-    private String acsUrl = "http://sp.example.org/acs";
+    private String acsUrl = "https://sp.example.org/ACSURL";
 
     private String relayState = "myRelayState";
 
@@ -67,10 +67,10 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.SHIRE_PARAM, acsUrl);
         request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.TARGET_PARAM, relayState);
 
-        FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
+        final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
         Assert.assertEquals(FLOW_ID, result.getFlowId());
 
-        FlowExecutionOutcome outcome = result.getOutcome();
+        final FlowExecutionOutcome outcome = result.getOutcome();
         log.debug("flow outcome {}", outcome);
         Assert.assertNotNull(outcome);
         Assert.assertEquals(outcome.getId(), "end");
@@ -83,16 +83,17 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         Assert.assertNotNull(prc.getOutboundMessageContext().getMessage());
         Assert.assertTrue(prc.getOutboundMessageContext().getMessage() instanceof Response);
 
-        Response response = (Response) prc.getOutboundMessageContext().getMessage();
+        final Response response = (Response) prc.getOutboundMessageContext().getMessage();
         Assert.assertEquals(response.getVersion(), SAMLVersion.VERSION_11);
         Assert.assertEquals(response.getStatus().getStatusCode().getValue(), StatusCode.SUCCESS);
+        Assert.assertEquals(response.getRecipient(), acsUrl);
 
         Assert.assertNotNull(response.getAssertions());
         Assert.assertFalse(response.getAssertions().isEmpty());
         Assert.assertEquals(response.getAssertions().size(), 1);
         Assert.assertNotNull(response.getAssertions().get(0));
 
-        Assertion assertion = response.getAssertions().get(0);
+        final Assertion assertion = response.getAssertions().get(0);
         Assert.assertEquals(assertion.getMajorVersion(), SAMLVersion.VERSION_11.getMajorVersion());
         Assert.assertEquals(assertion.getMinorVersion(), SAMLVersion.VERSION_11.getMinorVersion());
         Assert.assertEquals(assertion.getIssuer(), "https://idp.example.org");
