@@ -55,9 +55,9 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
     /** Flow id. */
     @Nonnull public final static String FLOW_ID = "Shibboleth/SSO";
 
-    private String entityId = "http://sp.example.org";
+    private String entityId = "https://sp.example.org";
 
-    private String acsUrl = "https://sp.example.org/ACSURL";
+    private String acsUrl = "https://sp.example.org/SAML1/POST/ACS";
 
     private String relayState = "myRelayState";
 
@@ -72,7 +72,7 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
 
         final FlowExecutionOutcome outcome = result.getOutcome();
         log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
+        Assert.assertNotNull(outcome, "Flow ended with an error");
         Assert.assertEquals(outcome.getId(), "end");
         Assert.assertTrue(result.isEnded());
 
