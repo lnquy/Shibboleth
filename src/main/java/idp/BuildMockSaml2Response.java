@@ -46,18 +46,9 @@ public class BuildMockSaml2Response extends AbstractProfileAction<SAMLObject, SA
 		
 		Response response = buildResponse(springRequestContext, profileRequestContext);
 		
-		MessageContext<SAMLObject> outboundMessageContext = buildOutboundMessageContext(response);
-		
-		profileRequestContext.setOutboundMessageContext(outboundMessageContext);
+		profileRequestContext.getOutboundMessageContext().setMessage(response);
 		
 		return ActionSupport.buildProceedEvent(this);
-	}
-
-	private MessageContext<SAMLObject> buildOutboundMessageContext(Response response) {
-		MessageContext<SAMLObject> messageContext = new MessageContext<>();
-		messageContext.setMessage(response);
-		
-		return messageContext;
 	}
 
 	private Response buildResponse(RequestContext springRequestContext, ProfileRequestContext<SAMLObject, SAMLObject> profileRequestContext) {

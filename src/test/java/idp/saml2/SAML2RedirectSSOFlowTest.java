@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.shibboleth.utilities.java.support.collection.Pair;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.net.SimpleUrlCanonicalizer;
 import net.shibboleth.utilities.java.support.net.UrlBuilder;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
 
@@ -169,14 +170,14 @@ public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
     private String getDestinationRedirect(HttpServletRequest servletRequest) {
         // TODO servlet context
         String destinationPath = "/idp/SAML2/Redirect/SSO";
-        String baseUrl = getBaseUrl(servletRequest);
         try {
+            String baseUrl = SimpleUrlCanonicalizer.canonicalize(getBaseUrl(servletRequest));
             UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
             urlBuilder.setPath(destinationPath);
             log.debug("set des redi {}", urlBuilder.buildURL());
             return urlBuilder.buildURL();
         } catch (MalformedURLException e) {
-            log.error("Couldn't parse base URL, reverting to internal default destination: {}", baseUrl);
+            log.error("Couldn't parse base URL, reverting to internal default destination");
             return "http://localhost:8080" + destinationPath;
         }
     }
@@ -211,7 +212,7 @@ public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
         String acsPath = "/sp/SAML2/POST/ACS";
         String baseUrl = getBaseUrl(servletRequest);
         try {
-            UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
+            UrlBuilder urlBuilder = new UrlBuilder(SimpleUrlCanonicalizer.canonicalize(baseUrl));
             urlBuilder.setPath(acsPath);
             return urlBuilder.buildURL();
         } catch (MalformedURLException e) {
