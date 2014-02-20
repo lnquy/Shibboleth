@@ -68,4 +68,18 @@ public class TestC14N extends AbstractFlowTest {
         Assert.assertTrue(result.isEnded());
 
     }
+    
+    @Test public void testDirectNameID() {
+
+        FlowExecutionResult result = flowExecutor.launchExecution("directNameID", null, externalContext);
+        Assert.assertEquals("directNameID", result.getFlowId());
+
+        FlowExecutionOutcome outcome = result.getOutcome();
+        log.debug("flow outcome {}", outcome);
+        Assert.assertNotNull(outcome);
+        Assert.assertEquals(outcome.getId(), "end");
+        Assert.assertTrue(result.isEnded());
+
+    }
+
 }

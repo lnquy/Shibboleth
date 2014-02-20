@@ -1,0 +1,43 @@
+<flow xmlns="http://www.springframework.org/schema/webflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/webflow classpath:/org/springframework/webflow/engine/model/builder/xml/spring-webflow-2.0.xsd"
+    >
+
+    <on-start>
+        <evaluate expression="InitializeProfileRequestContext" />
+    </on-start>
+    
+    <action-state id="PopulateResolution">
+        <evaluate expression="PopulateResolution" />
+        <transition on="proceed" to="ResolveAttributes" />
+    </action-state>
+
+    <action-state id="ResolveAttributes">
+        <evaluate expression="ResolveAttributes" />
+        <transition on="proceed" to="PopulateC14NDirect" />
+    </action-state>
+    
+    <action-state id="PopulateC14NDirect">
+        <evaluate expression="PopulateC14NDirect" />
+        <transition on="proceed" to="thing" />
+    </action-state>    
+    
+    <subflow-state id="thing" subflow="SubjectC14N">
+            <transition on="proceed" to="TestAfterC14N" />
+            <transition on="InvalidSubjectCanonicalizationContext" to="end" />
+    </subflow-state>
+
+    <action-state id="TestAfterC14N">
+        <evaluate expression="TestAfterC14N" />
+        <transition on="proceed" to="end" />
+    </action-state>    
+    
+    <end-state id="end">
+        <!-- TODO: Probably remove later. For tests, map the profile request context as an output attribute -->
+        <output name="ProfileRequestContext"
+            value="flowRequestContext.getConversationScope().get('org.opensaml.profile.context.ProfileRequestContext')" />
+    </end-state>
+    
+    <bean-import resource="beans.xml" />
+
+    
+    </flow>
