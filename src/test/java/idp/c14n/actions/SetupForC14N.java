@@ -36,28 +36,42 @@ import org.opensaml.saml.saml2.core.impl.NameIDBuilder;
  */
 public class SetupForC14N extends AbstractProfileAction {
     
-    @Override
-    protected void doExecute(
-            @Nonnull final ProfileRequestContext profileRequestContext)
+    private String attributeName;
+
+    /**
+     * @return Returns the attributeName.
+     */
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    /**
+     * @param attributeName The attributeName to set.
+     */
+    public void setAttributeName(String attributeName) {
+        this.attributeName = attributeName;
+    }
+
+    @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext)
             throws ProfileException {
-        
+
         RelyingPartyContext rpc = profileRequestContext.getSubcontext(RelyingPartyContext.class, false);
-        
+
         AttributeContext ac = rpc.getSubcontext(AttributeContext.class, false);
-        
+
         NameID nid = (new NameIDBuilder().buildObject());
-        nid.setValue((String) ac.getIdPAttributes().get("transientId").getValues().iterator().next().getValue());
+        nid.setValue((String) ac.getIdPAttributes().get(getAttributeName()).getValues().iterator().next().getValue());
         nid.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
-        
+
         NameIDPrincipal nidp = new NameIDPrincipal(nid);
         Subject sub = new Subject();
         sub.getPrincipals().add(nidp);
-        
-        SubjectCanonicalizationContext scc = profileRequestContext.getSubcontext(SubjectCanonicalizationContext.class, true);
+
+        SubjectCanonicalizationContext scc =
+                profileRequestContext.getSubcontext(SubjectCanonicalizationContext.class, true);
         scc.setSubject(sub);
         scc.setRequesterId(rpc.getRelyingPartyId());
         scc.setResponderId(rpc.getConfiguration().getResponderId());
-        
+
     }
-    
 }

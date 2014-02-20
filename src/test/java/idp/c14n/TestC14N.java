@@ -56,4 +56,16 @@ public class TestC14N extends AbstractFlowTest {
 
     }
     
+    @Test public void testCryptoTransientNameID() {
+
+        FlowExecutionResult result = flowExecutor.launchExecution("cryptoTransientNameID", null, externalContext);
+        Assert.assertEquals("cryptoTransientNameID", result.getFlowId());
+
+        FlowExecutionOutcome outcome = result.getOutcome();
+        log.debug("flow outcome {}", outcome);
+        Assert.assertNotNull(outcome);
+        Assert.assertEquals(outcome.getId(), "end");
+        Assert.assertTrue(result.isEnded());
+
+    }
 }

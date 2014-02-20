@@ -14,7 +14,8 @@
 		
 		<bean id="PopulateResolution" class = "idp.c14n.actions.SetupForResolver"  scope="prototype" p:id="resThing" />
         <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" p:id="Resolver" c:resolverService-ref="shibboleth.AttributeResolverService" scope="prototype" />
-        <bean id="PopulateC14N" class = "idp.c14n.actions.SetupForC14N"  scope="prototype" p:id="c14nThing" />
+        <bean id="PopulateC14N" class = "idp.c14n.actions.SetupForC14N"  scope="prototype" p:id="c14nThing" p:attributeName="transientId" />
+        <bean id="PopulateC14NCrypto" class = "idp.c14n.actions.SetupForC14N"  scope="prototype" p:id="c14ncryptoThing" p:attributeName="cryptoTransientId" />
         <bean id="TestAfterC14N" class = "idp.c14n.actions.TestAfterC14N"  scope="prototype" p:id="c14nTest" />
 		
 </beans>
