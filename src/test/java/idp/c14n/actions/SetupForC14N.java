@@ -23,7 +23,7 @@ import javax.security.auth.Subject;
 import net.shibboleth.idp.attribute.context.AttributeContext;
 import net.shibboleth.idp.authn.context.SubjectCanonicalizationContext;
 import net.shibboleth.idp.profile.AbstractProfileAction;
-import net.shibboleth.idp.relyingparty.RelyingPartyContext;
+import net.shibboleth.idp.profile.context.RelyingPartyContext;
 import net.shibboleth.idp.saml.authn.principal.NameIDPrincipal;
 
 import org.opensaml.profile.ProfileException;
