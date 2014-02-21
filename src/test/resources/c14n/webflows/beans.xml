@@ -18,5 +18,9 @@
         <bean id="PopulateSAML2C14NCrypto" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:id="c14ncryptoThing" p:attributeName="cryptoTransientId" />
         <bean id="PopulateSAML2C14NDirect" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:id="c14nThing" p:attributeName="Principal" />
         <bean id="TestAfterC14N" class = "idp.c14n.actions.TestAfterC14N"  scope="prototype" p:id="c14nTest" />
+
+        <bean id="PopulateSAML1C14N" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:id="c14nThing" p:attributeName="transientId" />
+        <bean id="PopulateSAML1C14NCrypto" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:id="c14ncryptoThing" p:attributeName="cryptoTransientId" />
+        <bean id="PopulateSAML1C14NDirect" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:id="c14nThing" p:attributeName="Principal" />
 		
 </beans>
