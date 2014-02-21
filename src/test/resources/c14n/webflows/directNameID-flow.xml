@@ -13,11 +13,11 @@
 
     <action-state id="ResolveAttributes">
         <evaluate expression="ResolveAttributes" />
-        <transition on="proceed" to="PopulateC14NDirect" />
+        <transition on="proceed" to="PopulateSAML2C14NDirect" />
     </action-state>
     
-    <action-state id="PopulateC14NDirect">
-        <evaluate expression="PopulateC14NDirect" />
+    <action-state id="PopulateSAML2C14NDirect">
+        <evaluate expression="PopulateSAML2C14NDirect" />
         <transition on="proceed" to="thing" />
     </action-state>    
     

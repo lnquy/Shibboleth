@@ -34,7 +34,7 @@ import org.opensaml.saml.saml2.core.impl.NameIDBuilder;
 /**
  *
  */
-public class SetupForC14N extends AbstractProfileAction {
+public class SetupForSAML2C14N extends AbstractProfileAction {
     
     private String attributeName;
 
