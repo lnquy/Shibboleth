@@ -18,10 +18,10 @@
     
     <action-state id="PopulateSAML2C14NCrypto">
         <evaluate expression="PopulateSAML2C14NCrypto" />
-        <transition on="proceed" to="thing" />
+        <transition on="proceed" to="C14N" />
     </action-state>    
     
-    <subflow-state id="thing" subflow="SubjectC14N">
+    <subflow-state id="C14N" subflow="SubjectC14N">
             <transition on="proceed" to="TestAfterC14N" />
             <transition on="InvalidSubjectCanonicalizationContext" to="end" />
     </subflow-state>

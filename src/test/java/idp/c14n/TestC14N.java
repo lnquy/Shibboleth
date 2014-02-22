@@ -36,12 +36,11 @@ import org.testng.annotations.Test;
 public class TestC14N extends AbstractFlowTest {
     
     static {
-        System.setProperty("idp.c14n.flows", "SAML2.*|Simple|Legacy.*");
+        System.setProperty("idp.c14n.flows", "SAML2.*|Simple|Legacy.*|SAML1.*");
     }
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(TestC14N.class);
-
 
     @Test public void testTransientNameID() {
 
@@ -53,7 +52,6 @@ public class TestC14N extends AbstractFlowTest {
         Assert.assertNotNull(outcome);
         Assert.assertEquals(outcome.getId(), "end");
         Assert.assertTrue(result.isEnded());
-
     }
     
     @Test public void testCryptoTransientNameID() {
@@ -66,7 +64,6 @@ public class TestC14N extends AbstractFlowTest {
         Assert.assertNotNull(outcome);
         Assert.assertEquals(outcome.getId(), "end");
         Assert.assertTrue(result.isEnded());
-
     }
     
     @Test public void testDirectNameID() {
@@ -79,7 +76,41 @@ public class TestC14N extends AbstractFlowTest {
         Assert.assertNotNull(outcome);
         Assert.assertEquals(outcome.getId(), "end");
         Assert.assertTrue(result.isEnded());
-
     }
 
+    @Test public void testTransientNameIdentifier() {
+
+        FlowExecutionResult result = flowExecutor.launchExecution("transientNameIdentifier", null, externalContext);
+        Assert.assertEquals("transientNameIdentifier", result.getFlowId());
+
+        FlowExecutionOutcome outcome = result.getOutcome();
+        log.debug("flow outcome {}", outcome);
+        Assert.assertNotNull(outcome);
+        Assert.assertEquals(outcome.getId(), "end");
+        Assert.assertTrue(result.isEnded());
+    }
+    
+    @Test public void testCryptoTransientNameIdentifier() {
+
+        FlowExecutionResult result = flowExecutor.launchExecution("cryptoTransientNameIdentifier", null, externalContext);
+        Assert.assertEquals("cryptoTransientNameIdentifier", result.getFlowId());
+
+        FlowExecutionOutcome outcome = result.getOutcome();
+        log.debug("flow outcome {}", outcome);
+        Assert.assertNotNull(outcome);
+        Assert.assertEquals(outcome.getId(), "end");
+        Assert.assertTrue(result.isEnded());
+    }
+    
+    @Test public void testDirectNameIdentifier() {
+
+        FlowExecutionResult result = flowExecutor.launchExecution("directNameIdentifier", null, externalContext);
+        Assert.assertEquals("directNameIdentifier", result.getFlowId());
+
+        FlowExecutionOutcome outcome = result.getOutcome();
+        log.debug("flow outcome {}", outcome);
+        Assert.assertNotNull(outcome);
+        Assert.assertEquals(outcome.getId(), "end");
+        Assert.assertTrue(result.isEnded());
+    }
 }

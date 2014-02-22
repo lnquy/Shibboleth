@@ -12,6 +12,8 @@
         <webflow:flow-location id="directNameID" path="/directNameID-flow.xml" />
 
         <webflow:flow-location id="transientNameIdentifier" path="/transientNameIdentifier-flow.xml" />
+        <webflow:flow-location id="cryptoTransientNameIdentifier" path="/cryptoTransientNameIdentifier-flow.xml" />
+        <webflow:flow-location id="directNameIdentifier" path="/directNameIdentifier-flow.xml" />
     </webflow:flow-registry>      
     
     <webflow:flow-executor id="flowExecutor" flow-registry="testFlowRegistry"/>
