@@ -21,12 +21,14 @@ import idp.AbstractFlowTest;
 
 import javax.annotation.Nonnull;
 
+import org.junit.AfterClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
@@ -35,8 +37,12 @@ import org.testng.annotations.Test;
 @ContextConfiguration({"classpath:/c14n/test-webflow-config.xml", "classpath:/c14n/locate-legacy-resolver.xml"})
 public class TestLegacyC14N extends AbstractFlowTest {
     
-    static {
-        System.setProperty("idp.c14n.flows", "SAML2.*|Simple|Legacy.*");
+    @BeforeClass public void setPerClassProperties() {
+        System.setProperty("idp.c14n.flows", "Simple|Legacy.*");
+    }
+    
+    @AfterClass public void resetPerClassProperties() {
+        System.setProperty("idp.c14n.flows", "Simple");
     }
 
     /** Class logger. */
