@@ -17,6 +17,8 @@
 
 package idp;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -24,11 +26,13 @@ import net.shibboleth.ext.spring.webflow.Event;
 import net.shibboleth.ext.spring.webflow.Events;
 import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.ActionSupport;
+import net.shibboleth.idp.saml.binding.BindingDescriptor;
+import net.shibboleth.utilities.java.support.annotation.constraint.NonnullElements;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.component.ComponentSupport;
 import net.shibboleth.utilities.java.support.logic.Constraint;
 
 import org.opensaml.messaging.context.MessageContext;
-import org.opensaml.messaging.decoder.MessageDecoder;
 import org.opensaml.messaging.encoder.MessageEncoder;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.messaging.handler.MessageHandler;
@@ -39,7 +43,12 @@ import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.webflow.execution.RequestContext;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
 /** A profile stage that encodes an outbound response from the outbound {@link MessageContext}. 
  * 
@@ -59,24 +68,18 @@ public class EncodeSAMLMessageFromBindingURI extends AbstractProfileAction {
     public static final String UNABLE_TO_ENCODE = "UnableToEncode";
 
     /** Class logger. */
-    private final Logger log = LoggerFactory.getLogger(EncodeSAMLMessageFromBindingURI.class);
-
-    private final SpringAwareEncoderLookup bindingLookup;
+    @Nonnull private final Logger log = LoggerFactory.getLogger(EncodeSAMLMessageFromBindingURI.class);
+    
+    @Nonnull @NonnullElements private ListMultimap<String,BindingDescriptor> bindingMap;
     
     /** An optional {@link MessageHandler} instance to be invoked after 
      * {@link MessageEncoder#prepareContext()} and prior to {@link MessageEncoder#encode()}.
      * May be null. */
-    private final MessageHandler messageHandler;
+    @Nullable private final MessageHandler messageHandler;
 
-    /**
-     * Constructor.
-     * 
-     * 
-     * @param messageEncoder the {@link MessageEncoder} used for the outbound response
-     */
-    public EncodeSAMLMessageFromBindingURI(@Nonnull final  SpringAwareEncoderLookup lookup) {
-        bindingLookup = Constraint.isNotNull(lookup, "Message encoder lookup can not be null");
-        messageHandler = null;
+    /** Constructor. */
+    public EncodeSAMLMessageFromBindingURI() {
+        this(null);
     }
     
     /**
@@ -87,15 +90,31 @@ public class EncodeSAMLMessageFromBindingURI extends AbstractProfileAction {
      * {@link MessageEncoder#prepareContext()}, and prior to invoking {@link MessageEncoder#encode()}.
      * Its use is optional and primarily used for transport/binding-specific message handling, 
      * as opposed to more generalized message handling operations which would typically be invoked 
-     * earlier than this action.  For more details see {@link MessageEncoder}.
+     * earlier than this action. For more details see {@link MessageEncoder}.
      * </p>
      * 
-     * @param  the {@link MessageEncoder} used for the outbound response
      * @param handler the {@link MessageHandler} used for the outbound response
      */
-    public EncodeSAMLMessageFromBindingURI(@Nonnull final SpringAwareEncoderLookup lookup, @Nullable final MessageHandler handler) {
-        bindingLookup = Constraint.isNotNull(lookup, "Message encoder lookup can not be null");
+    public EncodeSAMLMessageFromBindingURI(@Nullable final MessageHandler handler) {
         messageHandler = handler;
+        bindingMap = ArrayListMultimap.create();
+    }
+    
+    /**
+     * Set the bindings to evaluate for use, in preference order.
+     * 
+     * @param bindings bindings to consider
+     */
+    public void setBindings(@Nonnull @NonnullElements final List<BindingDescriptor> bindings) {
+        ComponentSupport.ifInitializedThrowUnmodifiabledComponentException(this);
+        Constraint.isNotNull(bindings, "Binding descriptor list cannot be null");
+        
+        bindingMap.clear();
+        for (final BindingDescriptor binding : bindings) {
+            if (binding != null && binding.getId() != null) {
+                bindingMap.put(binding.getId(), binding);
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -103,13 +122,14 @@ public class EncodeSAMLMessageFromBindingURI extends AbstractProfileAction {
             doExecute(@Nonnull final RequestContext springRequestContext,
                     @Nonnull final ProfileRequestContext profileRequestContext) throws ProfileException {
     	
-    	MessageEncoder encoder = lookupMessageEncoder(profileRequestContext);
+    	final MessageEncoder encoder = lookupMessageEncoder(
+    	        springRequestContext.getActiveFlow().getApplicationContext(), profileRequestContext);
     	
         try {
-            log.debug("Action {}: Using message encoder of type {} for this response", getId(), 
+            log.debug("Action {}: Using message encoder of type {} for this response", getLogPrefix(), 
                     encoder.getClass().getName());
 
-            log.debug("Action {}: Encoding outbound response", getId());         
+            log.debug("Action {}: Encoding outbound response", getLogPrefix());         
             final MessageContext msgContext = profileRequestContext.getOutboundMessageContext();
             
             if (!encoder.isInitialized()) {
@@ -124,14 +144,14 @@ public class EncodeSAMLMessageFromBindingURI extends AbstractProfileAction {
             encoder.prepareContext();
             
             if (messageHandler != null) {
-                log.debug("Action {}: Invoking message handler of type {} for this response", getId(), 
+                log.debug("Action {}: Invoking message handler of type {} for this response", getLogPrefix(), 
                         messageHandler.getClass().getName());
                 messageHandler.invoke(msgContext);
             }
             
             encoder.encode();
             
-            log.debug("Action {}: Outbound response encoded from a message of type {}", getId(),
+            log.debug("Action {}: Outbound response encoded from a message of type {}", getLogPrefix(),
                     msgContext.getMessage().getClass().getName());
             
             // Could also do this as an 'end' state expression in WebFlow.
@@ -139,7 +159,7 @@ public class EncodeSAMLMessageFromBindingURI extends AbstractProfileAction {
 
             return ActionSupport.buildProceedEvent(this);
         } catch (MessageEncodingException | ComponentInitializationException | MessageHandlerException e) {
-            log.debug("Action {}: Unable to encode outbound response", getId(), e);
+            log.debug("Action {}: Unable to encode outbound response", getLogPrefix(), e);
             return ActionSupport.buildEvent(this, UNABLE_TO_ENCODE);
         } finally {
             encoder.destroy();
@@ -147,20 +167,30 @@ public class EncodeSAMLMessageFromBindingURI extends AbstractProfileAction {
         
     }
     
-    private MessageEncoder lookupMessageEncoder(ProfileRequestContext profileRequestContext) throws ProfileException {
-    	SAMLBindingContext bindingContext = profileRequestContext.getOutboundMessageContext().getSubcontext(SAMLBindingContext.class, false);
+    @Nonnull private MessageEncoder lookupMessageEncoder(@Nonnull final ApplicationContext appContext,
+            @Nonnull final ProfileRequestContext profileRequestContext) throws ProfileException {
+        
+    	final SAMLBindingContext bindingContext =
+    	        profileRequestContext.getOutboundMessageContext().getSubcontext(SAMLBindingContext.class);
     	if (bindingContext == null || bindingContext.getBindingUri() == null) {
     		throw new ProfileException("Binding URI was not available, unable to lookup message encoder");
     	}
     	
     	log.debug("Looking up message encoder based on binding URI: {}", bindingContext.getBindingUri());
-    	
-    	MessageEncoder encoder = bindingLookup.get(bindingContext.getBindingUri());
-    	if (encoder == null) {
-    		log.warn("Failed to find a message encoder based on binding URI: {}", bindingContext.getBindingUri());
-    		throw new ProfileException("Unable to resolve MessageEncoder based on binding URI: " + bindingContext.getBindingUri());
+    
+    	final List<BindingDescriptor> bindings = bindingMap.get(bindingContext.getBindingUri());
+    	for (final BindingDescriptor binding : bindings) {
+    	    if (binding.getEncoderBeanId() != null) {
+    	        try {
+    	            return appContext.getBean(binding.getEncoderBeanId(), MessageEncoder.class);
+    	        } catch (final BeansException e) {
+    	            log.error(getLogPrefix() + " Error instantiating message encoder from bean ID "
+    	                    + binding.getEncoderBeanId(), e);
+    	        }
+    	    }
     	}
-    			
-    	return encoder;
+    	
+		log.warn("Failed to find a message encoder based on binding URI: {}", bindingContext.getBindingUri());
+		throw new ProfileException("Unable to resolve MessageEncoder based on binding URI: " + bindingContext.getBindingUri());
     }
 }
