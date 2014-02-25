@@ -20,19 +20,21 @@ package idp.c14n.actions;
 import javax.annotation.Nonnull;
 import javax.security.auth.Subject;
 
+import net.shibboleth.idp.attribute.AttributeEncoder;
+import net.shibboleth.idp.attribute.AttributeEncodingException;
 import net.shibboleth.idp.attribute.context.AttributeContext;
 import net.shibboleth.idp.authn.context.SubjectCanonicalizationContext;
 import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.context.RelyingPartyContext;
 import net.shibboleth.idp.saml.authn.principal.NameIdentifierPrincipal;
+import net.shibboleth.idp.saml.nameid.SAML1NameIdentifierAttributeEncoder;
 
 import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.saml1.core.NameIdentifier;
-import org.opensaml.saml.saml1.core.impl.NameIdentifierBuilder;
 
 /**
- *
+ * Action to mock up a Subject for C14N.
  */
 public class SetupForSAML1C14N extends AbstractProfileAction {
     
@@ -57,11 +59,21 @@ public class SetupForSAML1C14N extends AbstractProfileAction {
 
         RelyingPartyContext rpc = profileRequestContext.getSubcontext(RelyingPartyContext.class, false);
 
+        NameIdentifier nid = null;
         AttributeContext ac = rpc.getSubcontext(AttributeContext.class, false);
-
-        NameIdentifier nid = (new NameIdentifierBuilder().buildObject());
-        nid.setNameIdentifier((String) ac.getIdPAttributes().get(getAttributeName()).getValues().iterator().next().getValue());
-        nid.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+        for (final AttributeEncoder enc : ac.getIdPAttributes().get(getAttributeName()).getEncoders()) {
+            if (enc instanceof SAML1NameIdentifierAttributeEncoder) {
+                try {
+                    nid = ((SAML1NameIdentifierAttributeEncoder) enc).encode(ac.getIdPAttributes().get(getAttributeName()));
+                } catch (AttributeEncodingException e) {
+                    throw new ProfileException(e);
+                }
+            }
+        }
+        
+        if (nid == null) {
+            throw new ProfileException("Unable to encoder source attribute into NameIdentifier");
+        }
 
         NameIdentifierPrincipal nidp = new NameIdentifierPrincipal(nid);
         Subject sub = new Subject();

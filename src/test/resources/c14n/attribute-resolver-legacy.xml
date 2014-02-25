@@ -17,5 +17,6 @@
         <resolver:AttributeEncoder xsi:type="enc:SAML2StringNameID" nameFormat="urn:oasis:names:tc:SAML:2.0:nameid-format:transient"/>
     </resolver:AttributeDefinition>
     
+     <resolver:PrincipalConnector xsi:type="pc:Transient" nameIDFormat="urn:mace:shibboleth:1.0:nameIdentifier" id="Transient"/>
      <resolver:PrincipalConnector xsi:type="pc:Transient" nameIDFormat="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" id="Transient"/>
 </resolver:AttributeResolver>
