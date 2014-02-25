@@ -8,19 +8,21 @@
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
 	default-init-method="initialize" default-destroy-method="destroy">
 
+    <bean class="net.shibboleth.idp.spring.IdentifiableBeanPostProcessor" />
+    
 	<bean id="InitializeProfileRequestContext"
 		class="net.shibboleth.idp.profile.impl.InitializeProfileRequestContext"
-		scope="prototype" p:id="foo" p:profileId="test_flow" />
+		scope="prototype" p:profileId="test_flow" />
 		
-		<bean id="PopulateResolution" class = "idp.c14n.actions.SetupForResolver"  scope="prototype" p:id="resolver" />
-        <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" p:id="Resolver" c:resolverService-ref="shibboleth.AttributeResolverService" scope="prototype" />
-        <bean id="PopulateSAML2C14N" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:id="c14nTransientSAML2" p:attributeName="transientId" />
-        <bean id="PopulateSAML2C14NCrypto" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:id="c14nCryptoSAML2" p:attributeName="cryptoTransientId" />
-        <bean id="PopulateSAML2C14NDirect" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:id="c14nDirectSAML2" p:attributeName="Principal" />
-        <bean id="TestAfterC14N" class = "idp.c14n.actions.TestAfterC14N"  scope="prototype" p:id="c14nTest" />
+		<bean id="PopulateResolution" class = "idp.c14n.actions.SetupForResolver"  scope="prototype" />
+        <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" c:resolverService-ref="shibboleth.AttributeResolverService" scope="prototype" />
+        <bean id="PopulateSAML2C14N" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:attributeName="transientId" />
+        <bean id="PopulateSAML2C14NCrypto" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:attributeName="cryptoTransientId" />
+        <bean id="PopulateSAML2C14NDirect" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:attributeName="Principal" />
+        <bean id="TestAfterC14N" class = "idp.c14n.actions.TestAfterC14N"  scope="prototype" />
 
-        <bean id="PopulateSAML1C14N" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:id="c14nTransientSAML1" p:attributeName="transientId" />
-        <bean id="PopulateSAML1C14NCrypto" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:id="c14nCryptoSAML1" p:attributeName="cryptoTransientId" />
-        <bean id="PopulateSAML1C14NDirect" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:id="c14nDirectSAML1" p:attributeName="Principal" />
+        <bean id="PopulateSAML1C14N" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:attributeName="transientId" />
+        <bean id="PopulateSAML1C14NCrypto" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:attributeName="cryptoTransientId" />
+        <bean id="PopulateSAML1C14NDirect" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:attributeName="Principal" />
 		
 </beans>
