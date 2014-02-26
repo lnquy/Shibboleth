@@ -21,7 +21,7 @@
         <transition on="proceed" to="C14N" />
     </action-state>    
     
-    <subflow-state id="C14N" subflow="SubjectC14N">
+    <subflow-state id="C14N" subflow="SubjectC14N/SAML">
             <transition on="proceed" to="TestAfterC14N" />
             <transition on="InvalidSubjectCanonicalizationContext" to="end" />
     </subflow-state>
