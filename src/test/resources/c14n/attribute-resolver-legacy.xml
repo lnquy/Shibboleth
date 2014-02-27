@@ -13,10 +13,10 @@
     <!--      Attribute Definitions for webflow testing  -->
 
     <resolver:AttributeDefinition id="transientId" xsi:type="ad:TransientId">
-        <resolver:AttributeEncoder xsi:type="enc:SAML1StringNameIdentifier" nameFormat="urn:mace:shibboleth:1.0:nameIdentifier"/>
-        <resolver:AttributeEncoder xsi:type="enc:SAML2StringNameID" nameFormat="urn:oasis:names:tc:SAML:2.0:nameid-format:transient"/>
+        <resolver:AttributeEncoder xsi:type="enc:SAML1StringNameIdentifier" nameFormat="http://example.org/SAML1"/>
+        <resolver:AttributeEncoder xsi:type="enc:SAML2StringNameID" nameFormat="http://example.org/SAML2"/>
     </resolver:AttributeDefinition>
     
-     <resolver:PrincipalConnector xsi:type="pc:Transient" nameIDFormat="urn:mace:shibboleth:1.0:nameIdentifier" id="Transient"/>
-     <resolver:PrincipalConnector xsi:type="pc:Transient" nameIDFormat="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" id="Transient"/>
+     <resolver:PrincipalConnector xsi:type="pc:Transient" nameIDFormat="http://example.org/SAML1" id="Transient"/>
+     <resolver:PrincipalConnector xsi:type="pc:Transient" nameIDFormat="http://example.org/SAML2" id="Transient"/>
 </resolver:AttributeResolver>

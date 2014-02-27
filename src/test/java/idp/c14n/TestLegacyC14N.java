@@ -38,11 +38,11 @@ import org.testng.annotations.Test;
 public class TestLegacyC14N extends AbstractFlowTest {
     
     @BeforeClass public void setPerClassProperties() {
-        System.setProperty("idp.c14n.flows", "Simple|Legacy.*");
+        //System.setProperty("idp.c14n.flows", "Simple|Legacy.*");
     }
     
     @AfterClass public void resetPerClassProperties() {
-        System.setProperty("idp.c14n.flows", "Simple");
+        //System.setProperty("idp.c14n.flows", "Simple");
     }
 
     /** Class logger. */
