@@ -43,10 +43,10 @@ public class SetupForResolver extends AbstractProfileAction {
         
         RelyingPartyContext rpContext = profileRequestContext.getSubcontext(RelyingPartyContext.class, true);
         
-        rpContext.setRelyingPartyId("http://sp.example.com");
+        rpContext.setRelyingPartyId("https://sp.example.org");
         
         RelyingPartyConfiguration config = new RelyingPartyConfiguration();
-        config.setResponderId("https://idp.example.com");
+        config.setResponderId("https://idp.example.org");
         
         rpContext.setConfiguration(config);
                 
