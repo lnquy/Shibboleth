@@ -31,7 +31,6 @@ import org.opensaml.saml.saml1.core.Attribute;
 import org.opensaml.saml.saml1.core.AttributeStatement;
 import org.opensaml.saml.saml1.core.AuthenticationStatement;
 import org.opensaml.saml.saml1.core.ConfirmationMethod;
-import org.opensaml.saml.saml1.core.NameIdentifier;
 import org.opensaml.saml.saml1.core.Response;
 import org.opensaml.saml.saml1.core.StatusCode;
 import org.slf4j.Logger;
@@ -119,8 +118,9 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         // TODO is this correct ?
         Assert.assertNotNull(authnStmt.getSubject());
         Assert.assertNotNull(authnStmt.getSubject().getNameIdentifier());
-        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
-        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
+        //Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
+        //Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
+        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getFormat(), "urn:mace:shibboleth:1.0:nameIdentifier");
         Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getNameQualifier(), "https://idp.example.org");
 
         // TODO is this correct ?
@@ -140,8 +140,9 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         // TODO is this correct ?
         Assert.assertNotNull(attrStmt.getSubject());
         Assert.assertNotNull(attrStmt.getSubject().getNameIdentifier());
-        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
-        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
+        //Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
+        //Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
+        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getFormat(), "urn:mace:shibboleth:1.0:nameIdentifier");
         Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getNameQualifier(), "https://idp.example.org");
 
         // TODO is this correct ?
