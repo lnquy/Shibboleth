@@ -9,7 +9,6 @@ import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrate
 
 import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
-import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.action.EventIds;
 import org.opensaml.profile.context.ProfileRequestContext;
@@ -83,11 +82,6 @@ public class BuildMockSaml2Response extends AbstractProfileAction<SAMLObject, SA
 		response.setStatus(status);
 		
 		return response;
-	}
-	
-	private String getSpEntityId() {
-		//TODO get from config somewhere
-		return "https://sp.example.org";
 	}
 	
 	private String getIdpEntityId() {
