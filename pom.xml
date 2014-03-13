@@ -58,6 +58,12 @@
 
         <dependency>
             <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-profile-spring</artifactId>
+            <version>${idp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
             <artifactId>idp-attribute-filter-spring</artifactId>
             <version>${idp.version}</version>
         </dependency>
