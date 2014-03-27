@@ -72,7 +72,7 @@ public class SetupForSAML1C14N extends AbstractProfileAction {
         }
         
         if (nid == null) {
-            throw new ProfileException("Unable to encoder source attribute into NameIdentifier");
+            throw new ProfileException("Unable to encode source attribute into NameIdentifier");
         }
 
         NameIdentifierPrincipal nidp = new NameIdentifierPrincipal(nid);
