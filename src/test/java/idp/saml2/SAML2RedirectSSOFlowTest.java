@@ -47,9 +47,11 @@ import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.StatusCode;
+import org.opensaml.saml.saml2.core.Subject;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SignatureSigningParameters;
@@ -150,7 +152,7 @@ public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
         // TODO attribute ordering ?
         Attribute eduPersonAffiliation = attributeStatement.getAttributes().get(0);
         Assert.assertEquals(eduPersonAffiliation.getName(), "urn:oid:1.3.6.1.4.1.5923.1.1.1.1");
-        Assert.assertEquals(eduPersonAffiliation.getNameFormat(), "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Assert.assertEquals(eduPersonAffiliation.getNameFormat(), Attribute.URI_REFERENCE);
         Assert.assertEquals(eduPersonAffiliation.getFriendlyName(), "eduPersonAffiliation");
         Assert.assertEquals(eduPersonAffiliation.getAttributeValues().size(), 1);
         Assert.assertTrue(eduPersonAffiliation.getAttributeValues().get(0) instanceof XSString);
@@ -158,7 +160,7 @@ public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
 
         Attribute mail = attributeStatement.getAttributes().get(1);
         Assert.assertEquals(mail.getName(), "urn:oid:0.9.2342.19200300.100.1.3");
-        Assert.assertEquals(mail.getNameFormat(), "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Assert.assertEquals(mail.getNameFormat(), Attribute.URI_REFERENCE);
         Assert.assertEquals(mail.getFriendlyName(), "mail");
         Assert.assertEquals(mail.getAttributeValues().size(), 1);
         Assert.assertTrue(mail.getAttributeValues().get(0) instanceof XSString);
@@ -204,6 +206,17 @@ public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
         nameIDPolicy.setAllowCreate(true);
         authnRequest.setNameIDPolicy(nameIDPolicy);
 
+        /*
+        NameID nameID = (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(
+                        NameID.DEFAULT_ELEMENT_NAME);
+        nameID.setFormat(NameID.PERSISTENT);
+        nameID.setValue("foo");
+        Subject subject = (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject(
+                Subject.DEFAULT_ELEMENT_NAME);
+        subject.setNameID(nameID);
+        authnRequest.setSubject(subject);
+        */
+        
         return authnRequest;
     }
 

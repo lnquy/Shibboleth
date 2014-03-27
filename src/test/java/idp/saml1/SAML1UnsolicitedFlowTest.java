@@ -22,6 +22,7 @@ import idp.AbstractFlowTest;
 import javax.annotation.Nonnull;
 
 import net.shibboleth.idp.saml.impl.profile.BaseIdPInitiatedSSORequestMessageDecoder;
+import net.shibboleth.idp.saml.xml.SAMLConstants;
 
 import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.profile.context.ProfileRequestContext;
@@ -120,7 +121,7 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         Assert.assertNotNull(authnStmt.getSubject().getNameIdentifier());
         //Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
         //Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
-        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getFormat(), "urn:mace:shibboleth:1.0:nameIdentifier");
+        Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getFormat(), SAMLConstants.SAML1_NAMEID_TRANSIENT);
         Assert.assertEquals(authnStmt.getSubject().getNameIdentifier().getNameQualifier(), "https://idp.example.org");
 
         // TODO is this correct ?
@@ -142,7 +143,7 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         Assert.assertNotNull(attrStmt.getSubject().getNameIdentifier());
         //Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getFormat(), NameIdentifier.EMAIL);
         //Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getNameIdentifier(), "jdoe@shibboleth.net");
-        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getFormat(), "urn:mace:shibboleth:1.0:nameIdentifier");
+        Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getFormat(), SAMLConstants.SAML1_NAMEID_TRANSIENT);
         Assert.assertEquals(attrStmt.getSubject().getNameIdentifier().getNameQualifier(), "https://idp.example.org");
 
         // TODO is this correct ?
@@ -159,14 +160,14 @@ public class SAML1UnsolicitedFlowTest extends AbstractFlowTest {
         // TODO attribute ordering ?
         Attribute epaAttr = attrStmt.getAttributes().get(0);
         Assert.assertEquals(epaAttr.getAttributeName(), "urn:mace:dir:attribute-def:eduPersonAffiliation");
-        Assert.assertEquals(epaAttr.getAttributeNamespace(), "urn:mace:shibboleth:1.0:attributeNamespace:uri");
+        Assert.assertEquals(epaAttr.getAttributeNamespace(), SAMLConstants.SAML1_ATTR_NAMESPACE_URI);
         Assert.assertEquals(epaAttr.getAttributeValues().size(), 1);
         Assert.assertTrue(epaAttr.getAttributeValues().get(0) instanceof XSString);
         Assert.assertEquals(((XSString) epaAttr.getAttributeValues().get(0)).getValue(), "member");
 
         Attribute mailAttr = attrStmt.getAttributes().get(1);
         Assert.assertEquals(mailAttr.getAttributeName(), "urn:mace:dir:attribute-def:mail");
-        Assert.assertEquals(mailAttr.getAttributeNamespace(), "urn:mace:shibboleth:1.0:attributeNamespace:uri");
+        Assert.assertEquals(mailAttr.getAttributeNamespace(), SAMLConstants.SAML1_ATTR_NAMESPACE_URI);
         Assert.assertEquals(mailAttr.getAttributeValues().size(), 1);
         Assert.assertTrue(mailAttr.getAttributeValues().get(0) instanceof XSString);
         Assert.assertEquals(((XSString) mailAttr.getAttributeValues().get(0)).getValue(), "jdoe@shibboleth.net");

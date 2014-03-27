@@ -93,7 +93,7 @@ public class SAML2UnsolicitedFlowTest extends AbstractFlowTest {
         // TODO attribute ordering ?
         Attribute eduPersonAffiliation = attributeStatement.getAttributes().get(0);
         Assert.assertEquals(eduPersonAffiliation.getName(), "urn:oid:1.3.6.1.4.1.5923.1.1.1.1");
-        Assert.assertEquals(eduPersonAffiliation.getNameFormat(), "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Assert.assertEquals(eduPersonAffiliation.getNameFormat(), Attribute.URI_REFERENCE);
         Assert.assertEquals(eduPersonAffiliation.getFriendlyName(), "eduPersonAffiliation");
         Assert.assertEquals(eduPersonAffiliation.getAttributeValues().size(), 1);
         Assert.assertTrue(eduPersonAffiliation.getAttributeValues().get(0) instanceof XSString);
@@ -101,7 +101,7 @@ public class SAML2UnsolicitedFlowTest extends AbstractFlowTest {
 
         Attribute mail = attributeStatement.getAttributes().get(1);
         Assert.assertEquals(mail.getName(), "urn:oid:0.9.2342.19200300.100.1.3");
-        Assert.assertEquals(mail.getNameFormat(), "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+        Assert.assertEquals(mail.getNameFormat(), Attribute.URI_REFERENCE);
         Assert.assertEquals(mail.getFriendlyName(), "mail");
         Assert.assertEquals(mail.getAttributeValues().size(), 1);
         Assert.assertTrue(mail.getAttributeValues().get(0) instanceof XSString);
