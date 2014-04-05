@@ -193,6 +193,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>net.shibboleth.utilities.jetty9</groupId>
+            <artifactId>jetty9-dta-ssl</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Test scope -->
         <dependency>
             <groupId>${spring.groupId}</groupId>
