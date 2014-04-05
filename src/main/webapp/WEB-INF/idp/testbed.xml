@@ -34,4 +34,8 @@
         <constructor-arg ref="testbed.KeyInfoCredentialResolver" />
     </bean>
 
+    <bean id="idp.X509TrustEngine" class="org.opensaml.security.trust.impl.ExplicitX509CertificateTrustEngine">
+        <constructor-arg ref="idp.CredentialResolver" />
+    </bean>
+
 </beans>
