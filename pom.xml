@@ -213,6 +213,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>${opensaml.groupId}</groupId>
+            <artifactId>opensaml-saml-api</artifactId>
+            <version>${opensaml.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
 
     </dependencies>
 
