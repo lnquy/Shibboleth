@@ -18,24 +18,4 @@
         <property name="entityId" ref="testbed.idp.EntityID" />
     </bean>
     
-    <bean id="idp.CredentialResolver" class="org.opensaml.security.credential.impl.CollectionCredentialResolver">
-        <constructor-arg>
-            <util:set>
-                <bean class="org.opensaml.security.x509.BasicX509Credential" >
-                    <constructor-arg ref="testbed.sp.X509Certificate" />
-                    <property name="entityId" ref="testbed.sp.EntityID" />
-                </bean>
-            </util:set>
-        </constructor-arg>
-    </bean>
-    
-    <bean id="idp.SignatureTrustEngine" class="org.opensaml.xmlsec.signature.support.impl.ExplicitKeySignatureTrustEngine">
-        <constructor-arg ref="idp.CredentialResolver" />
-        <constructor-arg ref="testbed.KeyInfoCredentialResolver" />
-    </bean>
-
-    <bean id="idp.X509TrustEngine" class="org.opensaml.security.trust.impl.ExplicitX509CertificateTrustEngine">
-        <constructor-arg ref="idp.CredentialResolver" />
-    </bean>
-
 </beans>
