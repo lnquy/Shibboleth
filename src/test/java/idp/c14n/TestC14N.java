@@ -24,9 +24,7 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -36,88 +34,66 @@ import org.testng.annotations.Test;
  */
 @ContextConfiguration({"classpath:/c14n/test-webflow-config.xml", "classpath:/c14n/locate-resolver.xml"})
 public class TestC14N extends AbstractFlowTest {
-    
+
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(TestC14N.class);
 
     @BeforeClass public void setPerClassProperties() {
-        //System.setProperty("idp.c14n.flows", "SAML2.*|Legacy.*|SAML1.*");
+        // System.setProperty("idp.c14n.flows", "SAML2.*|Legacy.*|SAML1.*");
     }
-    
+
     @AfterClass public void resetPerClassProperties() {
         // Taken from idp.properties
-        //System.setProperty("idp.c14n.flows", "Simple");
+        // System.setProperty("idp.c14n.flows", "Simple");
     }
 
     @Test public void testTransientNameID() {
 
-        FlowExecutionResult result = flowExecutor.launchExecution("transientNameID", null, externalContext);
-        Assert.assertEquals("transientNameID", result.getFlowId());
+        final FlowExecutionResult result = flowExecutor.launchExecution("transientNameID", null, externalContext);
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
+        assertFlowExecutionResult(result, "transientNameID");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
-    
+
     @Test public void testCryptoTransientNameID() {
 
-        FlowExecutionResult result = flowExecutor.launchExecution("cryptoTransientNameID", null, externalContext);
-        Assert.assertEquals("cryptoTransientNameID", result.getFlowId());
+        final FlowExecutionResult result = flowExecutor.launchExecution("cryptoTransientNameID", null, externalContext);
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
+        assertFlowExecutionResult(result, "cryptoTransientNameID");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
-    
+
     @Test public void testDirectNameID() {
 
-        FlowExecutionResult result = flowExecutor.launchExecution("directNameID", null, externalContext);
-        Assert.assertEquals("directNameID", result.getFlowId());
+        final FlowExecutionResult result = flowExecutor.launchExecution("directNameID", null, externalContext);
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
+        assertFlowExecutionResult(result, "directNameID");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
 
     @Test public void testTransientNameIdentifier() {
 
-        FlowExecutionResult result = flowExecutor.launchExecution("transientNameIdentifier", null, externalContext);
-        Assert.assertEquals("transientNameIdentifier", result.getFlowId());
+        final FlowExecutionResult result =
+                flowExecutor.launchExecution("transientNameIdentifier", null, externalContext);
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
+        assertFlowExecutionResult(result, "transientNameIdentifier");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
-    
+
     @Test public void testCryptoTransientNameIdentifier() {
 
-        FlowExecutionResult result = flowExecutor.launchExecution("cryptoTransientNameIdentifier", null, externalContext);
-        Assert.assertEquals("cryptoTransientNameIdentifier", result.getFlowId());
+        final FlowExecutionResult result =
+                flowExecutor.launchExecution("cryptoTransientNameIdentifier", null, externalContext);
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
+        assertFlowExecutionResult(result, "cryptoTransientNameIdentifier");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
-    
+
     @Test public void testDirectNameIdentifier() {
 
-        FlowExecutionResult result = flowExecutor.launchExecution("directNameIdentifier", null, externalContext);
-        Assert.assertEquals("directNameIdentifier", result.getFlowId());
+        final FlowExecutionResult result = flowExecutor.launchExecution("directNameIdentifier", null, externalContext);
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
+        assertFlowExecutionResult(result, "directNameIdentifier");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
 }

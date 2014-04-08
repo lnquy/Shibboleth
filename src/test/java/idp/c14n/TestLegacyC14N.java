@@ -24,7 +24,6 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -36,30 +35,25 @@ import org.testng.annotations.Test;
  */
 @ContextConfiguration({"classpath:/c14n/test-webflow-config.xml", "classpath:/c14n/locate-legacy-resolver.xml"})
 public class TestLegacyC14N extends AbstractFlowTest {
-    
+
     @BeforeClass public void setPerClassProperties() {
-        //System.setProperty("idp.c14n.flows", "Simple|Legacy.*");
+        // System.setProperty("idp.c14n.flows", "Simple|Legacy.*");
     }
-    
+
     @AfterClass public void resetPerClassProperties() {
-        //System.setProperty("idp.c14n.flows", "Simple");
+        // System.setProperty("idp.c14n.flows", "Simple");
     }
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(TestLegacyC14N.class);
-
 
     @Test public void testTransientNameID() {
 
         FlowExecutionResult result = flowExecutor.launchExecution("transientNameID", null, externalContext);
         Assert.assertEquals("transientNameID", result.getFlowId());
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
-
+        assertFlowExecutionResult(result, "transientNameID");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
 
     @Test public void testTransientNameIdentifier() {
@@ -67,11 +61,7 @@ public class TestLegacyC14N extends AbstractFlowTest {
         FlowExecutionResult result = flowExecutor.launchExecution("transientNameIdentifier", null, externalContext);
         Assert.assertEquals("transientNameIdentifier", result.getFlowId());
 
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
-
+        assertFlowExecutionResult(result, "transientNameIdentifier");
+        assertFlowExecutionOutcome(result.getOutcome());
     }
 }
