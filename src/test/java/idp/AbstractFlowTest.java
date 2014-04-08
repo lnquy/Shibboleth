@@ -18,11 +18,19 @@
 package idp;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
+import net.shibboleth.utilities.java.support.xml.ParserPool;
 
+import org.opensaml.core.xml.XMLObjectBuilderFactory;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.MarshallerFactory;
+import org.opensaml.core.xml.io.UnmarshallerFactory;
+import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -31,15 +39,19 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.webflow.execution.FlowExecutionOutcome;
+import org.springframework.webflow.executor.FlowExecutionResult;
 import org.springframework.webflow.executor.FlowExecutor;
 import org.springframework.webflow.test.MockExternalContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
 import com.unboundid.ldap.sdk.LDAPException;
+
 import common.InMemoryDirectory;
 import common.PathPropertySupport;
 
@@ -57,12 +69,24 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** Path to LDIF file to be imported into directory server. */
     @Nonnull public final static String LDIF_FILE = "src/main/resources/test/ldap.ldif";
-    
+
     /** Name of flow output attribute containing the profile request context. */
-    public final static String OUTPUT_ATTR_NAME = "ProfileRequestContext";
+    @Nonnull public final static String OUTPUT_ATTR_NAME = "ProfileRequestContext";
+
+    /** The IDP entity ID. */
+    @Nonnull public final static String IDP_ENTITY_ID = "https://idp.example.org";
+    
+    /** The SP entity ID. */
+    @Nonnull public final static String SP_ENTITY_ID = "https://sp.example.org";
+
+    /** The SP ACS URL. */
+    @Nonnull public final static String SP_ACS_URL = "https://sp.example.org/SAML1/POST/ACS";
+
+    /** The SP relay state. */
+    @Nonnull public final static String SP_RELAY_STATE = "myRelayState";
 
     /** In-memory directory server. */
-    @Nonnull protected InMemoryDirectory directoryServer;
+    @NonnullAfterInit protected InMemoryDirectory directoryServer;
 
     /** Mock external context. */
     @Nonnull protected MockExternalContext externalContext;
@@ -75,6 +99,18 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** Mock response. */
     @Nonnull protected MockHttpServletResponse response;
+
+    /** Parser pool */
+    @NonnullAfterInit protected static ParserPool parserPool;
+
+    /** XMLObject builder factory */
+    @NonnullAfterInit protected static XMLObjectBuilderFactory builderFactory;
+
+    /** XMLObject marshaller factory */
+    @NonnullAfterInit protected static MarshallerFactory marshallerFactory;
+
+    /** XMLObject unmarshaller factory */
+    @NonnullAfterInit protected static UnmarshallerFactory unmarshallerFactory;
 
     static {
         PathPropertySupport.setupIdPHomeProperty();
@@ -115,6 +151,16 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     }
 
     /**
+     * Initialize XMLObject support classes.
+     */
+    @BeforeClass public void initializeXMLObjectSupport() {
+        parserPool = XMLObjectProviderRegistrySupport.getParserPool();
+        builderFactory = XMLObjectProviderRegistrySupport.getBuilderFactory();
+        marshallerFactory = XMLObjectProviderRegistrySupport.getMarshallerFactory();
+        unmarshallerFactory = XMLObjectProviderRegistrySupport.getUnmarshallerFactory();
+    }
+
+    /**
      * Creates an UnboundID in-memory directory server. Leverages LDIF found at {@value #LDIF_FILE}.
      * 
      * @throws LDAPException if the in-memory directory server cannot be created
@@ -130,4 +176,30 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     @AfterTest public void teardownDirectoryServer() {
         directoryServer.stop();
     }
+
+    /**
+     * Assert that the flow execution result is not null, has ended, and its flow id equals the given flow id.
+     * 
+     * @param result the flow execution result
+     * @param flowID the flow id
+     */
+    public void assertFlowExecutionResult(@Nullable final FlowExecutionResult result, @Nonnull String flowID) {
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getFlowId(), flowID);
+        Assert.assertTrue(result.isEnded());
+    }
+
+    /**
+     * Assert that the flow execution outcome is not null and its id equals 'end'. For testing purposes, the outcome's
+     * attribute map must map {@value #OUTPUT_ATTR_NAME} to the {@link ProfileRequestContext}.
+     * 
+     * @param outcome the flow execution outcome
+     */
+    public void assertFlowExecutionOutcome(@Nullable final FlowExecutionOutcome outcome) {
+        Assert.assertNotNull(outcome, "Flow ended with an error");
+        Assert.assertEquals(outcome.getId(), "end");
+        Assert.assertTrue(outcome.getOutput().contains(OUTPUT_ATTR_NAME));
+        Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
+    }
+
 }
