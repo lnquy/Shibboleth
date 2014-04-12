@@ -34,15 +34,11 @@
     <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
        <property name="exceptionMappings">
           <props>
-             <prop key="org.springframework.webflow.execution.repository.FlowExecutionRestorationFailureException">
-                FlowExecutionRestorationFailureException
-             </prop>
+             <prop key="FlowExecutionRestorationFailureException">backbutton</prop>
           </props>
        </property>
-       <!-- 
        <property name="defaultErrorView" value="error"/>
-        -->
-    </bean>    
+    </bean>
     
     <!-- ViewResolvers -->
     
