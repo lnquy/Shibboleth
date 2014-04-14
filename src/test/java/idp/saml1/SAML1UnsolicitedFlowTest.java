@@ -22,7 +22,7 @@ import idp.AbstractSAML1FlowTest;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.shibboleth.idp.saml.impl.profile.BaseIdPInitiatedSSORequestMessageDecoder;
+import net.shibboleth.idp.saml.profile.impl.BaseIdPInitiatedSSORequestMessageDecoder;
 
 import org.opensaml.saml.saml1.core.ConfirmationMethod;
 import org.opensaml.saml.saml1.core.Response;
