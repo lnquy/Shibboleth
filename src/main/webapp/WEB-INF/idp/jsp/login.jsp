@@ -5,8 +5,9 @@
 <%@ page import="org.owasp.esapi.Encoder" %>
 
 <%
-Encoder encoder = (Encoder) request.getAttribute("esapiEncoder");
+Encoder encoder = (Encoder) request.getAttribute("encoder");
 AuthenticationErrorContext authenticationErrorContext = (AuthenticationErrorContext) request.getAttribute("authenticationErrorContext");
+AuthenticationWarningContext authenticationWarningContext = (AuthenticationWarningContext) request.getAttribute("authenticationWarningContext");
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -20,6 +21,10 @@ AuthenticationErrorContext authenticationErrorContext = (AuthenticationErrorCont
 
 <% if ( authenticationErrorContext != null && !authenticationErrorContext.getClassifiedErrors().isEmpty()) { %>
         <p>Classified errors: <%= encoder.encodeForHTML(authenticationErrorContext.getClassifiedErrors().toString()) %></p>
+<% } %>
+
+<% if ( authenticationWarningContext != null && !authenticationWarningContext.getClassifiedWarnings().isEmpty()) { %>
+        <p>Classified warnings: <%= encoder.encodeForHTML(authenticationWarningContext.getClassifiedWarnings().toString()) %></p>
 <% } %>
         
         <form action="<%= request.getAttribute("flowExecutionUrl") %>" method="post">
