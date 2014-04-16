@@ -24,7 +24,6 @@ import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.context.RelyingPartyContext;
 import net.shibboleth.idp.relyingparty.RelyingPartyConfiguration;
 
-import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.context.ProfileRequestContext;
 
 /**
@@ -34,8 +33,7 @@ public class SetupForResolver extends AbstractProfileAction {
     
     @Override
     protected void doExecute(
-            @Nonnull final ProfileRequestContext profileRequestContext)
-            throws ProfileException {
+            @Nonnull final ProfileRequestContext profileRequestContext) {
 
         SubjectContext sc = profileRequestContext.getSubcontext(SubjectContext.class, true);
         

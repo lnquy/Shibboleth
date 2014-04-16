@@ -9,7 +9,6 @@ import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrate
 
 import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
-import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.action.EventIds;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLObject;
@@ -38,8 +37,7 @@ public class BuildMockSaml2Response extends AbstractProfileAction<SAMLObject, SA
 
 
 	@Nonnull
-	protected Event doExecute(RequestContext springRequestContext, ProfileRequestContext<SAMLObject, SAMLObject> profileRequestContext)
-			throws ProfileException {
+	protected Event doExecute(RequestContext springRequestContext, ProfileRequestContext<SAMLObject, SAMLObject> profileRequestContext) {
 		
 		log.debug("Building mock SAML 2 Response");
 		

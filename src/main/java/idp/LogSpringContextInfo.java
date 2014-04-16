@@ -5,7 +5,6 @@ import javax.annotation.Nonnull;
 import net.shibboleth.idp.profile.AbstractProfileAction;
 import net.shibboleth.idp.profile.ActionSupport;
 
-import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,7 @@ public class LogSpringContextInfo extends AbstractProfileAction implements Appli
 	
 
 	@Nonnull
-	protected Event doExecute(RequestContext springRequestContext, ProfileRequestContext profileRequestContext) throws ProfileException {
+	protected Event doExecute(RequestContext springRequestContext, ProfileRequestContext profileRequestContext) {
 		log.debug("***************************************************************************************************");
 		
 		ApplicationContext current = context;

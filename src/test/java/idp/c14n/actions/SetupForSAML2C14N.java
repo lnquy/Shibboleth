@@ -29,7 +29,8 @@ import net.shibboleth.idp.profile.context.RelyingPartyContext;
 import net.shibboleth.idp.saml.authn.principal.NameIDPrincipal;
 import net.shibboleth.idp.saml.nameid.SAML2NameIDAttributeEncoder;
 
-import org.opensaml.profile.ProfileException;
+import org.opensaml.profile.action.ActionSupport;
+import org.opensaml.profile.action.EventIds;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.saml2.core.NameID;
 
@@ -54,8 +55,7 @@ public class SetupForSAML2C14N extends AbstractProfileAction {
         this.attributeName = attributeName;
     }
 
-    @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext)
-            throws ProfileException {
+    @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
         RelyingPartyContext rpc = profileRequestContext.getSubcontext(RelyingPartyContext.class, false);
 
@@ -66,13 +66,15 @@ public class SetupForSAML2C14N extends AbstractProfileAction {
                 try {
                     nid = ((SAML2NameIDAttributeEncoder) enc).encode(ac.getIdPAttributes().get(getAttributeName()));
                 } catch (AttributeEncodingException e) {
-                    throw new ProfileException(e);
+                    ActionSupport.buildEvent(profileRequestContext, EventIds.INVALID_PROFILE_CTX);
+                    return;
                 }
             }
         }
         
         if (nid == null) {
-            throw new ProfileException("Unable to encode source attribute into NameID");
+            ActionSupport.buildEvent(profileRequestContext, EventIds.INVALID_PROFILE_CTX);
+            return;
         }
 
         NameIDPrincipal nidp = new NameIDPrincipal(nid);

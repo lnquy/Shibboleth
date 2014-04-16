@@ -23,7 +23,6 @@ import net.shibboleth.idp.authn.context.SubjectCanonicalizationContext;
 import net.shibboleth.idp.authn.context.SubjectContext;
 import net.shibboleth.idp.profile.AbstractProfileAction;
 
-import org.opensaml.profile.ProfileException;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.testng.Assert;
 
@@ -34,8 +33,7 @@ public class TestAfterC14N extends AbstractProfileAction {
     
     @Override
     protected void doExecute(
-            @Nonnull final ProfileRequestContext profileRequestContext)
-            throws ProfileException {
+            @Nonnull final ProfileRequestContext profileRequestContext) {
         
         SubjectCanonicalizationContext scc = profileRequestContext.getSubcontext(SubjectCanonicalizationContext.class, false);
         SubjectContext sc = profileRequestContext.getSubcontext(SubjectContext.class, true);
