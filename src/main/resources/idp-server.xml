@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- TODO Needs cleanup and property abstraction. -->
+
+    <!-- Start Jetty. -->
+
+    <context:property-placeholder location="file://${idp.home}/conf/idp.properties" />
+
+    <bean id="server" class="org.eclipse.jetty.server.Server" init-method="start" destroy-method="stop">
+        <constructor-arg>
+            <bean id="threadPool" class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+                <property name="minThreads" value="10" />
+                <property name="maxThreads" value="50" />
+            </bean>
+        </constructor-arg>
+        <property name="connectors">
+            <list>
+                <bean id="httpConnector" class="org.eclipse.jetty.server.ServerConnector">
+                    <constructor-arg ref="server" />
+                    <property name="host" value="${jetty.host}" />
+                    <property name="port" value="${jetty.port}" />
+                </bean>
+                <bean id="httpsConnector" class="org.eclipse.jetty.server.ServerConnector">
+                    <constructor-arg ref="server" />
+                    <constructor-arg>
+                        <bean id="sslContextFactory" class="org.eclipse.jetty.util.ssl.SslContextFactory">
+                            <property name="keyStorePath" value="${idp.home}/${jetty.keystore.path}" />
+                            <property name="keyStorePassword" value="${jetty.keystore.password}" />
+                            <property name="keyStoreType" value="${jetty.keystore.type}" />
+                            <!-- <property name="endpointIdentificationAlgorithm" value="HTTPS" /> -->
+                        </bean>
+                    </constructor-arg>
+                    <property name="host" value="${jetty.host}" />
+                    <property name="port" value="${jetty.https.port}" />
+                </bean>
+                <bean id="delegateToApplicationSslConnector" class="org.eclipse.jetty.server.ServerConnector">
+                    <constructor-arg ref="server" />
+                    <constructor-arg>
+                        <bean id="dtaSslContextFactory" class="net.shibboleth.utilities.jetty9.DelegateToApplicationSslContextFactory">
+                            <property name="keyStorePath" value="${idp.home}/${jetty.keystore.path}" />
+                            <property name="keyStorePassword" value="${jetty.keystore.password}" />
+                            <property name="keyStoreType" value="${jetty.keystore.type}" />
+                        </bean>
+                    </constructor-arg>
+                    <property name="host" value="${jetty.host}" />
+                    <!-- TODO Testbed specific. -->
+                    <property name="port" value="9443" />
+                </bean>
+            </list>
+        </property>
+        <property name="handler">
+            <bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
+                <property name="handlers">
+                    <list>
+                        <!-- TODO Testbed specific. -->
+                        <bean id="webAppContext" class="org.eclipse.jetty.webapp.WebAppContext">
+                            <property name="contextPath" value="/" />
+                            <property name="war" value="src/main/webapp" />
+                        </bean>
+                        <bean id="defaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler" />
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <!-- TODO Testbed specific. -->
+        <property name="beans">
+            <list>
+                <bean id="loginService" class="org.eclipse.jetty.security.HashLoginService">
+                    <property name="name" value="Shib Testbed Web Authentication" />
+                    <property name="config" value="/test/jetty-realm.properties" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+</beans>

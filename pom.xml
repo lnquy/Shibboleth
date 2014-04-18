@@ -23,6 +23,7 @@
         <!-- TODO tz These paths are fragile. -->
         <idp.home>${project.basedir}/../java-identity-provider/idp-conf/src/main/resources</idp.home>
         <app.home>${project.basedir}/src/main/resources</app.home>
+        <selenium.version>2.41.0</selenium.version>
     </properties>
 
     <repositories>
@@ -219,6 +220,40 @@
             <version>${opensaml.version}</version>
             <scope>test</scope>
             <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>xerces</groupId>
+                    <artifactId>xercesImpl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xalan</groupId>
+                    <artifactId>xalan</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>${xerces.groupId}</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>${xerces.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${xerces.groupId}</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xerces.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${xalan.groupId}</groupId>
+            <artifactId>xalan</artifactId>
+            <version>${xalan.version}</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

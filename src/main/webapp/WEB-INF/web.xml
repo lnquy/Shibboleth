@@ -82,6 +82,22 @@
         <servlet-name>idp</servlet-name>
         <url-pattern>/idp/*</url-pattern>
     </servlet-mapping>
+    
+    <!-- Servlet for displaying IdP status. -->
+    <servlet>
+        <servlet-name>Status</servlet-name>
+        <servlet-class>net.shibboleth.idp.StatusServlet</servlet-class>
+        <!-- Space separated list of CIDR blocks allowed to access the status page -->
+        <init-param>
+            <param-name>AllowedIPs</param-name>
+            <param-value>127.0.0.1/32 ::1/128</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Status</servlet-name>
+        <url-pattern>/idp/status</url-pattern>
+    </servlet-mapping>
 
     <!-- The /sp app space -->
     <servlet>
