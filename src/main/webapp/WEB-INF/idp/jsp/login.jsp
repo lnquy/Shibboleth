@@ -2,10 +2,10 @@
 
 <%@ page import="net.shibboleth.idp.authn.context.*" %>
 <%@ page import="org.opensaml.profile.context.ProfileRequestContext" %>
-<%@ page import="org.owasp.esapi.Encoder" %>
+<%@ page import="net.shibboleth.utilities.java.support.encoder.HTMLEncoder" %>
 
 <%
-Encoder encoder = (Encoder) request.getAttribute("encoder");
+HTMLEncoder encoder = (HTMLEncoder) request.getAttribute("encoder");
 AuthenticationErrorContext authenticationErrorContext = (AuthenticationErrorContext) request.getAttribute("authenticationErrorContext");
 AuthenticationWarningContext authenticationWarningContext = (AuthenticationWarningContext) request.getAttribute("authenticationWarningContext");
 %>

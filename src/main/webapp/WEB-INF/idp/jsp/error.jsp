@@ -1,10 +1,10 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="org.opensaml.profile.context.ErrorEventContext" %>
-<%@ page import="org.owasp.esapi.Encoder" %>
+<%@ page import="net.shibboleth.utilities.java.support.encoder.HTMLEncoder" %>
 
 <%
-Encoder encoder = (Encoder) request.getAttribute("encoder");
+HTMLEncoder encoder = (HTMLEncoder) request.getAttribute("encoder");
 ErrorEventContext errorEventContext = (ErrorEventContext) request.getAttribute("errorEventContext");
 %>
 
