@@ -26,7 +26,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Test;
 
 import common.PathPropertySupport;
 
@@ -36,7 +35,7 @@ import common.PathPropertySupport;
 @ContextConfiguration({"/idp-server.xml",})
 public class StatusTest extends AbstractTestNGSpringContextTests {
 
-    @BeforeSuite public void setupProperties() throws FileNotFoundException, IOException {
+    @BeforeSuite(enabled=false) public void setupProperties() throws FileNotFoundException, IOException {
 
         String idpHome = PathPropertySupport.setupIdPHomeProperty();
 
