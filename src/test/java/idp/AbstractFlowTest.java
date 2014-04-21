@@ -172,9 +172,13 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /**
      * Shutdown the in-memory directory server.
+     * 
+     * Always run this method to avoid starting the server multiple times when tests fail.
      */
-    @AfterTest public void teardownDirectoryServer() {
-        directoryServer.stop();
+    @AfterTest(alwaysRun=true) public void teardownDirectoryServer() {
+        if (directoryServer != null) {
+            directoryServer.stop();
+        }
     }
 
     /**
