@@ -243,18 +243,6 @@
             <version>${xerces.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>${xerces.groupId}</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>${xerces.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${xalan.groupId}</groupId>
-            <artifactId>xalan</artifactId>
-            <version>${xalan.version}</version>
-            <scope>test</scope>
-        </dependency>
 
     </dependencies>
 
