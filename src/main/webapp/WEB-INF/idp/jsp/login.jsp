@@ -2,7 +2,7 @@
 
 <%@ page import="net.shibboleth.idp.authn.context.*" %>
 <%@ page import="org.opensaml.profile.context.ProfileRequestContext" %>
-<%@ page import="net.shibboleth.utilities.java.support.encoder.HTMLEncoder" %>
+<%@ page import="net.shibboleth.utilities.java.support.codec.HTMLEncoder" %>
 
 <%
 HTMLEncoder encoder = (HTMLEncoder) request.getAttribute("encoder");
