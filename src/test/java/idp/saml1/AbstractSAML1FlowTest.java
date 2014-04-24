@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package idp;
+package idp.saml1;
+
+import idp.AbstractFlowTest;
 
 import java.util.List;
 

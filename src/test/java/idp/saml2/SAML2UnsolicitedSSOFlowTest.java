@@ -17,8 +17,6 @@
 
 package idp.saml2;
 
-import idp.AbstractSAML2FlowTest;
-
 import javax.annotation.Nonnull;
 
 import org.springframework.mock.web.MockHttpServletRequest;

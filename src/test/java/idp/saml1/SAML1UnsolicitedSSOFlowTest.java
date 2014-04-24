@@ -17,8 +17,6 @@
 
 package idp.saml1;
 
-import idp.AbstractSAML1FlowTest;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

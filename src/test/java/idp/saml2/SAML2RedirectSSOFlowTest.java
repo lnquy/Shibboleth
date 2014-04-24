@@ -17,8 +17,6 @@
 
 package idp.saml2;
 
-import idp.AbstractSAML2FlowTest;
-
 import java.net.MalformedURLException;
 
 import javax.annotation.Nonnull;

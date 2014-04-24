@@ -17,8 +17,6 @@
 
 package idp.saml1;
 
-import idp.AbstractSAML1FlowTest;
-
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
