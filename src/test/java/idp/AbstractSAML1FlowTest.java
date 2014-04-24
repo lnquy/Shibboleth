@@ -52,7 +52,28 @@ import org.testng.Assert;
 @ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/idp/testbed.xml"})
 public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
 
-    public void validateResult(@Nullable final FlowExecutionResult result, String flowId) {
+    /**
+     * Top level validation of the {@link FlowExecutionResult}.
+     * <p>
+     * Calls validate methods :
+     * <ul>
+     * <li>{@link #validateConditions(Assertion)}</li>
+     * <li>{@link #validateAuthenticationStatements(Assertion)}</li>
+     * <li>{@link #validateAttributeStatements(Assertion)}</li>
+     * </ul>
+     * Calls assert methods :
+     * <ul>
+     * <li>{@link AbstractFlowTest#assertFlowExecutionResult(FlowExecutionResult, String)}</li>
+     * <li>{@link #assertProfileRequestContext(ProfileRequestContext)}</li>
+     * <li>{@link #assertResponse(Response)}</li>
+     * <li>{@link #assertAssertions(List)}</li>
+     * <li>{@link #assertAssertion(Assertion)}</li>
+     * </ul>
+     * 
+     * @param result the flow execution result
+     * @param flowId the flow ID
+     */
+    public void validateResult(@Nullable final FlowExecutionResult result, @Nonnull final String flowId) {
 
         assertFlowExecutionResult(result, flowId);
 
@@ -80,6 +101,18 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         // TODO signing, encoding
     }
 
+    /**
+     * Validate the assertion conditions.
+     * <p>
+     * Calls assert methods :
+     * <ul>
+     * <li>{@link #assertConditions(Conditions)}</li>
+     * <li>{@link #assertAudienceRestrictionConditions(List)}</li>
+     * <li>{@link #assertAudiences(List)}</li>
+     * </ul>
+     * 
+     * @param assertion the assertion
+     */
     public void validateConditions(@Nullable final Assertion assertion) {
         Assert.assertNotNull(assertion);
 
@@ -94,6 +127,19 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         assertAudiences(audiences);
     }
 
+    /**
+     * Validate the assertion authentication statements.
+     * <p>
+     * Calls assert methods :
+     * <ul>
+     * <li>{@link #assertAuthenticationStatement(AuthenticationStatement)}</li>
+     * <li>{@link #assertAttributeStatement(AttributeStatement)}</li>
+     * <li>{@link #assertSubject(Subject)}</li>
+     * <li>{@link #assertAuthenticationMethod(String)}</li>
+     * </ul>
+     * 
+     * @param assertion the assertion
+     */
     public void validateAuthenticationStatements(@Nullable final Assertion assertion) {
         Assert.assertNotNull(assertion);
 
@@ -109,6 +155,22 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         assertAuthenticationMethod(authenticationStatement.getAuthenticationMethod());
     }
 
+    /**
+     * Validate the assertion attribute statements.
+     * <p>
+     * Calls assert methods :
+     * <ul>
+     * <li>{@link #assertAuthenticationStatements(List)}</li>
+     * <li>{@link #assertAttributeStatement(AttributeStatement)}</li>
+     * <li>{@link #assertSubject(Subject)}</li>
+     * <li>{@link #assertNameIdentifier(NameIdentifier)}</li>
+     * <li>{@link #assertSubjectConfirmation(SubjectConfirmation)}</li>
+     * <li>{@link #assertConfirmationMethods(List)</li>
+     * <li>{@link #assertAttributes(List)}</li>
+     * </ul>
+     * 
+     * @param assertion the assertion
+     */
     public void validateAttributeStatements(@Nullable final Assertion assertion) {
         Assert.assertNotNull(assertion);
 
@@ -128,7 +190,7 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         assertSubjectConfirmation(subjectConfirmation);
 
         final List<ConfirmationMethod> confirmationMethods = subjectConfirmation.getConfirmationMethods();
-        this.assertConfirmationMethods(confirmationMethods);
+        assertConfirmationMethods(confirmationMethods);
 
         final List<Attribute> attributes = attributeStatement.getAttributes();
         assertAttributes(attributes);
@@ -189,6 +251,11 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         // TODO assertion.getIssueInstant()
     }
 
+    /**
+     * Assert that a single authentication statement is present.
+     * 
+     * @param authenticationStatements the authentication statements
+     */
     public void assertAuthenticationStatements(@Nullable List<AuthenticationStatement> authenticationStatements) {
         Assert.assertNotNull(authenticationStatements);
         Assert.assertFalse(authenticationStatements.isEmpty());
@@ -196,29 +263,55 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         Assert.assertNotNull(authenticationStatements.get(0));
     }
 
+    /**
+     * Assert that the authentication statement has a subject.
+     * 
+     * @param authenticationStatement the authentication statement
+     */
     public void assertAuthenticationStatement(@Nullable AuthenticationStatement authenticationStatement) {
         Assert.assertNotNull(authenticationStatement);
         Assert.assertNotNull(authenticationStatement.getSubject());
         // TODO issueInstant
     }
 
+    /**
+     * Assert that the authentication method is {@link AuthenticationStatement#UNSPECIFIED_AUTHN_METHOD}.
+     * 
+     * @param authenticationMethod the authentication method
+     */
     public void assertAuthenticationMethod(@Nullable String authenticationMethod) {
         Assert.assertNotNull(authenticationMethod);
         Assert.assertEquals(authenticationMethod, AuthenticationStatement.UNSPECIFIED_AUTHN_METHOD);
     }
 
+    /**
+     * Assert that a single audience restriction condition is present.
+     * 
+     * @param audienceRestrictionConditions the audience restriction conditions
+     */
     public void assertAudienceRestrictionConditions(
             @Nullable final List<AudienceRestrictionCondition> audienceRestrictionConditions) {
         Assert.assertNotNull(audienceRestrictionConditions);
         Assert.assertEquals(audienceRestrictionConditions.size(), 1);
     }
 
+    /**
+     * Assert that a single audience is present whose URI is {@link AbstractFlowTest#SP_ENTITY_ID}.
+     * 
+     * @param audiences the audiences
+     */
     public void assertAudiences(@Nullable final List<Audience> audiences) {
         Assert.assertNotNull(audiences);
         Assert.assertEquals(audiences.size(), 1);
-        Assert.assertEquals(audiences.get(0).getUri(), "https://sp.example.org");
+        Assert.assertEquals(audiences.get(0).getUri(), SP_ENTITY_ID);
     }
 
+    /**
+     * Assert that the conditions has a NotBefore and NotOnOrAfter attribute, and that a single audience restriction
+     * conditions is present.
+     * 
+     * @param conditions the conditions
+     */
     public void assertConditions(@Nullable final Conditions conditions) {
         Assert.assertNotNull(conditions);
         Assert.assertNotNull(conditions.getNotBefore());
@@ -228,6 +321,11 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         Assert.assertEquals(conditions.getAudienceRestrictionConditions().size(), 1);
     }
 
+    /**
+     * Assert that a single attribute statement is present.
+     * 
+     * @param attributeStatements the attribute statements
+     */
     public void assertAttributeStatements(@Nullable final List<AttributeStatement> attributeStatements) {
         Assert.assertNotNull(attributeStatements);
         Assert.assertFalse(attributeStatements.isEmpty());
@@ -235,30 +333,58 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         Assert.assertNotNull(attributeStatements.get(0));
     }
 
+    /**
+     * Assert that the attribute statement has a subject and attributes.
+     * 
+     * @param attributeStatement the attribute statement
+     */
     public void assertAttributeStatement(@Nullable final AttributeStatement attributeStatement) {
         Assert.assertNotNull(attributeStatement);
         Assert.assertNotNull(attributeStatement.getSubject());
         Assert.assertNotNull(attributeStatement.getAttributes());
     }
 
+    /**
+     * Assert that the subject has a name identifier and subject confirmation.
+     * 
+     * @param subject the subject
+     */
     public void assertSubject(@Nullable final Subject subject) {
         Assert.assertNotNull(subject);
         Assert.assertNotNull(subject.getNameIdentifier());
         Assert.assertNotNull(subject.getSubjectConfirmation());
     }
 
+    /**
+     * Assert that the name identifier format is {@link SAMLConstants#SAML1_NAMEID_TRANSIENT} and the name qualifier is
+     * {@link AbstractFlowTest#IDP_ENTITY_ID}.
+     * 
+     * @param nameIdentifier the name identifier
+     */
     public void assertNameIdentifier(@Nullable final NameIdentifier nameIdentifier) {
         Assert.assertNotNull(nameIdentifier);
         Assert.assertNotNull(nameIdentifier.getNameIdentifier());
         Assert.assertEquals(nameIdentifier.getFormat(), SAMLConstants.SAML1_NAMEID_TRANSIENT);
-        Assert.assertEquals(nameIdentifier.getNameQualifier(), "https://idp.example.org");
+        Assert.assertEquals(nameIdentifier.getNameQualifier(), IDP_ENTITY_ID);
     }
 
+    /**
+     * Assert that the subject confirmation has a single confirmation method.
+     * 
+     * @param subjectConfirmation the subject confirmation
+     */
     public void assertSubjectConfirmation(@Nullable final SubjectConfirmation subjectConfirmation) {
         Assert.assertNotNull(subjectConfirmation);
         Assert.assertEquals(subjectConfirmation.getConfirmationMethods().size(), 1);
     }
 
+    /**
+     * Assert that a single confirmation method is present.
+     * <p>
+     * Calls {@link #assertConfirmationMethod(ConfirmationMethod)}.
+     * 
+     * @param confirmationMethods the confirmation methods
+     */
     public void assertConfirmationMethods(@Nullable final List<ConfirmationMethod> confirmationMethods) {
         Assert.assertNotNull(confirmationMethods);
         Assert.assertFalse(confirmationMethods.isEmpty());
@@ -268,10 +394,21 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         assertConfirmationMethod(confirmationMethods.get(0));
     }
 
-    public void assertConfirmationMethod(@Nullable final ConfirmationMethod confirmationMethod) {
-        Assert.assertNotNull(confirmationMethod);
-    }
+    /**
+     * Assert the confirmation method, probably {@link ConfirmationMethod#METHOD_BEARER} or
+     * {@link ConfirmationMethod#METHOD_ARTIFACT}.
+     * 
+     * @param confirmationMethod the confirmation method
+     */
+    public abstract void assertConfirmationMethod(@Nullable final ConfirmationMethod confirmationMethod);
 
+    /**
+     * Assert that two attributes are present. The first attribute has name
+     * 'urn:mace:dir:attribute-def:eduPersonAffiliation' and value 'member'. The second attribute has name
+     * 'urn:mace:dir:attribute-def:mail' and value 'jdoe@shibboleth.net'.
+     * 
+     * @param attributes the attributes
+     */
     public void assertAttributes(@Nullable final List<Attribute> attributes) {
         Assert.assertNotNull(attributes);
         Assert.assertFalse(attributes.isEmpty());
@@ -281,6 +418,14 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         assertAttribute(attributes.get(1), "urn:mace:dir:attribute-def:mail", "jdoe@shibboleth.net");
     }
 
+    /**
+     * Assert that the attribute namespace is {@link SAMLConstants#SAML1_ATTR_NAMESPACE_URI}, the attribute name is the
+     * supplied name, and the attribute value is the single supplied String value.
+     * 
+     * @param attribute the attribute
+     * @param attributeName the attribute name
+     * @param attributeValue the attribute value
+     */
     public void assertAttribute(@Nullable final Attribute attribute, @Nonnull final String attributeName,
             @Nonnull final String attributeValue) {
         Assert.assertNotNull(attribute);

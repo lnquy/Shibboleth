@@ -28,7 +28,6 @@ import net.shibboleth.ext.spring.factory.X509CertificateFactoryBean;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 import org.joda.time.DateTime;
-import org.opensaml.core.xml.XMLObject;
 import org.opensaml.saml.saml1.core.Assertion;
 import org.opensaml.saml.saml1.core.ConfirmationMethod;
 import org.opensaml.saml.saml1.core.NameIdentifier;
@@ -37,7 +36,6 @@ import org.opensaml.saml.saml1.core.Response;
 import org.opensaml.saml.saml1.core.Subject;
 import org.opensaml.saml.saml1.profile.SAML1ActionTestingSupport;
 import org.opensaml.security.messaging.ServletRequestX509CredentialAdapter;
-import org.opensaml.soap.soap11.Body;
 import org.opensaml.soap.soap11.Envelope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -56,19 +54,25 @@ public class SAML1AttributeQueryTest extends AbstractSAML1FlowTest {
     // TODO Retrieve SP certificate from metadata
     @Autowired @Qualifier("testbed.sp.X509Certificate") private X509CertificateFactoryBean certFactoryBean;
 
-    @Nonnull public Envelope buildSOAP11Envelope(@Nonnull final XMLObject payload) {
-        final Envelope envelope =
-                (Envelope) builderFactory.getBuilder(Envelope.DEFAULT_ELEMENT_NAME).buildObject(
-                        Envelope.DEFAULT_ELEMENT_NAME);
-        final Body body =
-                (Body) builderFactory.getBuilder(Body.DEFAULT_ELEMENT_NAME).buildObject(Body.DEFAULT_ELEMENT_NAME);
+    /**
+     * Test the SAML1 Attribute Query flow.
+     * 
+     * @throws Exception if an error occurs
+     */
+    @Test public void testSAML1AttributeQueryFlow() throws Exception {
 
-        body.getUnknownXMLObjects().add(payload);
-        envelope.setBody(body);
+        buildRequest();
 
-        return envelope;
+        final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
+
+        validateResult(result, FLOW_ID);
     }
 
+    /**
+     * Build the {@link MockHttpServletRequest}.
+     * 
+     * @throws Exception if an error occurs
+     */
     public void buildRequest() throws Exception {
         final Subject subject = SAML1ActionTestingSupport.buildSubject("jdoe");
 
@@ -89,15 +93,6 @@ public class SAML1AttributeQueryTest extends AbstractSAML1FlowTest {
         request.setContent(requestContent.getBytes("UTF-8"));
     }
 
-    @Test public void testFlow() throws Exception {
-
-        buildRequest();
-
-        final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
-
-        validateResult(result, FLOW_ID);
-    }
-
     /**
      * {@inheritDoc}
      * 
@@ -106,15 +101,6 @@ public class SAML1AttributeQueryTest extends AbstractSAML1FlowTest {
     @Override public void assertResponse(@Nullable final Response response) {
         super.assertResponse(response);
         Assert.assertEquals(response.getInResponseTo(), "TESTID");
-    }
-
-    /**
-     * Assert that authentication statements are not present in the response.
-     */
-    @Override public void validateAuthenticationStatements(@Nullable final Assertion assertion) {
-        Assert.assertNotNull(assertion);
-        Assert.assertNotNull(assertion.getAuthenticationStatements());
-        Assert.assertTrue(assertion.getAuthenticationStatements().isEmpty());
     }
 
     /**
@@ -134,8 +120,17 @@ public class SAML1AttributeQueryTest extends AbstractSAML1FlowTest {
      * {@link org.opensaml.saml.saml1.core.ConfirmationMethod#METHOD_SENDER_VOUCHES}.
      */
     @Override public void assertConfirmationMethod(@Nullable final ConfirmationMethod confirmationMethod) {
-        super.assertConfirmationMethod(confirmationMethod);
+        Assert.assertNotNull(confirmationMethod);
         Assert.assertEquals(confirmationMethod.getConfirmationMethod(), ConfirmationMethod.METHOD_SENDER_VOUCHES);
+    }
+
+    /**
+     * Assert that authentication statements are not present in the response.
+     */
+    @Override public void validateAuthenticationStatements(@Nullable final Assertion assertion) {
+        Assert.assertNotNull(assertion);
+        Assert.assertNotNull(assertion.getAuthenticationStatements());
+        Assert.assertTrue(assertion.getAuthenticationStatements().isEmpty());
     }
 
 }

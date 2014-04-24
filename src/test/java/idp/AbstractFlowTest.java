@@ -26,11 +26,14 @@ import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterI
 import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
 
+import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallerFactory;
 import org.opensaml.core.xml.io.UnmarshallerFactory;
 import org.opensaml.profile.context.ProfileRequestContext;
+import org.opensaml.soap.soap11.Body;
+import org.opensaml.soap.soap11.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -75,7 +78,7 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** The IDP entity ID. */
     @Nonnull public final static String IDP_ENTITY_ID = "https://idp.example.org";
-    
+
     /** The SP entity ID. */
     @Nonnull public final static String SP_ENTITY_ID = "https://sp.example.org";
 
@@ -175,7 +178,7 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
      * 
      * Always run this method to avoid starting the server multiple times when tests fail.
      */
-    @AfterTest(alwaysRun=true) public void teardownDirectoryServer() {
+    @AfterTest(alwaysRun = true) public void teardownDirectoryServer() {
         if (directoryServer != null) {
             directoryServer.stop();
         }
@@ -204,6 +207,25 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
         Assert.assertEquals(outcome.getId(), "end");
         Assert.assertTrue(outcome.getOutput().contains(OUTPUT_ATTR_NAME));
         Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
+    }
+
+    /**
+     * Build a SOAP11 {@link Envelope} with the given payload.
+     * 
+     * @param payload the payload
+     * @return the SOAP11 envelop
+     */
+    @Nonnull public static Envelope buildSOAP11Envelope(@Nonnull final XMLObject payload) {
+        final Envelope envelope =
+                (Envelope) builderFactory.getBuilder(Envelope.DEFAULT_ELEMENT_NAME).buildObject(
+                        Envelope.DEFAULT_ELEMENT_NAME);
+        final Body body =
+                (Body) builderFactory.getBuilder(Body.DEFAULT_ELEMENT_NAME).buildObject(Body.DEFAULT_ELEMENT_NAME);
+
+        body.getUnknownXMLObjects().add(payload);
+        envelope.setBody(body);
+
+        return envelope;
     }
 
 }

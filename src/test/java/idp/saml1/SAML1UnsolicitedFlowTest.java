@@ -26,6 +26,7 @@ import net.shibboleth.idp.saml.profile.impl.BaseIdPInitiatedSSORequestMessageDec
 
 import org.opensaml.saml.saml1.core.ConfirmationMethod;
 import org.opensaml.saml.saml1.core.Response;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -38,20 +39,30 @@ public class SAML1UnsolicitedFlowTest extends AbstractSAML1FlowTest {
     /** The flow id. */
     @Nonnull public final static String FLOW_ID = "Shibboleth/SSO";
 
-    public void buildRequest() throws Exception {
-        // TODO time request parameter ?
-        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.PROVIDER_ID_PARAM, SP_ENTITY_ID);
-        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.SHIRE_PARAM, SP_ACS_URL);
-        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.TARGET_PARAM, SP_RELAY_STATE);
-    }
-
-    @Test public void testFlow() throws Exception {
+    /**
+     * Test the SAML1 unsolicited SSO flow.
+     * 
+     * @throws Exception if an error occurs
+     */
+    @Test public void testSAML1UnsolicitedSSOFlow() throws Exception {
 
         buildRequest();
 
         final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
 
         validateResult(result, FLOW_ID);
+    }
+
+    /**
+     * Build the {@link MockHttpServletRequest}.
+     * 
+     * @throws Exception if an error occurs
+     */
+    public void buildRequest() throws Exception {
+        // TODO time request parameter ?
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.PROVIDER_ID_PARAM, SP_ENTITY_ID);
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.SHIRE_PARAM, SP_ACS_URL);
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.TARGET_PARAM, SP_RELAY_STATE);
     }
 
     /**
@@ -70,7 +81,7 @@ public class SAML1UnsolicitedFlowTest extends AbstractSAML1FlowTest {
      * Assert that the confirmation method equals {@link org.opensaml.saml.saml1.core.ConfirmationMethod#METHOD_BEARER}.
      */
     @Override public void assertConfirmationMethod(@Nullable final ConfirmationMethod confirmationMethod) {
-        super.assertConfirmationMethod(confirmationMethod);
+        Assert.assertNotNull(confirmationMethod);
         Assert.assertEquals(confirmationMethod.getConfirmationMethod(), ConfirmationMethod.METHOD_BEARER);
     }
 }
