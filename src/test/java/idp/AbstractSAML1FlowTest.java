@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import net.shibboleth.idp.saml.xml.SAMLConstants;
 
 import org.opensaml.core.xml.schema.XSString;
+import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.saml1.core.Assertion;
@@ -64,7 +65,9 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
      * Calls assert methods :
      * <ul>
      * <li>{@link AbstractFlowTest#assertFlowExecutionResult(FlowExecutionResult, String)}</li>
-     * <li>{@link #assertProfileRequestContext(ProfileRequestContext)}</li>
+     * <li>{@link AbstractFlowTest#assertFlowExecutionOutcome(FlowExecutionOutcome)}</li>
+     * <li>{@link AbstractFlowTest#assertProfileRequestContext(ProfileRequestContext)}</li>
+     * <li>{@link #assertOutboundMessageContextMessage(MessageContext)}</li>
      * <li>{@link #assertResponse(Response)}</li>
      * <li>{@link #assertAssertions(List)}</li>
      * <li>{@link #assertAssertion(Assertion)}</li>
@@ -82,7 +85,9 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
 
         final ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(OUTPUT_ATTR_NAME);
         assertProfileRequestContext(prc);
-
+        
+        assertOutboundMessageContextMessage(prc.getOutboundMessageContext());
+        
         final Response response = (Response) prc.getOutboundMessageContext().getMessage();
         assertResponse(response);
 
@@ -195,17 +200,14 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         final List<Attribute> attributes = attributeStatement.getAttributes();
         assertAttributes(attributes);
     }
-
+    
     /**
-     * Assert that the profile request context has an outbound message context whose message is a SAML 1 response.
+     * Assert that the outbound message context message is a SAML 1 response.
      * 
-     * @param profileRequestContext the profile request context
+     * @param outboundMessageContext the outbound message context
      */
-    public void assertProfileRequestContext(@Nullable final ProfileRequestContext profileRequestContext) {
-        Assert.assertNotNull(profileRequestContext);
-        Assert.assertNotNull(profileRequestContext.getOutboundMessageContext());
-        Assert.assertNotNull(profileRequestContext.getOutboundMessageContext().getMessage());
-        Assert.assertTrue(profileRequestContext.getOutboundMessageContext().getMessage() instanceof Response);
+    public void assertOutboundMessageContextMessage(@Nonnull final MessageContext outboundMessageContext) {
+        Assert.assertTrue(outboundMessageContext.getMessage() instanceof Response);
     }
 
     /**
@@ -239,7 +241,7 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     }
 
     /**
-     * Assert that the assertion has the correct major and minor version and the issuer is correct.
+     * Assert that the assertion version is {@link SAMLVersion#VERSION_11}.
      * 
      * @param assertion the assertion
      */
@@ -403,9 +405,26 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     public abstract void assertConfirmationMethod(@Nullable final ConfirmationMethod confirmationMethod);
 
     /**
-     * Assert that two attributes are present. The first attribute has name
-     * 'urn:mace:dir:attribute-def:eduPersonAffiliation' and value 'member'. The second attribute has name
-     * 'urn:mace:dir:attribute-def:mail' and value 'jdoe@shibboleth.net'.
+     * Assert that two attributes are present.
+     * <p>
+     * The first attribute is
+     * <ul>
+     * <li>name : urn:mace:dir:attribute-def:eduPersonAffiliation</li>
+     * <li>namespace : {@link SAMLConstants#SAML1_ATTR_NAMESPACE_URI}</li>
+     * <li>value : member</li>
+     * </ul>
+     * <p>
+     * The second attribute is
+     * <ul>
+     * <li>name : urn:oid:0.9.2342.19200300.100.1.3</li>
+     * <li>namespace : {@link SAMLConstants#SAML1_ATTR_NAMESPACE_URI}</li>
+     * <li>value : jdoe@shibboleth.net</li>
+     * </ul>
+     * 
+     * Calls assert methods :
+     * <ul>
+     * <li>{@link #assertAttribute(Attribute, String, String)}</li>
+     * </ul>
      * 
      * @param attributes the attributes
      */

@@ -17,7 +17,7 @@
 
 package idp.saml2;
 
-import idp.AbstractFlowTest;
+import idp.AbstractSAML2FlowTest;
 
 import java.net.MalformedURLException;
 
@@ -65,11 +65,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Work-in-progress test for SAML2 Unsolicited flow.
+ * Test for SAML2 Unsolicited flow.
  */
-@ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/idp/testbed.xml",
-        "file:src/main/webapp/WEB-INF/sp/testbed.xml"})
-public class SAML2RedirectSSOFlowTest extends AbstractFlowTest {
+@ContextConfiguration({"file:src/main/webapp/WEB-INF/sp/testbed.xml"})
+public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(SAML2RedirectSSOFlowTest.class);

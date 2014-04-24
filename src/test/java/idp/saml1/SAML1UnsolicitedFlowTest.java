@@ -58,7 +58,7 @@ public class SAML1UnsolicitedFlowTest extends AbstractSAML1FlowTest {
      * 
      * @throws Exception if an error occurs
      */
-    public void buildRequest() throws Exception {
+    public void buildRequest() {
         // TODO time request parameter ?
         request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.PROVIDER_ID_PARAM, SP_ENTITY_ID);
         request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.SHIRE_PARAM, SP_ACS_URL);

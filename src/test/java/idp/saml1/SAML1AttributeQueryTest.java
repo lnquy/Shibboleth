@@ -39,6 +39,7 @@ import org.opensaml.security.messaging.ServletRequestX509CredentialAdapter;
 import org.opensaml.soap.soap11.Envelope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.testng.Assert;
 import org.testng.annotations.Test;

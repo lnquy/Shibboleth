@@ -54,7 +54,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
 import com.unboundid.ldap.sdk.LDAPException;
-
 import common.InMemoryDirectory;
 import common.PathPropertySupport;
 
@@ -207,6 +206,18 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
         Assert.assertEquals(outcome.getId(), "end");
         Assert.assertTrue(outcome.getOutput().contains(OUTPUT_ATTR_NAME));
         Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
+    }
+
+    /**
+     * Assert that the profile request context has an outbound message context and that the outbound message context has
+     * a message.
+     * 
+     * @param profileRequestContext the profile request context
+     */
+    public void assertProfileRequestContext(@Nullable final ProfileRequestContext profileRequestContext) {
+        Assert.assertNotNull(profileRequestContext);
+        Assert.assertNotNull(profileRequestContext.getOutboundMessageContext());
+        Assert.assertNotNull(profileRequestContext.getOutboundMessageContext().getMessage());
     }
 
     /**
