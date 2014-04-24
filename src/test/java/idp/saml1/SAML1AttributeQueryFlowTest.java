@@ -47,7 +47,7 @@ import org.testng.annotations.Test;
 /**
  * Test for SAML 1 attribute query flow.
  */
-public class SAML1AttributeQueryTest extends AbstractSAML1FlowTest {
+public class SAML1AttributeQueryFlowTest extends AbstractSAML1FlowTest {
 
     /** Flow id. */
     @Nonnull public final static String FLOW_ID = "SAML1/AttributeQuery";
