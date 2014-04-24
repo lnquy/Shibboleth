@@ -82,7 +82,7 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     @Nonnull public final static String SP_ENTITY_ID = "https://sp.example.org";
 
     /** The SP ACS URL. */
-    @Nonnull public final static String SP_ACS_URL = "https://sp.example.org/SAML1/POST/ACS";
+    @Nonnull public final static String SP_ACS_URL = "https://localhost:8443/sp/SAML1/POST/ACS";
 
     /** The SP relay state. */
     @Nonnull public final static String SP_RELAY_STATE = "myRelayState";

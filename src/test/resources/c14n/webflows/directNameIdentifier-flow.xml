@@ -8,16 +8,10 @@
     
     <action-state id="PopulateResolution">
         <evaluate expression="PopulateResolution" />
-        <transition on="proceed" to="ResolveAttributes" />
-    </action-state>
-
-    <action-state id="ResolveAttributes">
         <evaluate expression="ResolveAttributes" />
-        <transition on="proceed" to="PopulateSAML1C14NDirect" />
-    </action-state>
-    
-    <action-state id="PopulateSAML1C14NDirect">
         <evaluate expression="PopulateSAML1C14NDirect" />
+        <evaluate expression="'proceed'" />
+
         <transition on="proceed" to="C14N" />
     </action-state>    
     
@@ -28,6 +22,8 @@
 
     <action-state id="TestAfterC14N">
         <evaluate expression="TestAfterC14N" />
+        <evaluate expression="'proceed'" />
+        
         <transition on="proceed" to="end" />
     </action-state>    
     
@@ -38,6 +34,6 @@
     </end-state>
     
     <bean-import resource="beans.xml" />
-
     
-    </flow>
+</flow>
+    
