@@ -17,6 +17,8 @@
 
 package idp.saml2;
 
+import idp.AbstractFlowTest;
+
 import java.net.MalformedURLException;
 
 import javax.annotation.Nonnull;
@@ -31,23 +33,16 @@ import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrate
 
 import org.joda.time.DateTime;
 import org.opensaml.core.xml.XMLObjectBuilderFactory;
-import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
-import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
-import org.opensaml.saml.saml2.core.Assertion;
-import org.opensaml.saml.saml2.core.Attribute;
-import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
-import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SignatureSigningParameters;
@@ -56,10 +51,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -80,8 +74,27 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
 
     @Qualifier("sp.Credential") @Autowired private Credential spCredential;
 
-    @Test public void testFlow() throws Exception {
+    /**
+     * Test the SAML 2 redirect SSO flow.
+     * 
+     * @throws Exception
+     */
+    @Test public void testSAML2RedirectFlow() throws Exception {
+    
+        buildRequest();
+    
+        // execute the flow
+        final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
+    
+        validateResult(result, FLOW_ID);
+    }
 
+    /**
+     * Build the {@link MockHttpServletRequest}.
+     * 
+     * @throws Exception if an error occurs
+     */
+    public void buildRequest() throws Exception {
         // setup, mostly wrong
         AuthnRequest authnRequest = buildAuthnRequest(request);
 
@@ -100,68 +113,6 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
                 request.addParameter("SAMLRequest", param.getSecond());
             }
         }
-
-        // execute the flow
-        FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
-
-        // asserts
-        Assert.assertEquals(result.getFlowId(), FLOW_ID);
-
-        FlowExecutionOutcome outcome = result.getOutcome();
-        log.debug("flow outcome {}", outcome);
-
-        Assert.assertNotNull(outcome);
-        Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(result.isEnded());
-
-        // Get the response
-        Assert.assertTrue(outcome.getOutput().contains(OUTPUT_ATTR_NAME));
-        Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
-        ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(OUTPUT_ATTR_NAME);
-        Assert.assertNotNull(prc.getOutboundMessageContext());
-        Assert.assertNotNull(prc.getOutboundMessageContext().getMessage());
-        Assert.assertTrue(prc.getOutboundMessageContext().getMessage() instanceof Response);
-        Response response = (Response) prc.getOutboundMessageContext().getMessage();
-
-        Assert.assertEquals("https://idp.example.org", response.getIssuer().getValue());
-        Assert.assertEquals(StatusCode.SUCCESS_URI, response.getStatus().getStatusCode().getValue());
-
-        Assert.assertNotNull(response.getAssertions());
-        Assert.assertFalse(response.getAssertions().isEmpty());
-        Assert.assertEquals(response.getAssertions().size(), 1);
-        Assert.assertNotNull(response.getAssertions().get(0));
-
-        Assertion assertion = response.getAssertions().get(0);
-
-        Assert.assertNotNull(assertion.getAttributeStatements());
-        Assert.assertFalse(assertion.getAttributeStatements().isEmpty());
-        Assert.assertEquals(assertion.getAttributeStatements().size(), 1);
-        Assert.assertNotNull(assertion.getAttributeStatements().get(0));
-
-        AttributeStatement attributeStatement = assertion.getAttributeStatements().get(0);
-
-        Assert.assertNotNull(attributeStatement.getAttributes());
-        Assert.assertFalse(attributeStatement.getAttributes().isEmpty());
-        Assert.assertEquals(attributeStatement.getAttributes().size(), 2);
-
-        // TODO attribute ordering ?
-        Attribute eduPersonAffiliation = attributeStatement.getAttributes().get(0);
-        Assert.assertEquals(eduPersonAffiliation.getName(), "urn:oid:1.3.6.1.4.1.5923.1.1.1.1");
-        Assert.assertEquals(eduPersonAffiliation.getNameFormat(), Attribute.URI_REFERENCE);
-        Assert.assertEquals(eduPersonAffiliation.getFriendlyName(), "eduPersonAffiliation");
-        Assert.assertEquals(eduPersonAffiliation.getAttributeValues().size(), 1);
-        Assert.assertTrue(eduPersonAffiliation.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals(((XSString) eduPersonAffiliation.getAttributeValues().get(0)).getValue(), "member");
-
-        Attribute mail = attributeStatement.getAttributes().get(1);
-        Assert.assertEquals(mail.getName(), "urn:oid:0.9.2342.19200300.100.1.3");
-        Assert.assertEquals(mail.getNameFormat(), Attribute.URI_REFERENCE);
-        Assert.assertEquals(mail.getFriendlyName(), "mail");
-        Assert.assertEquals(mail.getAttributeValues().size(), 1);
-        Assert.assertTrue(mail.getAttributeValues().get(0) instanceof XSString);
-        Assert.assertEquals(((XSString) mail.getAttributeValues().get(0)).getValue(), "jdoe@shibboleth.net");
-
-        // TODO meaningful asserts
     }
 
     private String getDestinationRedirect(HttpServletRequest servletRequest) {
@@ -171,7 +122,6 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
             String baseUrl = SimpleUrlCanonicalizer.canonicalize(getBaseUrl(servletRequest));
             UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
             urlBuilder.setPath(destinationPath);
-            log.debug("set des redi {}", urlBuilder.buildURL());
             return urlBuilder.buildURL();
         } catch (MalformedURLException e) {
             log.error("Couldn't parse base URL, reverting to internal default destination");
@@ -192,7 +142,7 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
         Issuer issuer =
                 (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME)
                         .buildObject(Issuer.DEFAULT_ELEMENT_NAME);
-        issuer.setValue(getSpEntityId());
+        issuer.setValue(AbstractFlowTest.SP_ENTITY_ID);
         authnRequest.setIssuer(issuer);
 
         NameIDPolicy nameIDPolicy =
@@ -202,16 +152,12 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
         authnRequest.setNameIDPolicy(nameIDPolicy);
 
         /*
-        NameID nameID = (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(
-                        NameID.DEFAULT_ELEMENT_NAME);
-        nameID.setFormat(NameID.PERSISTENT);
-        nameID.setValue("foo");
-        Subject subject = (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject(
-                Subject.DEFAULT_ELEMENT_NAME);
-        subject.setNameID(nameID);
-        authnRequest.setSubject(subject);
-        */
-        
+         * NameID nameID = (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(
+         * NameID.DEFAULT_ELEMENT_NAME); nameID.setFormat(NameID.PERSISTENT); nameID.setValue("foo"); Subject subject =
+         * (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject( Subject.DEFAULT_ELEMENT_NAME);
+         * subject.setNameID(nameID); authnRequest.setSubject(subject);
+         */
+
         return authnRequest;
     }
 
@@ -261,7 +207,7 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
         messageContext.setMessage(authnRequest);
 
         SAMLPeerEntityContext peerContext = messageContext.getSubcontext(SAMLPeerEntityContext.class, true);
-        peerContext.setEntityId(getIdpEntityId());
+        peerContext.setEntityId(AbstractFlowTest.IDP_ENTITY_ID);
 
         SAMLEndpointContext endpointContext = peerContext.getSubcontext(SAMLEndpointContext.class, true);
         endpointContext.setEndpoint(buildIdpSsoEndpoint(bindingUri, authnRequest.getDestination()));
@@ -292,16 +238,6 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2FlowTest {
         } finally {
             encoder.destroy();
         }
-    }
-
-    private String getSpEntityId() {
-        // TODO get from config somewhere
-        return "https://sp.example.org";
-    }
-
-    private String getIdpEntityId() {
-        // TODO get from config somewhere
-        return "https://idp.example.org";
     }
 
 }

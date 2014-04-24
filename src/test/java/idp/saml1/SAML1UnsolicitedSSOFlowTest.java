@@ -53,8 +53,6 @@ public class SAML1UnsolicitedSSOFlowTest extends AbstractSAML1FlowTest {
 
     /**
      * Build the {@link MockHttpServletRequest}.
-     * 
-     * @throws Exception if an error occurs
      */
     public void buildRequest() {
         // TODO time request parameter ?

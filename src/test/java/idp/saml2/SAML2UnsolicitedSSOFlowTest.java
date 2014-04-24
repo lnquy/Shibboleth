@@ -35,18 +35,16 @@ public class SAML2UnsolicitedSSOFlowTest extends AbstractSAML2FlowTest {
      * Test the SAML 2 unsolicited SSO flow
      */
     @Test public void testSAML2UnsolicitedSSOFlow() {
-    
+
         buildRequest();
-    
+
         final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
-    
+
         validateResult(result, FLOW_ID);
     }
 
     /**
      * Build the {@link MockHttpServletRequest}.
-     * 
-     * @throws Exception if an error occurs
      */
     public void buildRequest() {
         request.addParameter("providerId", SP_ENTITY_ID);
