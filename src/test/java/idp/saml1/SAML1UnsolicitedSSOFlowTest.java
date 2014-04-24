@@ -34,7 +34,7 @@ import org.testng.annotations.Test;
 /**
  * Test for SAML 1 unsolicited SSO flow.
  */
-public class SAML1UnsolicitedFlowTest extends AbstractSAML1FlowTest {
+public class SAML1UnsolicitedSSOFlowTest extends AbstractSAML1FlowTest {
 
     /** The flow id. */
     @Nonnull public final static String FLOW_ID = "Shibboleth/SSO";

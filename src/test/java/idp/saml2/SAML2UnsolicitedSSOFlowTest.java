@@ -28,10 +28,22 @@ import org.testng.annotations.Test;
 /**
  * Test for SAML2 Unsolicited SSO flow.
  */
-public class SAML2UnsolicitedFlowTest extends AbstractSAML2FlowTest {
+public class SAML2UnsolicitedSSOFlowTest extends AbstractSAML2FlowTest {
 
     /** Flow id. */
     @Nonnull public final static String FLOW_ID = "SAML2/Unsolicited/SSO";
+
+    /**
+     * Test the SAML 2 unsolicited SSO flow
+     */
+    @Test public void testSAML2UnsolicitedSSOFlow() {
+    
+        buildRequest();
+    
+        final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
+    
+        validateResult(result, FLOW_ID);
+    }
 
     /**
      * Build the {@link MockHttpServletRequest}.
@@ -40,17 +52,5 @@ public class SAML2UnsolicitedFlowTest extends AbstractSAML2FlowTest {
      */
     public void buildRequest() {
         request.addParameter("providerId", SP_ENTITY_ID);
-    }
-
-    /**
-     * Test the SAML 2 unsolicited SSO flow
-     */
-    @Test public void testSAML2UnsolicitedSSOFlow() {
-
-        buildRequest();
-
-        final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
-
-        validateResult(result, FLOW_ID);
     }
 }
