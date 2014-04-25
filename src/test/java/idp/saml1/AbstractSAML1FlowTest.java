@@ -40,6 +40,7 @@ import org.opensaml.saml.saml1.core.Conditions;
 import org.opensaml.saml.saml1.core.ConfirmationMethod;
 import org.opensaml.saml.saml1.core.NameIdentifier;
 import org.opensaml.saml.saml1.core.Response;
+import org.opensaml.saml.saml1.core.Status;
 import org.opensaml.saml.saml1.core.StatusCode;
 import org.opensaml.saml.saml1.core.Subject;
 import org.opensaml.saml.saml1.core.SubjectConfirmation;
@@ -71,6 +72,7 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
      * <li>{@link AbstractFlowTest#assertProfileRequestContext(ProfileRequestContext)}</li>
      * <li>{@link #assertOutboundMessageContextMessage(MessageContext)}</li>
      * <li>{@link #assertResponse(Response)}</li>
+     * <li>{@link #assertStatus(Status)}</li>
      * <li>{@link #assertAssertions(List)}</li>
      * <li>{@link #assertAssertion(Assertion)}</li>
      * </ul>
@@ -92,6 +94,8 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         
         final Response response = (Response) prc.getOutboundMessageContext().getMessage();
         assertResponse(response);
+        
+        assertStatus(response.getStatus());
 
         final List<Assertion> assertions = response.getAssertions();
         assertAssertions(assertions);
@@ -221,13 +225,23 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     public void assertResponse(@Nullable final Response response) {
         Assert.assertNotNull(response);
         Assert.assertEquals(response.getVersion(), SAMLVersion.VERSION_11);
-        Assert.assertEquals(response.getStatus().getStatusCode().getValue(), StatusCode.SUCCESS);
         Assert.assertNotNull(response.getAssertions());
         Assert.assertFalse(response.getAssertions().isEmpty());
         Assert.assertEquals(response.getAssertions().size(), 1);
         Assert.assertNotNull(response.getAssertions().get(0));
         // TODO response.getIssueInstant()
         // TODO response.getRecipient()
+    }
+    
+    /**
+     * Assert that the status has a status code of {@link StatusCode#SUCCESS}.
+     *  
+     * @param status the status
+     */
+    public void assertStatus(@Nullable final Status status) {
+        Assert.assertNotNull(status);
+        Assert.assertNotNull(status.getStatusCode());
+        Assert.assertEquals(status.getStatusCode().getValue(), StatusCode.SUCCESS);
     }
 
     /**

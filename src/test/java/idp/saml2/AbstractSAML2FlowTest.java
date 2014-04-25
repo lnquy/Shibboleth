@@ -28,11 +28,13 @@ import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.profile.context.ProfileRequestContext;
 import org.opensaml.saml.common.SAMLVersion;
-import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
+import org.opensaml.saml.saml2.core.Conditions;
 import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.Status;
+import org.opensaml.saml.saml2.core.StatusCode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
@@ -49,6 +51,8 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
      * <p>
      * Calls validate methods :
      * <ul>
+     * <li>{@link #validateConditions(Assertion)}</li>
+     * <li>{@link #validateAuthenticationStatements(Assertion)}</li>
      * <li>{@link #validateAttributeStatements(Assertion)}</li>
      * </ul>
      * Calls assert methods :
@@ -57,7 +61,8 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
      * <li>{@link AbstractFlowTest#assertFlowExecutionOutcome(FlowExecutionOutcome)}</li>
      * <li>{@link AbstractFlowTest#assertProfileRequestContext(ProfileRequestContext)}</li>
      * <li>{@link #assertOutboundMessageContextMessage(MessageContext)}</li>
-     * <li>
+     * <li>{@link #assertResponse(Response)}</li>
+     * <li>{@link #assertStatus(Status)}</li>
      * <li>{@link #assertAssertions(List)}</li>
      * <li>{@link #assertAssertion(Assertion)}</li>
      * </ul>
@@ -75,8 +80,12 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         final ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(OUTPUT_ATTR_NAME);
         assertProfileRequestContext(prc);
 
+        assertOutboundMessageContextMessage(prc.getOutboundMessageContext());
+
         final Response response = (Response) prc.getOutboundMessageContext().getMessage();
-        // assertResponse(response);
+        assertResponse(response);
+
+        assertStatus(response.getStatus());
 
         final List<Assertion> assertions = response.getAssertions();
         assertAssertions(assertions);
@@ -84,9 +93,46 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         final Assertion assertion = assertions.get(0);
         assertAssertion(assertion);
 
+        validateConditions(assertion);
+
+        validateAuthenticationStatements(assertion);
+
         validateAttributeStatements(assertion);
 
         // TODO much more
+    }
+
+    /**
+     * Validate the assertion conditions.
+     * <p>
+     * Calls assert methods :
+     * <ul>
+     * <li></li>
+     * </ul>
+     * 
+     * @param assertion the assertion
+     */
+    public void validateConditions(@Nullable final Assertion assertion) {
+        Assert.assertNotNull(assertion);
+
+        final Conditions conditions = assertion.getConditions();
+        assertConditions(conditions);
+        // TODO implement
+    }
+
+    /**
+     * Validate the assertion authentication statements.
+     * <p>
+     * Calls assert methods :
+     * <ul>
+     * <li></li>
+     * </ul>
+     * 
+     * @param assertion the assertion
+     */
+    public void validateAuthenticationStatements(@Nullable final Assertion assertion) {
+        Assert.assertNotNull(assertion);
+        // TODO implement
     }
 
     /**
@@ -134,8 +180,18 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     public void assertResponse(@Nullable final Response response) {
         Assert.assertNotNull(response);
         Assert.assertEquals(response.getIssuer().getValue(), IDP_ENTITY_ID);
-        Assert.assertEquals(response.getStatus().getStatusCode().getValue(), StatusCode.SUCCESS_URI);
         // TODO
+    }
+
+    /**
+     * Assert that the status has a status code of {@link StatusCode#SUCCESS}.
+     * 
+     * @param status the status
+     */
+    public void assertStatus(@Nullable final Status status) {
+        Assert.assertNotNull(status);
+        Assert.assertNotNull(status.getStatusCode());
+        Assert.assertEquals(status.getStatusCode().getValue(), StatusCode.SUCCESS_URI);
     }
 
     /**
@@ -159,8 +215,14 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         Assert.assertNotNull(assertion);
         Assert.assertEquals(assertion.getVersion().getMajorVersion(), SAMLVersion.VERSION_20.getMajorVersion());
         Assert.assertEquals(assertion.getVersion().getMinorVersion(), SAMLVersion.VERSION_20.getMinorVersion());
-        // Assert.assertEquals(assertion.getIssuer(), IDP_ENTITY_ID);
+        Assert.assertEquals(assertion.getIssuer().getValue(), IDP_ENTITY_ID);
+        // TODO probably need an assertIssuer() method
         // TODO assertion.getIssueInstant()
+    }
+
+    public void assertConditions(@Nullable final Conditions conditions) {
+        Assert.assertNotNull(conditions);
+        // TODO implement
     }
 
     /**
