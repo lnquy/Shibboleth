@@ -26,6 +26,7 @@ import net.shibboleth.ext.spring.factory.X509CertificateFactoryBean;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 import org.joda.time.DateTime;
+import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AttributeQuery;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
@@ -130,5 +131,16 @@ public class SAML2AttributeQueryFlowTest extends AbstractSAML2FlowTest {
     @Override public void
             assertSubjectConfirmationData(@Nullable final SubjectConfirmationData subjectConfirmationData) {
         Assert.assertNull(subjectConfirmationData);
+    }
+
+    /**
+     * Assert that authn statements are not present.
+     * 
+     * @param assertion the assertion
+     */
+    public void validateAuthnStatements(@Nullable final Assertion assertion) {
+        Assert.assertNotNull(assertion);
+        Assert.assertNotNull(assertion.getAuthnStatements());
+        Assert.assertTrue(assertion.getAuthnStatements().isEmpty());
     }
 }

@@ -33,6 +33,9 @@ import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.Audience;
 import org.opensaml.saml.saml2.core.AudienceRestriction;
+import org.opensaml.saml.saml2.core.AuthnContext;
+import org.opensaml.saml.saml2.core.AuthnContextClassRef;
+import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.opensaml.saml.saml2.core.Conditions;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
@@ -59,7 +62,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
      * <ul>
      * <li>{@link #validateSubject(Subject)}</li>
      * <li>{@link #validateConditions(Assertion)}</li>
-     * <li>{@link #validateAuthenticationStatements(Assertion)}</li>
+     * <li>{@link #validateAuthnStatements(Assertion)}</li>
      * <li>{@link #validateAttributeStatements(Assertion)}</li>
      * </ul>
      * Calls assert methods :
@@ -105,11 +108,9 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
         validateConditions(assertion);
 
-        validateAuthenticationStatements(assertion);
+        validateAuthnStatements(assertion);
 
         validateAttributeStatements(assertion);
-
-        // TODO much more
     }
 
     /**
@@ -166,14 +167,22 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
      * <p>
      * Calls assert methods :
      * <ul>
-     * <li></li>
+     * <li>{@link #assertAuthnStatements(List)}</li>
+     * <li>{@link #assertAuthnStatement(AuthnStatement)}</li>
+     * <li>{@link #assertAuthnContextClassRef(AuthnContextClassRef)}</li>
      * </ul>
      * 
      * @param assertion the assertion
      */
-    public void validateAuthenticationStatements(@Nullable final Assertion assertion) {
+    public void validateAuthnStatements(@Nullable final Assertion assertion) {
         Assert.assertNotNull(assertion);
-        // TODO implement
+
+        final List<AuthnStatement> authnStatements = assertion.getAuthnStatements();
+        assertAuthnStatements(authnStatements);
+
+        final AuthnStatement authnStatement = authnStatements.get(0);
+        assertAuthnStatement(authnStatement);
+        assertAuthnContextClassRef(authnStatement.getAuthnContext().getAuthnContextClassRef());
     }
 
     /**
@@ -199,8 +208,6 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
         final List<Attribute> attributes = attributeStatement.getAttributes();
         assertAttributes(attributes);
-
-        // TODO
     }
 
     /**
@@ -292,8 +299,6 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     public void assertSubjectConfirmation(@Nullable final SubjectConfirmation subjectConfirmation) {
         Assert.assertNotNull(subjectConfirmation);
         Assert.assertNotNull(subjectConfirmation.getMethod());
-        // TODO implement
-        // SubjectConfirmationData scd = subjectConfirmation.getSubjectConfirmationData();
     }
 
     /**
@@ -345,7 +350,6 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         Assert.assertNotNull(conditions.getNotBefore());
         Assert.assertNotNull(conditions.getNotOnOrAfter());
         // TODO check time via some range ?
-        // TODO implement
     }
 
     /**
@@ -371,6 +375,39 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
         final Audience audience = audiences.get(0);
         Assert.assertEquals(audience.getAudienceURI(), AbstractFlowTest.SP_ENTITY_ID);
+    }
+
+    /**
+     * Assert that a single authn statement is present.
+     * 
+     * @param authnStatements the authn statements
+     */
+    public void assertAuthnStatements(@Nullable final List<AuthnStatement> authnStatements) {
+        Assert.assertNotNull(authnStatements);
+        Assert.assertEquals(authnStatements.size(), 1);
+        Assert.assertNotNull(authnStatements.get(0));
+    }
+
+    /**
+     * Assert that the authn statement has an authn instant and authn context class ref.
+     * 
+     * @param authnStatement the authn statement
+     */
+    public void assertAuthnStatement(@Nonnull final AuthnStatement authnStatement) {
+        Assert.assertNotNull(authnStatement);
+        Assert.assertNotNull(authnStatement.getAuthnInstant());
+        // TODO check authn instant time ?
+        Assert.assertNotNull(authnStatement.getAuthnContext());
+        Assert.assertNotNull(authnStatement.getAuthnContext().getAuthnContextClassRef());
+    }
+
+    /**
+     * Assert that the authn context class ref is {@link AuthnContext#IP_AUTHN_CTX}.
+     * 
+     * @param authnContextClassRef the authn context class ref
+     */
+    public void assertAuthnContextClassRef(@Nullable final AuthnContextClassRef authnContextClassRef) {
+        Assert.assertEquals(authnContextClassRef.getAuthnContextClassRef(), AuthnContext.IP_AUTHN_CTX);
     }
 
     /**
