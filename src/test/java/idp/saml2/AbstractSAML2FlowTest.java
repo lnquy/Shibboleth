@@ -32,9 +32,11 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.Conditions;
+import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
+import org.opensaml.saml.saml2.core.Subject;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
@@ -65,6 +67,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
      * <li>{@link #assertStatus(Status)}</li>
      * <li>{@link #assertAssertions(List)}</li>
      * <li>{@link #assertAssertion(Assertion)}</li>
+     * <li>{@link #assertSubject(Subject)}</li>
      * </ul>
      * 
      * @param result the flow execution result
@@ -92,6 +95,8 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
         final Assertion assertion = assertions.get(0);
         assertAssertion(assertion);
+
+        assertSubject(assertion.getSubject());
 
         validateConditions(assertion);
 
@@ -207,7 +212,8 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     }
 
     /**
-     * Assert that the assertion version is {@link SAMLVersion#VERSION_20}.
+     * Assert that the assertion version is {@link SAMLVersion#VERSION_20} and that the issuer is
+     * {@link AbstractFlowTest#IDP_ENTITY_ID}.
      * 
      * @param assertion the assertion
      */
@@ -218,6 +224,23 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         Assert.assertEquals(assertion.getIssuer().getValue(), IDP_ENTITY_ID);
         // TODO probably need an assertIssuer() method
         // TODO assertion.getIssueInstant()
+    }
+
+    /**
+     * Assert that the subject has a nameID and subject confirmations.
+     * 
+     * @param subject the subject
+     */
+    public void assertSubject(@Nullable final Subject subject) {
+        Assert.assertNotNull(subject);
+        Assert.assertNotNull(subject.getNameID());
+        Assert.assertNotNull(subject.getSubjectConfirmations());
+    }
+
+    public void assertNameID(@Nullable final NameID nameID) {
+        Assert.assertNotNull(nameID);
+        // TODO nameID.getNameQualifier();
+        // TODO nameID.getValue()
     }
 
     public void assertConditions(@Nullable final Conditions conditions) {

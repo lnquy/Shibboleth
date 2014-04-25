@@ -257,7 +257,8 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     }
 
     /**
-     * Assert that the assertion version is {@link SAMLVersion#VERSION_11}.
+     * Assert that the assertion version is {@link SAMLVersion#VERSION_11} and that the issuer is
+     * {@link AbstractFlowTest#IDP_ENTITY_ID}.
      * 
      * @param assertion the assertion
      */
@@ -413,8 +414,7 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     }
 
     /**
-     * Assert the confirmation method, probably {@link ConfirmationMethod#METHOD_BEARER} or
-     * {@link ConfirmationMethod#METHOD_ARTIFACT}.
+     * Assert the confirmation method.
      * 
      * @param confirmationMethod the confirmation method
      */

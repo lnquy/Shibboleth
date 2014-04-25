@@ -19,6 +19,8 @@ package idp.saml2;
 
 import javax.annotation.Nonnull;
 
+import net.shibboleth.idp.saml.profile.impl.BaseIdPInitiatedSSORequestMessageDecoder;
+
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.testng.annotations.Test;
@@ -47,6 +49,10 @@ public class SAML2UnsolicitedSSOFlowTest extends AbstractSAML2FlowTest {
      * Build the {@link MockHttpServletRequest}.
      */
     public void buildRequest() {
-        request.addParameter("providerId", SP_ENTITY_ID);
+        // TODO time request parameter ?
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.PROVIDER_ID_PARAM, SP_ENTITY_ID);
+        // TODO if the following params are set, why does the test fail ?
+        //request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.SHIRE_PARAM, SP_ACS_URL);
+        //request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.TARGET_PARAM, SP_RELAY_STATE);
     }
 }

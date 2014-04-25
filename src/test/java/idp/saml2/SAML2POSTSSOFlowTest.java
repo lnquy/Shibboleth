@@ -17,10 +17,7 @@
 
 package idp.saml2;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.annotation.Nonnull;
 
@@ -39,19 +36,17 @@ import org.testng.annotations.Test;
 import org.w3c.dom.Element;
 
 /**
- * SAML 2 Redirect SSO flow test.
+ * SAML 2 POST SSO flow test.
  */
-public class SAML2RedirectSSOFlowTest extends AbstractSAML2SSOFlowTest {
+public class SAML2POSTSSOFlowTest extends AbstractSAML2SSOFlowTest {
 
     /** Flow id. */
-    @Nonnull public final static String FLOW_ID = "SAML2/Redirect/SSO";
+    @Nonnull public final static String FLOW_ID = "SAML2/POST/SSO";
 
     /**
-     * Test the SAML 2 Redirect SSO flow.
-     * 
-     * @throws Exception
+     * Test the SAML 2 POST SSO flow.
      */
-    @Test public void testSAML2RedirectFlow() throws Exception {
+    @Test public void testSAML2POSTSSOFlow() throws Exception {
 
         buildRequest();
 
@@ -67,37 +62,32 @@ public class SAML2RedirectSSOFlowTest extends AbstractSAML2SSOFlowTest {
      */
     public void buildRequest() throws Exception {
 
-        request.setRequestURI("/idp/SAML2/Redirect/SSO");
+        request.setMethod("POST");
+        request.setRequestURI("/idp/SAML2/POST/SSO");
 
         final AuthnRequest authnRequest = buildAuthnRequest(request);
-        authnRequest.setDestination(getDestinationRedirect(request));
+        authnRequest.setDestination(getDestinationPost(request));
 
         final MessageContext<SAMLObject> messageContext =
-                buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+                buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_POST_BINDING_URI);
         final SAMLObject message = messageContext.getMessage();
         final String encodedMessage = encodeMessage(message);
         request.addParameter("SAMLRequest", encodedMessage);
     }
 
     /**
-     * DEFLATE (RFC1951) compresses the given SAML message.
+     * Base64 the given SAML message.
      * 
      * @param message the SAML message
-     * @return DEFLATE compressed message
+     * @return Base64 encoded message
      * @throws MarshallingException if there is a problem marshalling the XMLObject
-     * @throws IOException if an I/O error has occurred
+     * @throws UnsupportedEncodingException If the named charset is not supported
      */
-    @Nonnull public String encodeMessage(@Nonnull final SAMLObject message) throws MarshallingException, IOException {
+    @Nonnull public String encodeMessage(@Nonnull final SAMLObject message) throws MarshallingException,
+            UnsupportedEncodingException {
         final Element domMessage = XMLObjectSupport.marshall(message);
         final String messageXML = SerializeSupport.nodeToString(domMessage);
 
-        final ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        final Deflater deflater = new Deflater(Deflater.DEFLATED, true);
-        final DeflaterOutputStream deflaterStream = new DeflaterOutputStream(bytesOut, deflater);
-        deflaterStream.write(messageXML.getBytes("UTF-8"));
-        deflaterStream.finish();
-
-        return Base64Support.encode(bytesOut.toByteArray(), Base64Support.UNCHUNKED);
+        return Base64Support.encode(messageXML.getBytes("UTF-8"), Base64Support.UNCHUNKED);
     }
-
 }
