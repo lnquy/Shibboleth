@@ -31,12 +31,16 @@ import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
+import org.opensaml.saml.saml2.core.Audience;
+import org.opensaml.saml.saml2.core.AudienceRestriction;
 import org.opensaml.saml.saml2.core.Conditions;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.Subject;
+import org.opensaml.saml.saml2.core.SubjectConfirmation;
+import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
@@ -53,6 +57,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
      * <p>
      * Calls validate methods :
      * <ul>
+     * <li>{@link #validateSubject(Subject)}</li>
      * <li>{@link #validateConditions(Assertion)}</li>
      * <li>{@link #validateAuthenticationStatements(Assertion)}</li>
      * <li>{@link #validateAttributeStatements(Assertion)}</li>
@@ -96,7 +101,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         final Assertion assertion = assertions.get(0);
         assertAssertion(assertion);
 
-        assertSubject(assertion.getSubject());
+        validateSubject(assertion.getSubject());
 
         validateConditions(assertion);
 
@@ -108,11 +113,38 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     }
 
     /**
+     * Validate the subject.
+     * <p>
+     * Calls assert methods :
+     * <ul>
+     * <li>{@link #assertSubject(Subject)}</li>
+     * <li>{@link #assertNameID(NameID)}</li>
+     * <li>{@link #assertSubjectConfirmations(List)}</li>
+     * <li>{@link #assertSubjectConfirmation(SubjectConfirmation)}</li>
+     * <li>{@link #assertSubjectConfirmationMethod(SubjectConfirmation)}</li>
+     * <li>{@link #assertSubjectConfirmationData(SubjectConfirmationData)}</li>
+     * </ul>
+     * 
+     * @param subject the subject
+     */
+    public void validateSubject(@Nullable final Subject subject) {
+        assertSubject(subject);
+        assertNameID(subject.getNameID());
+        assertSubjectConfirmations(subject.getSubjectConfirmations());
+        final SubjectConfirmation subjectConfirmation = subject.getSubjectConfirmations().get(0);
+        assertSubjectConfirmation(subjectConfirmation);
+        assertSubjectConfirmationMethod(subjectConfirmation);
+        assertSubjectConfirmationData(subjectConfirmation.getSubjectConfirmationData());
+    }
+
+    /**
      * Validate the assertion conditions.
      * <p>
      * Calls assert methods :
      * <ul>
-     * <li></li>
+     * <li>{@link #assertConditions(Conditions)}</li>
+     * <li>{@link #assertAudienceRestrictions(List)}</li>
+     * <li>{@link #assertAudienceRestriction(AudienceRestriction)}</li>
      * </ul>
      * 
      * @param assertion the assertion
@@ -122,7 +154,11 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
         final Conditions conditions = assertion.getConditions();
         assertConditions(conditions);
-        // TODO implement
+
+        final List<AudienceRestriction> audienceRestrictions = conditions.getAudienceRestrictions();
+        assertAudienceRestrictions(audienceRestrictions);
+
+        assertAudienceRestriction(audienceRestrictions.get(0));
     }
 
     /**
@@ -229,6 +265,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     /**
      * Assert that the subject has a nameID and subject confirmations.
      * 
+     * 
      * @param subject the subject
      */
     public void assertSubject(@Nullable final Subject subject) {
@@ -237,15 +274,103 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         Assert.assertNotNull(subject.getSubjectConfirmations());
     }
 
-    public void assertNameID(@Nullable final NameID nameID) {
-        Assert.assertNotNull(nameID);
-        // TODO nameID.getNameQualifier();
-        // TODO nameID.getValue()
+    /**
+     * Assert that a single subject confirmation is present.
+     * 
+     * @param subjectConfirmations the subject confirmations
+     */
+    public void assertSubjectConfirmations(@Nullable final List<SubjectConfirmation> subjectConfirmations) {
+        Assert.assertNotNull(subjectConfirmations);
+        Assert.assertEquals(subjectConfirmations.size(), 1);
     }
 
+    /**
+     * Assert that the subject confirmation has a confirmation method.
+     * 
+     * @param subjectConfirmation the subject confirmation
+     */
+    public void assertSubjectConfirmation(@Nullable final SubjectConfirmation subjectConfirmation) {
+        Assert.assertNotNull(subjectConfirmation);
+        Assert.assertNotNull(subjectConfirmation.getMethod());
+        // TODO implement
+        // SubjectConfirmationData scd = subjectConfirmation.getSubjectConfirmationData();
+    }
+
+    /**
+     * Assert that the subject confirmation method is {@link SubjectConfirmation#METHOD_BEARER}.
+     * 
+     * @param subjectConfirmation the subject confirmation
+     */
+    public void assertSubjectConfirmationMethod(@Nullable final SubjectConfirmation subjectConfirmation) {
+        Assert.assertEquals(subjectConfirmation.getMethod(), SubjectConfirmation.METHOD_BEARER);
+    }
+
+    /**
+     * Assert that the subject confirmation data address is "127.0.0.1".
+     * 
+     * @param subjectConfirmationData the subject confirmation data
+     */
+    public void assertSubjectConfirmationData(@Nullable final SubjectConfirmationData subjectConfirmationData) {
+        Assert.assertEquals(subjectConfirmationData.getAddress(), "127.0.0.1");
+        // TODO subjectConfirmationData.getNotOnOrAfter()
+        // TODO subjectConfirmationData.getRecipient()
+    }
+
+    /**
+     * Assert that :
+     * <ul>
+     * <li>the NameID value is not null</li>
+     * <li>the NameID format is {@link NameID#TRANSIENT}</li>
+     * <li>the NameID name qualifier is {@link AbstractFlowTest#IDP_ENTITY_ID}</li>
+     * <li>the NameID SP name qualifier is {@link AbstractFlowTest#SP_ENTITY_ID}</li>
+     * <ul>
+     * 
+     * @param nameID the NameID
+     */
+    public void assertNameID(@Nullable final NameID nameID) {
+        Assert.assertNotNull(nameID);
+        Assert.assertNotNull(nameID.getValue());
+        Assert.assertEquals(nameID.getFormat(), NameID.TRANSIENT);
+        Assert.assertEquals(nameID.getNameQualifier(), AbstractFlowTest.IDP_ENTITY_ID);
+        Assert.assertEquals(nameID.getSPNameQualifier(), AbstractFlowTest.SP_ENTITY_ID);
+    }
+
+    /**
+     * Assert that the conditions has NotBefore and NotOnOrAfter attributes.
+     * 
+     * @param conditions the conditions
+     */
     public void assertConditions(@Nullable final Conditions conditions) {
         Assert.assertNotNull(conditions);
+        Assert.assertNotNull(conditions.getNotBefore());
+        Assert.assertNotNull(conditions.getNotOnOrAfter());
+        // TODO check time via some range ?
         // TODO implement
+    }
+
+    /**
+     * Assert that a single audience restriction is present.
+     * 
+     * @param audienceRestrictions the audience restrictions
+     */
+    public void assertAudienceRestrictions(@Nullable final List<AudienceRestriction> audienceRestrictions) {
+        Assert.assertNotNull(audienceRestrictions);
+        Assert.assertEquals(audienceRestrictions.size(), 1);
+    }
+
+    /**
+     * Assert that the audience restriction has a single audience whose URI is {@link AbstractFlowTest#SP_ENTITY_ID}.
+     * 
+     * @param audienceRestriction the audience restriction
+     */
+    public void assertAudienceRestriction(@Nullable final AudienceRestriction audienceRestriction) {
+        Assert.assertNotNull(audienceRestriction);
+
+        final List<Audience> audiences = audienceRestriction.getAudiences();
+        Assert.assertEquals(audiences.size(), 1);
+
+        final Audience audience = audiences.get(0);
+        Assert.assertEquals(audience.getAudienceURI(), AbstractFlowTest.SP_ENTITY_ID);
     }
 
     /**

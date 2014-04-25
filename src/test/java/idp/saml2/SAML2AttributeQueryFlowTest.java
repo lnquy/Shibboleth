@@ -27,9 +27,12 @@ import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 import org.joda.time.DateTime;
 import org.opensaml.saml.saml2.core.AttributeQuery;
+import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.Subject;
+import org.opensaml.saml.saml2.core.SubjectConfirmation;
+import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.opensaml.saml.saml2.profile.SAML2ActionTestingSupport;
 import org.opensaml.security.messaging.ServletRequestX509CredentialAdapter;
 import org.opensaml.soap.soap11.Envelope;
@@ -89,12 +92,43 @@ public class SAML2AttributeQueryFlowTest extends AbstractSAML2FlowTest {
                 new X509Certificate[] {certFactoryBean.getObject()});
         request.setContent(requestContent.getBytes("UTF-8"));
     }
-    
+
     // TODO why is there no issuer in the response ?
-    @Override
-    public void assertResponse(@Nullable final Response response) {
+    @Override public void assertResponse(@Nullable final Response response) {
         Assert.assertNotNull(response);
         // TODO Assert.assertEquals(response.getIssuer().getValue(), IDP_ENTITY_ID);
         Assert.assertEquals(response.getStatus().getStatusCode().getValue(), StatusCode.SUCCESS_URI);
+    }
+
+    /**
+     * Assert that the nameID value is "jdoe" and that the name qualifier, SP name qualifier, and name format are null.
+     * 
+     * @param nameID the name ID
+     */
+    @Override public void assertNameID(@Nullable final NameID nameID) {
+        Assert.assertNotNull(nameID);
+        Assert.assertEquals(nameID.getValue(), "jdoe");
+        Assert.assertNull(nameID.getNameQualifier());
+        Assert.assertNull(nameID.getSPNameQualifier());
+        Assert.assertNull(nameID.getFormat());
+    }
+
+    /**
+     * Assert that the subject confirmation method is {@link SubjectConfirmation#METHOD_SENDER_VOUCHES}.
+     * 
+     * @param subjectConfirmation the subject confirmation
+     */
+    @Override public void assertSubjectConfirmationMethod(@Nullable final SubjectConfirmation subjectConfirmation) {
+        Assert.assertEquals(subjectConfirmation.getMethod(), SubjectConfirmation.METHOD_SENDER_VOUCHES);
+    }
+
+    /**
+     * Assert that the subject confirmation data is null.
+     * 
+     * @param subjectConfirmationData the subject confirmation data
+     */
+    @Override public void
+            assertSubjectConfirmationData(@Nullable final SubjectConfirmationData subjectConfirmationData) {
+        Assert.assertNull(subjectConfirmationData);
     }
 }
