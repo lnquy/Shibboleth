@@ -217,20 +217,21 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     }
 
     /**
-     * Assert that the SAML 1 response is a success, the response version is correct, and the response contains a single
-     * assertion.
+     * Assert that :
+     * <ul>
+     * <li>the response ID is not null nor empty</li>
+     * <li>the response IssueInstant is not null</li>
+     * <li>the response version is {@link SAMLVersion#VERSION_11}</li>
+     * </ul>
      * 
      * @param response the SAML 1 response
      */
     public void assertResponse(@Nullable final Response response) {
         Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getID());
+        Assert.assertFalse(response.getID().isEmpty());
+        Assert.assertNotNull(response.getIssueInstant());
         Assert.assertEquals(response.getVersion(), SAMLVersion.VERSION_11);
-        Assert.assertNotNull(response.getAssertions());
-        Assert.assertFalse(response.getAssertions().isEmpty());
-        Assert.assertEquals(response.getAssertions().size(), 1);
-        Assert.assertNotNull(response.getAssertions().get(0));
-        // TODO response.getIssueInstant()
-        // TODO response.getRecipient()
     }
     
     /**
@@ -257,17 +258,24 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     }
 
     /**
-     * Assert that the assertion version is {@link SAMLVersion#VERSION_11} and that the issuer is
-     * {@link AbstractFlowTest#IDP_ENTITY_ID}.
+     * Assert that :
+     * <ul>
+     * <li>the assertion ID is not null nor empty</li>
+     * <li>the assertion issue instant is not null</li>
+     * <li>the assertion version is {@link SAMLVersion#VERSION_11}</li>
+     * <li>the assertion issuer is {@link AbstractFlowTest#IDP_ENTITY_ID}</li>
+     * </ul>
      * 
      * @param assertion the assertion
      */
     public void assertAssertion(@Nullable final Assertion assertion) {
         Assert.assertNotNull(assertion);
+        Assert.assertNotNull(assertion.getID());
+        Assert.assertFalse(assertion.getID().isEmpty());
+        Assert.assertNotNull(assertion.getIssueInstant());
         Assert.assertEquals(assertion.getMajorVersion(), SAMLVersion.VERSION_11.getMajorVersion());
-        Assert.assertEquals(assertion.getMinorVersion(), SAMLVersion.VERSION_11.getMinorVersion());
+        Assert.assertEquals(assertion.getMinorVersion(), SAMLVersion.VERSION_11.getMinorVersion());        
         Assert.assertEquals(assertion.getIssuer(), IDP_ENTITY_ID);
-        // TODO assertion.getIssueInstant()
     }
 
     /**
@@ -283,14 +291,21 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     }
 
     /**
-     * Assert that the authentication statement has a subject.
+     * Assert that :
+     * <ul>
+     * <li>the authentication statement has a subject</li>
+     * <li>the authentication instant is not null</li>
+     * <li>the authentication method is not null nor empty</li>
+     * </ul>
      * 
      * @param authenticationStatement the authentication statement
      */
     public void assertAuthenticationStatement(@Nullable AuthenticationStatement authenticationStatement) {
         Assert.assertNotNull(authenticationStatement);
         Assert.assertNotNull(authenticationStatement.getSubject());
-        // TODO issueInstant
+        Assert.assertNotNull(authenticationStatement.getAuthenticationInstant());
+        Assert.assertNotNull(authenticationStatement.getAuthenticationMethod());
+        Assert.assertFalse(authenticationStatement.getAuthenticationMethod().isEmpty());
     }
 
     /**
