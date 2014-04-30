@@ -17,6 +17,10 @@
 
 package idp;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
+import net.shibboleth.utilities.java.support.net.IPRange;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
 
 import org.opensaml.core.xml.XMLObject;
@@ -38,13 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.webflow.definition.FlowDefinition;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.springframework.webflow.executor.FlowExecutor;
+import org.springframework.webflow.executor.FlowExecutorImpl;
 import org.springframework.webflow.test.MockExternalContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -60,7 +66,6 @@ import common.PathPropertySupport;
 /**
  * Abstract flow test.
  */
-@ActiveProfiles("dev")
 @ContextConfiguration({"/system/conf/global-system.xml", "/conf/global-user.xml", "/system/conf/mvc-beans.xml",
         "/conf/webflow-config.xml"})
 @WebAppConfiguration
@@ -86,6 +91,12 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** The SP relay state. */
     @Nonnull public final static String SP_RELAY_STATE = "myRelayState";
+
+    /** The name of the bean which maps principals to IP ranges for IP address based authn. */
+    @Nonnull public final static String IP_ADDRESS_AUTHN_MAP_BEAN_NAME = "shibboleth.authn.IPAddress.Mappings";
+
+    /** The flow ID for IP address based authn. */
+    @Nonnull public final static String IP_ADDRESS_AUTHN_FLOW_ID = "AuthenticationFlow/IPAddress";
 
     /** In-memory directory server. */
     @NonnullAfterInit protected InMemoryDirectory directoryServer;
@@ -237,6 +248,23 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
         envelope.setBody(body);
 
         return envelope;
+    }
+
+    /**
+     * Configure IP address based authentication by assembling the {@link #IP_ADDRESS_AUTHN_FLOW_ID} flow for the first
+     * time and overriding the map of allowed principals to IP ranges via the {@link #IP_ADDRESS_AUTHN_MAP_BEAN_NAME}
+     * bean.
+     */
+    @BeforeMethod(dependsOnMethods = {"initializeFlowExecutor"}) public void overrideIPBasedAuthn() {
+        final FlowDefinition flowDefinition =
+                ((FlowExecutorImpl) flowExecutor).getDefinitionLocator().getFlowDefinition(IP_ADDRESS_AUTHN_FLOW_ID);
+
+        final Map map = flowDefinition.getApplicationContext().getBean(IP_ADDRESS_AUTHN_MAP_BEAN_NAME, Map.class);
+
+        final List<IPRange> ipRanges = new ArrayList<IPRange>(2);
+        ipRanges.add(IPRange.parseCIDRBlock("127.0.0.1/24"));
+        ipRanges.add(IPRange.parseCIDRBlock("::1/128"));
+        map.put("jdoe", ipRanges);
     }
 
 }
