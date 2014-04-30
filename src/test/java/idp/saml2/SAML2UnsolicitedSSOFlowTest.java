@@ -39,6 +39,8 @@ public class SAML2UnsolicitedSSOFlowTest extends AbstractSAML2FlowTest {
     @Test public void testSAML2UnsolicitedSSOFlow() {
 
         buildRequest();
+        
+        overrideEndStateOutput(FLOW_ID);
 
         final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
 

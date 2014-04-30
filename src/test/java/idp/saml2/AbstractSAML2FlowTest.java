@@ -88,7 +88,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         final FlowExecutionOutcome outcome = result.getOutcome();
         assertFlowExecutionOutcome(outcome);
 
-        final ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(OUTPUT_ATTR_NAME);
+        final ProfileRequestContext prc = (ProfileRequestContext) outcome.getOutput().get(END_STATE_OUTPUT_ATTR_NAME);
         assertProfileRequestContext(prc);
 
         assertOutboundMessageContextMessage(prc.getOutboundMessageContext());

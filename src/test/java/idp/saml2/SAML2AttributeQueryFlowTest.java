@@ -63,6 +63,8 @@ public class SAML2AttributeQueryFlowTest extends AbstractSAML2FlowTest {
     @Test public void testSAML2AttributeQueryFlow() throws Exception {
 
         buildRequest();
+        
+        overrideEndStateOutput(FLOW_ID);
 
         final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
 

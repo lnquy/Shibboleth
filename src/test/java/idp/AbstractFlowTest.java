@@ -41,16 +41,26 @@ import org.opensaml.soap.soap11.Body;
 import org.opensaml.soap.soap11.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.binding.expression.Expression;
+import org.springframework.binding.expression.ExpressionParser;
+import org.springframework.binding.expression.support.FluentParserContext;
+import org.springframework.binding.mapping.impl.DefaultMapper;
+import org.springframework.binding.mapping.impl.DefaultMapping;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.webflow.core.collection.MutableAttributeMap;
 import org.springframework.webflow.definition.FlowDefinition;
+import org.springframework.webflow.engine.EndState;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
+import org.springframework.webflow.execution.RequestContext;
 import org.springframework.webflow.executor.FlowExecutionResult;
 import org.springframework.webflow.executor.FlowExecutor;
 import org.springframework.webflow.executor.FlowExecutorImpl;
+import org.springframework.webflow.expression.spel.WebFlowSpringELExpressionParser;
 import org.springframework.webflow.test.MockExternalContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -77,9 +87,6 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     /** Path to LDIF file to be imported into directory server. */
     @Nonnull public final static String LDIF_FILE = "src/main/resources/test/ldap.ldif";
 
-    /** Name of flow output attribute containing the profile request context. */
-    @Nonnull public final static String OUTPUT_ATTR_NAME = "ProfileRequestContext";
-
     /** The IDP entity ID. */
     @Nonnull public final static String IDP_ENTITY_ID = "https://idp.example.org";
 
@@ -91,6 +98,16 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** The SP relay state. */
     @Nonnull public final static String SP_RELAY_STATE = "myRelayState";
+
+    /** The end state ID. */
+    @Nonnull public final static String END_STATE_ID = "end";
+
+    /** The end state output attribute expression which retrieves the profile request context. */
+    @Nonnull public final static String END_STATE_OUTPUT_ATTR_EXPR =
+            "flowRequestContext.getConversationScope().get('org.opensaml.profile.context.ProfileRequestContext')";
+
+    /** The name of the end state flow output attribute containing the profile request context. */
+    @Nonnull public final static String END_STATE_OUTPUT_ATTR_NAME = "ProfileRequestContext";
 
     /** The name of the bean which maps principals to IP ranges for IP address based authn. */
     @Nonnull public final static String IP_ADDRESS_AUTHN_MAP_BEAN_NAME = "shibboleth.authn.IPAddress.Mappings";
@@ -215,8 +232,8 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     public void assertFlowExecutionOutcome(@Nullable final FlowExecutionOutcome outcome) {
         Assert.assertNotNull(outcome, "Flow ended with an error");
         Assert.assertEquals(outcome.getId(), "end");
-        Assert.assertTrue(outcome.getOutput().contains(OUTPUT_ATTR_NAME));
-        Assert.assertTrue(outcome.getOutput().get(OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
+        Assert.assertTrue(outcome.getOutput().contains(END_STATE_OUTPUT_ATTR_NAME));
+        Assert.assertTrue(outcome.getOutput().get(END_STATE_OUTPUT_ATTR_NAME) instanceof ProfileRequestContext);
     }
 
     /**
@@ -248,6 +265,33 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
         envelope.setBody(body);
 
         return envelope;
+    }
+
+    /**
+     * Map the {@link ProfileRequestContext} as an end state output attribute with name
+     * {@link #END_STATE_OUTPUT_ATTR_NAME} by assembling the flow with the given ID and manually setting the output
+     * attributes.
+     * 
+     * @param flowID the flow ID
+     */
+    public void overrideEndStateOutput(@Nonnull final String flowID) {
+
+        final FlowDefinition flowDefinition =
+                ((FlowExecutorImpl) flowExecutor).getDefinitionLocator().getFlowDefinition(flowID);
+
+        final ExpressionParser parser = new WebFlowSpringELExpressionParser(new SpelExpressionParser());
+        final Expression source =
+                parser.parseExpression(END_STATE_OUTPUT_ATTR_EXPR,
+                        new FluentParserContext().evaluate(RequestContext.class));
+        final Expression target =
+                parser.parseExpression(END_STATE_OUTPUT_ATTR_NAME,
+                        new FluentParserContext().evaluate(MutableAttributeMap.class));
+        final DefaultMapping defaultMapping = new DefaultMapping(source, target);
+        final DefaultMapper defaultMapper = new DefaultMapper();
+        defaultMapper.addMapping(defaultMapping);
+
+        final EndState endState = (EndState) flowDefinition.getState(END_STATE_ID);
+        endState.setOutputMapper(defaultMapper);
     }
 
     /**
