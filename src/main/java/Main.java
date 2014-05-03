@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 
-import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -38,28 +37,21 @@ public class Main {
         try {
             // Hack. If protection domain location ends with ".war", then assume we are running from a CLI, otherwise
             // assume we are running from within Eclipse.
-            ProtectionDomain protectionDomain = Main.class.getProtectionDomain();
-            URL location = protectionDomain.getCodeSource().getLocation();
+            final ProtectionDomain protectionDomain = Main.class.getProtectionDomain();
+            final URL location = protectionDomain.getCodeSource().getLocation();
 
-            String idpHome = PathPropertySupport.setupIdPHomeProperty();
-
-            PathPropertySupport.setupIdPProperties(idpHome);
-            
-            PathPropertySupport.setupAppHomeProperty();
+            PathPropertySupport.setupIdPHomeProperties();
+            PathPropertySupport.setupIdPProperties();
+            PathPropertySupport.setupTestbedHomeProperty();
             
             // Configure Jetty from jetty.xml.
-            Path pathToJettyXML = Paths.get(idpHome, "system", "conf", "jetty.xml");
-            Resource fileserver_xml = Resource.newResource(pathToJettyXML.toString());
-            XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
-            Server server = (Server) configuration.configure();
+            final Path pathToJettyXML =
+                    Paths.get(System.getProperty(PathPropertySupport.IDP_HOME_RAW), "system", "conf", "jetty.xml");
+            final Resource fileserver_xml = Resource.newResource(pathToJettyXML.toString());
+            final XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
+            final Server server = (Server) configuration.configure();
 
-            Path pathToRealm = Paths.get(idpHome, "test", "jetty-realm.properties");
-            HashLoginService loginService = new HashLoginService();
-            loginService.setName("Shib Testbed Web Authentication");
-            loginService.setConfig(pathToRealm.toString());
-            server.addBean(loginService);
-
-            WebAppContext webapp = new WebAppContext();
+            final WebAppContext webapp = new WebAppContext();
             webapp.setContextPath("/");
             server.setHandler(webapp);
             if (protectionDomain.getCodeSource().getLocation().toString().endsWith(".war")) {
@@ -72,8 +64,9 @@ public class Main {
 
             server.start();
             server.join();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
+    
 }

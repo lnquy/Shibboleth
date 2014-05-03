@@ -143,8 +143,8 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     @NonnullAfterInit protected static UnmarshallerFactory unmarshallerFactory;
 
     static {
-        PathPropertySupport.setupIdPHomeProperty();
-        PathPropertySupport.setupAppHomeProperty();
+        PathPropertySupport.setupIdPHomeProperties();
+        PathPropertySupport.setupTestbedHomeProperty();
     }
 
     /**

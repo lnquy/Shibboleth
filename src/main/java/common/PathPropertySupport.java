@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -33,60 +32,65 @@ import javax.annotation.Nullable;
  */
 public class PathPropertySupport {
 
-    /** The name of the system property defining the path to configuration files for the IdP. Defaults to 'idp.home'. */
+    /** The name of the system property defining the normalized path to configuration files for the IdP. */
     public final static String IDP_HOME = "idp.home";
 
-    /**
-     * The name of the system property defining the path to configuration files external to the IdP. Defaults to
-     * 'app.home'.
-     */
-    public final static String APP_HOME = "app.home";
+    /** The name of the system property defining the raw path to configuration files for the IdP. */
+    public final static String IDP_HOME_RAW = "idp.home.raw";
 
+    /** The name of the system property defining the normalized path to testbed-only configuration. */
+    public final static String TESTBED_HOME = "testbed.home";
+    
     /**
-     * Set the 'idp.home' system property if not already set.
+     * Set the 'idp.home' system property if not already set, and preserve the unnormalized
+     * form in idp.home.raw
      * 
      * @return the 'idp.home' property
      */
-    public static String setupIdPHomeProperty() {
+    public static void setupIdPHomeProperties() {
 
-        if (System.getProperty(IDP_HOME) != null) {
-            return System.getProperty(IDP_HOME);
+        String raw = System.getProperty(IDP_HOME);
+
+        if (raw != null) {
+            normalizeProperty(IDP_HOME, raw);
+            System.setProperty(IDP_HOME_RAW, raw);
+        } else {
+            raw = Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
+                    "java-identity-provider", "idp-conf", "src", "main", "resources").toString();
+            normalizeProperty(IDP_HOME, raw);
+            System.setProperty(IDP_HOME_RAW, raw);
         }
-
-        String idpHome =
-                Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
-                        "java-identity-provider", "idp-conf", "src", "main", "resources").toString();
-
-        return setupProperty(IDP_HOME, idpHome);
     }
 
     /**
-     * Set the 'app.home' system property if not already set.
+     * Set the 'testbed.home' system property if not already set.
      * 
-     * @return the 'app.home' system property
+     * @return the 'testbed.home' system property
      */
-    public static String setupAppHomeProperty() {
+    public static void setupTestbedHomeProperty() {
+        
+        String raw = System.getProperty(TESTBED_HOME);
 
-        if (System.getProperty(APP_HOME) != null) {
-            return System.getProperty(APP_HOME);
+        if (raw != null) {
+            normalizeProperty(TESTBED_HOME, raw);
         }
 
-        String appHome = Paths.get("src", "main", "resources").toAbsolutePath().toString();
-        return setupProperty(APP_HOME, appHome);
+        raw = Paths.get("src", "main", "resources").toAbsolutePath().toString();
+        normalizeProperty(TESTBED_HOME, raw);
     }
-
+    
     /**
-     * Set system properties from 'idp.properties' file.F
+     * Set system properties sourced from 'idp.properties' file.
      * 
      * @param idpHome 'idp.home' path
      * @return the properties
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static Properties setupIdPProperties(@Nonnull final String idpHome) throws FileNotFoundException,
+    public static Properties setupIdPProperties() throws FileNotFoundException,
             IOException {
-        Path pathToIdPProperties = Paths.get(idpHome, "conf", "idp.properties");
-        Properties idpProperties = new Properties();
+        final Path pathToIdPProperties = Paths.get(System.getProperty(IDP_HOME_RAW), "conf", "idp.properties");
+        final Properties idpProperties = new Properties();
         idpProperties.load(new FileInputStream(pathToIdPProperties.toFile()));
         for (String propertyName : idpProperties.stringPropertyNames()) {
             System.setProperty(propertyName, idpProperties.getProperty(propertyName));
@@ -103,7 +107,7 @@ public class PathPropertySupport {
      * @param path path to normalize and set
      * @return the normalized path
      */
-    public static String setupProperty(@Nullable final String name, @Nullable final String path) {
+    public static void normalizeProperty(@Nullable final String name, @Nullable final String path) {
         String value = path;
 
         if (System.getProperty(name) == null
@@ -121,8 +125,6 @@ public class PathPropertySupport {
         }
 
         System.setProperty(name, normalizedValue);
-
-        return value;
     }
 
     /**

@@ -14,7 +14,7 @@
     <!-- Specific testbed-related beans -->
 
     <bean id="testbed.DirectoryService" class="common.InMemoryDirectory" init-method="start" destroy-method="stop">
-        <constructor-arg value="${app.home}/test/ldap.ldif" />
+        <constructor-arg value="${testbed.home}/test/ldap.ldif" />
     </bean>
 
 </beans>

@@ -5,7 +5,7 @@
     <!-- Context config params -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>file://${app.home}/system/conf/testbed-ldap.xml file://${idp.home}/system/conf/global-system.xml file://${idp.home}/conf/global-user.xml file://${app.home}/system/conf/testbed-beans.xml</param-value>
+        <param-value>file://${testbed.home}/system/conf/testbed-ldap.xml file://${idp.home}/system/conf/global-system.xml file://${idp.home}/conf/global-user.xml file://${testbed.home}/system/conf/testbed-beans.xml</param-value>
     </context-param>
 
     <!-- Listeners -->
@@ -73,7 +73,7 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>file://${idp.home}/system/conf/mvc-beans.xml /WEB-INF/idp/testbed.xml file://${idp.home}/conf/webflow-config.xml</param-value>
+            <param-value>file://${idp.home}/system/conf/mvc-beans.xml file://${idp.home}/conf/webflow-config.xml /WEB-INF/idp/testbed.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -114,34 +114,5 @@
         <servlet-name>sp</servlet-name>
         <url-pattern>/sp/*</url-pattern>
     </servlet-mapping>
-
-
-    <!-- Container security config -->
-
-    <!-- Just used for testing stuff that ought to require authentication. -->
-    <security-constraint>
-        <display-name>Shib Testbed Web Authentication</display-name>
-        <web-resource-collection>
-            <web-resource-name>protected actions</web-resource-name>
-            <url-pattern>/test/protected/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>*</role-name>
-        </auth-constraint>
-        <!--
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-        -->
-    </security-constraint>
-
-    <security-role>
-        <role-name>*</role-name>
-    </security-role>
-
-    <login-config>
-        <auth-method>BASIC</auth-method>
-        <realm-name>Shib Testbed Web Authentication</realm-name>
-    </login-config>
 
 </web-app>
