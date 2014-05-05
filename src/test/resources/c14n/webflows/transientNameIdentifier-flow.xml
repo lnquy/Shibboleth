@@ -16,6 +16,7 @@
     </action-state>    
     
     <subflow-state id="C14N" subflow="SubjectC14N/SAML">
+        <input name="calledAsSubflow" value="true" />
         <transition on="proceed" to="TestAfterC14N" />
         <transition on="InvalidSubjectCanonicalizationContext" to="end" />
     </subflow-state>
