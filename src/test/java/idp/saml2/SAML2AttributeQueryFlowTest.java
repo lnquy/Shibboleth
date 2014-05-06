@@ -50,7 +50,7 @@ import org.testng.annotations.Test;
 public class SAML2AttributeQueryFlowTest extends AbstractSAML2FlowTest {
 
     /** Flow id. */
-    @Nonnull public final static String FLOW_ID = "SAML2/AttributeQuery";
+    @Nonnull public final static String FLOW_ID = "profile/SAML2/SOAP/AttributeQuery";
 
     // TODO Retrieve SP certificate from metadata
     @Autowired @Qualifier("testbed.sp.X509Certificate") private X509CertificateFactoryBean certFactoryBean;

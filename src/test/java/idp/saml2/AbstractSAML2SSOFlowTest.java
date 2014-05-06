@@ -68,7 +68,7 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
 
     public String getDestinationRedirect(HttpServletRequest servletRequest) {
         // TODO servlet context
-        String destinationPath = "/idp/SAML2/Redirect/SSO";
+        String destinationPath = "/idp/profile/SAML2/Redirect/SSO";
         try {
             String baseUrl = SimpleUrlCanonicalizer.canonicalize(getBaseUrl(servletRequest));
             UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
@@ -82,7 +82,21 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
 
     public String getDestinationPost(HttpServletRequest servletRequest) {
         // TODO servlet context
-        String destinationPath = "/idp/SAML2/POST/SSO";
+        String destinationPath = "/idp/profile/SAML2/POST/SSO";
+        String baseUrl = getBaseUrl(servletRequest);
+        try {
+            UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
+            urlBuilder.setPath(destinationPath);
+            return urlBuilder.buildURL();
+        } catch (MalformedURLException e) {
+            log.error("Couldn't parse base URL, reverting to internal default destination: {}", baseUrl);
+            return "http://localhost:8080" + destinationPath;
+        }
+    }
+
+    public String getDestinationPostSimpleSign(HttpServletRequest servletRequest) {
+        // TODO servlet context
+        String destinationPath = "/idp/profile/SAML2/POST-SimpleSign/SSO";
         String baseUrl = getBaseUrl(servletRequest);
         try {
             UrlBuilder urlBuilder = new UrlBuilder(baseUrl);

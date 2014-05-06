@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 public class SAML2UnsolicitedSSOFlowTest extends AbstractSAML2FlowTest {
 
     /** Flow id. */
-    @Nonnull public final static String FLOW_ID = "SAML2/Unsolicited/SSO";
+    @Nonnull public final static String FLOW_ID = "profile/SAML2/Unsolicited/SSO";
 
     /**
      * Test the SAML 2 unsolicited SSO flow
@@ -51,10 +51,7 @@ public class SAML2UnsolicitedSSOFlowTest extends AbstractSAML2FlowTest {
      * Build the {@link MockHttpServletRequest}.
      */
     public void buildRequest() {
-        // TODO time request parameter ?
         request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.PROVIDER_ID_PARAM, SP_ENTITY_ID);
-        // TODO if the following params are set, why does the test fail ?
-        //request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.SHIRE_PARAM, SP_ACS_URL);
-        //request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.TARGET_PARAM, SP_RELAY_STATE);
+        request.addParameter(BaseIdPInitiatedSSORequestMessageDecoder.TARGET_PARAM, SP_RELAY_STATE);
     }
 }

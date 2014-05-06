@@ -227,7 +227,7 @@ public class Saml2Controller {
 
 	private String getDestinationRedirect(HttpServletRequest servletRequest) {
 		//TODO servlet context
-		String destinationPath = "/idp/SAML2/Redirect/SSO";
+		String destinationPath = "/idp/profile/SAML2/Redirect/SSO";
 		String baseUrl = getBaseUrl(servletRequest);
 		try {
 			UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
@@ -241,7 +241,7 @@ public class Saml2Controller {
 	
 	private String getDestinationPost(HttpServletRequest servletRequest) {
 		//TODO servlet context
-		String destinationPath = "/idp/SAML2/POST/SSO";
+		String destinationPath = "/idp/profile/SAML2/POST/SSO";
 		String baseUrl = getBaseUrl(servletRequest);
 		try {
 			UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
