@@ -57,12 +57,13 @@ public class SetupForSAML1C14N extends AbstractProfileAction {
 
     @Override protected void doExecute(@Nonnull final ProfileRequestContext profileRequestContext) {
 
-        RelyingPartyContext rpc = profileRequestContext.getSubcontext(RelyingPartyContext.class, false);
+        final RelyingPartyContext rpc = profileRequestContext.getSubcontext(RelyingPartyContext.class);
 
         NameIdentifier nid = null;
-        AttributeContext ac = rpc.getSubcontext(AttributeContext.class, false);
+        final AttributeContext ac = rpc.getSubcontext(AttributeContext.class, false);
         for (final AttributeEncoder enc : ac.getIdPAttributes().get(getAttributeName()).getEncoders()) {
-            if (enc instanceof SAML1NameIdentifierAttributeEncoder) {
+            if (enc instanceof SAML1NameIdentifierAttributeEncoder
+                    && enc.getActivationCondition().apply(profileRequestContext)) {
                 try {
                     nid = ((SAML1NameIdentifierAttributeEncoder) enc).encode(ac.getIdPAttributes().get(getAttributeName()));
                 } catch (AttributeEncodingException e) {
@@ -77,15 +78,14 @@ public class SetupForSAML1C14N extends AbstractProfileAction {
             return;
         }
 
-        NameIdentifierPrincipal nidp = new NameIdentifierPrincipal(nid);
-        Subject sub = new Subject();
+        final NameIdentifierPrincipal nidp = new NameIdentifierPrincipal(nid);
+        final Subject sub = new Subject();
         sub.getPrincipals().add(nidp);
 
-        SubjectCanonicalizationContext scc =
+        final SubjectCanonicalizationContext scc =
                 profileRequestContext.getSubcontext(SubjectCanonicalizationContext.class, true);
         scc.setSubject(sub);
         scc.setRequesterId(rpc.getRelyingPartyId());
         scc.setResponderId(rpc.getConfiguration().getResponderId());
-
     }
 }
