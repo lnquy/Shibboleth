@@ -25,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.executor.FlowExecutionResult;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
@@ -37,15 +35,6 @@ public class TestC14N extends AbstractFlowTest {
 
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(TestC14N.class);
-
-    @BeforeClass public void setPerClassProperties() {
-        // System.setProperty("idp.c14n.flows", "SAML2.*|Legacy.*|SAML1.*");
-    }
-
-    @AfterClass public void resetPerClassProperties() {
-        // Taken from idp.properties
-        // System.setProperty("idp.c14n.flows", "Simple");
-    }
 
     @Test public void testTransientNameID() {
 
@@ -96,4 +85,5 @@ public class TestC14N extends AbstractFlowTest {
         assertFlowExecutionResult(result, "directNameIdentifier");
         assertFlowExecutionOutcome(result.getOutcome());
     }
+    
 }
