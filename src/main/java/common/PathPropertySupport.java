@@ -17,7 +17,6 @@
 
 package common;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,9 +34,6 @@ public class PathPropertySupport {
     /** The name of the system property defining the normalized path to configuration files for the IdP. */
     public final static String IDP_HOME = "idp.home";
 
-    /** The name of the system property defining the raw path to configuration files for the IdP. */
-    public final static String IDP_HOME_RAW = "idp.home.raw";
-
     /** The name of the system property defining the normalized path to testbed-only configuration. */
     public final static String TESTBED_HOME = "testbed.home";
     
@@ -50,15 +46,12 @@ public class PathPropertySupport {
     public static void setupIdPHomeProperties() {
 
         String raw = System.getProperty(IDP_HOME);
-
         if (raw != null) {
             normalizeProperty(IDP_HOME, raw);
-            System.setProperty(IDP_HOME_RAW, raw);
         } else {
             raw = Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
                     "java-identity-provider", "idp-conf", "src", "main", "resources").toString();
             normalizeProperty(IDP_HOME, raw);
-            System.setProperty(IDP_HOME_RAW, raw);
         }
     }
 
@@ -70,13 +63,12 @@ public class PathPropertySupport {
     public static void setupTestbedHomeProperty() {
         
         String raw = System.getProperty(TESTBED_HOME);
-
         if (raw != null) {
             normalizeProperty(TESTBED_HOME, raw);
+        } else {
+            raw = Paths.get("src", "main", "resources").toAbsolutePath().toString();
+            normalizeProperty(TESTBED_HOME, raw);
         }
-
-        raw = Paths.get("src", "main", "resources").toAbsolutePath().toString();
-        normalizeProperty(TESTBED_HOME, raw);
     }
     
     /**
@@ -89,7 +81,7 @@ public class PathPropertySupport {
      */
     public static Properties setupIdPProperties() throws FileNotFoundException,
             IOException {
-        final Path pathToIdPProperties = Paths.get(System.getProperty(IDP_HOME_RAW), "conf", "idp.properties");
+        final Path pathToIdPProperties = Paths.get(System.getProperty(IDP_HOME), "conf", "idp.properties");
         final Properties idpProperties = new Properties();
         idpProperties.load(new FileInputStream(pathToIdPProperties.toFile()));
         for (String propertyName : idpProperties.stringPropertyNames()) {
@@ -105,7 +97,6 @@ public class PathPropertySupport {
      * 
      * @param name system property name
      * @param path path to normalize and set
-     * @return the normalized path
      */
     public static void normalizeProperty(@Nullable final String name, @Nullable final String path) {
         String value = path;
@@ -117,53 +108,28 @@ public class PathPropertySupport {
             value = Paths.get("").toAbsolutePath().toString();
         }
 
-        final String normalizedValue;
-        if (needsNormalized(value)) {
-            normalizedValue = normalizePath(value);
-        } else {
-            normalizedValue = value;
-        }
-
-        System.setProperty(name, normalizedValue);
+        System.setProperty(name, normalizePath(value));
     }
 
     /**
-     * Normalize a path for windows.<br/>
+     * Normalize a path with multiple leading slashes and convert backslashes to forward slashes.
      * 
-     * On operating systems which present filesystems not rooted in '\', we need to be careful about the construction of
-     * URLS. According to RFC 1738 a url of the form file://foo/bar is for <em>host</em>foo and <em>path</em> bar. Hence
-     * if we take a path of the form c:\foo\bar and (or normalized to c:/foo/bar) and prepend 'file://' the URL code
-     * will, quite correctly take this as host 'C:'. This will at best end up with a timeout because 'C:' cannot be
-     * found and at worst with getting the completely the wrong info. Contrast the case of passing in /opt/idp/config,
-     * this yields file:///opt/idp/config which the URL code interprets as '/opt/idp/config' on the null host.
-     * 
-     * 
-     * <br/>
-     * The canonical solution on windows is to prepend a '/'. We can deal with other operatring systems as the need
-     * arises.
+     * <p>This normalization presupposes that any Windows paths that start with a drive letter are
+     * usable, with the caveat that use of the path in a URI will be corrected for in-situ by adding a slash
+     * when needed.</p>
      * 
      * @param path the input path
      * @return the normalized path.
      */
     static private String normalizePath(String path) {
 
-        if (needsNormalized(path)) {
-            return '/' + path;
+        String normalized = path.replace("\\", "/");
+        while (normalized.startsWith("//")) {
+            // Skip the first slash
+            normalized = normalized.substring(1);
         }
-        return path;
+        
+        return normalized;
     }
 
-    /**
-     * Does the path need to be normalized? <br/>
-     * Yes if it doesn't start with '/' (or '\') and the second character is ':'
-     * 
-     * @param path the path to inspect
-     * @return whether we need to normalize.
-     */
-    static private boolean needsNormalized(String path) {
-
-        return path.length() >= 2 && path.charAt(0) != '/' && path.charAt(0) != File.pathSeparatorChar
-                && path.charAt(1) == ':';
-
-    }
 }

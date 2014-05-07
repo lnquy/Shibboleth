@@ -46,7 +46,7 @@ public class Main {
             
             // Configure Jetty from jetty.xml.
             final Path pathToJettyXML =
-                    Paths.get(System.getProperty(PathPropertySupport.IDP_HOME_RAW), "system", "conf", "jetty.xml");
+                    Paths.get(System.getProperty(PathPropertySupport.IDP_HOME), "system", "conf", "jetty.xml");
             final Resource fileserver_xml = Resource.newResource(pathToJettyXML.toString());
             final XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
             final Server server = (Server) configuration.configure();
