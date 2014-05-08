@@ -113,7 +113,7 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     @Nonnull public final static String IP_ADDRESS_AUTHN_MAP_BEAN_NAME = "shibboleth.authn.IPAddress.Mappings";
 
     /** The flow ID for IP address based authn. */
-    @Nonnull public final static String IP_ADDRESS_AUTHN_FLOW_ID = "AuthenticationFlow/IPAddress";
+    @Nonnull public final static String IP_ADDRESS_AUTHN_FLOW_ID = "authn/IPAddress";
 
     /** In-memory directory server. */
     @NonnullAfterInit protected InMemoryDirectory directoryServer;
