@@ -5,7 +5,6 @@
 <%@ page import="net.shibboleth.utilities.java.support.codec.HTMLEncoder" %>
 
 <%
-HTMLEncoder encoder = (HTMLEncoder) request.getAttribute("encoder");
 AuthenticationErrorContext authenticationErrorContext = (AuthenticationErrorContext) request.getAttribute("authenticationErrorContext");
 AuthenticationWarningContext authenticationWarningContext = (AuthenticationWarningContext) request.getAttribute("authenticationWarningContext");
 %>
@@ -13,18 +12,18 @@ AuthenticationWarningContext authenticationWarningContext = (AuthenticationWarni
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <body>
     
-    	<h2>Testbed Login</h2>
+    	<h2>Testbed JSP Login</h2>
         
 <% if ( authenticationErrorContext != null && !authenticationErrorContext.getExceptions().isEmpty()) { %>
-		<p>ERROR: <%= encoder.encodeForHTML(authenticationErrorContext.getExceptions().get(0).getMessage()) %></p>
+		<p>ERROR: <%= HTMLEncoder.encodeForHTML(authenticationErrorContext.getExceptions().get(0).getMessage()) %></p>
 <% } %>
 
 <% if ( authenticationErrorContext != null && !authenticationErrorContext.getClassifiedErrors().isEmpty()) { %>
-        <p>Classified errors: <%= encoder.encodeForHTML(authenticationErrorContext.getClassifiedErrors().toString()) %></p>
+        <p>Classified errors: <%= HTMLEncoder.encodeForHTML(authenticationErrorContext.getClassifiedErrors().toString()) %></p>
 <% } %>
 
 <% if ( authenticationWarningContext != null && !authenticationWarningContext.getClassifiedWarnings().isEmpty()) { %>
-        <p>Classified warnings: <%= encoder.encodeForHTML(authenticationWarningContext.getClassifiedWarnings().toString()) %></p>
+        <p>Classified warnings: <%= HTMLEncoder.encodeForHTML(authenticationWarningContext.getClassifiedWarnings().toString()) %></p>
 <% } %>
         
         <form action="<%= request.getAttribute("flowExecutionUrl") %>" method="post">
