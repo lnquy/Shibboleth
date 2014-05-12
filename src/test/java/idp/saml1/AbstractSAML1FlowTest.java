@@ -53,7 +53,7 @@ import org.testng.Assert;
  * Abstract SAML 1 flow test.
  */
 // TODO Remove ContextConfiguration once credentials are figured out.
-@ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/idp/testbed.xml"})
+@ContextConfiguration({"/system/conf/testbed-beans.xml", })
 public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
 
     /**

@@ -52,7 +52,7 @@ import org.testng.Assert;
 /**
  * Abstract SAML 2 flow test.
  */
-@ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/idp/testbed.xml"})
+@ContextConfiguration({"/system/conf/testbed-beans.xml", })
 public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
     /**
