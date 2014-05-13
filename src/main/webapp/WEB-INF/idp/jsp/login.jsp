@@ -1,5 +1,8 @@
 <%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="urn:mace:shibboleth:2.0:idp:ui" prefix="idpui" %>
+
+
 <%@ page import="net.shibboleth.idp.authn.context.*" %>
 <%@ page import="org.opensaml.profile.context.ProfileRequestContext" %>
 <%@ page import="net.shibboleth.utilities.java.support.codec.HTMLEncoder" %>
@@ -11,6 +14,14 @@ AuthenticationWarningContext authenticationWarningContext = (AuthenticationWarni
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <body>
+    
+    <p>
+        <idpui:serviceLogo>default</idpui:serviceLogo>
+    </p>
+    <p>
+        <idpui:serviceDescription>SP description</idpui:serviceDescription>
+    </p>
+    
     
     	<h2>Testbed JSP Login</h2>
         
