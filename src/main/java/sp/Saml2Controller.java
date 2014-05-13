@@ -48,7 +48,7 @@ import org.w3c.dom.Element;
 
 @Controller
 @RequestMapping("/SAML2")
-public class Saml2Controller {
+public class Saml2Controller extends BaseSAMLController {
 	
 	private Logger log = LoggerFactory.getLogger(Saml2Controller.class);
 	
@@ -126,24 +126,6 @@ public class Saml2Controller {
 		headers.add("Content-Type", "text/plain");
 		
 		return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
-	}
-	
-	private MessageContext<SAMLObject> decodeInboundMessageContextPost(HttpServletRequest servletRequest) throws Exception {
-		HTTPPostDecoder decoder = new HTTPPostDecoder();
-		try {
-			decoder.setHttpServletRequest(servletRequest);
-			decoder.setParserPool(parserPool);
-			decoder.initialize();
-			
-			decoder.decode();
-			
-			return decoder.getMessageContext();
-		} catch (ComponentInitializationException | MessageDecodingException e) {
-			log.error("Error decoding inbound message context", e);
-			throw e;
-		} finally {
-			decoder.destroy();
-		}
 	}
 
 	private MessageContext<SAMLObject> buildOutboundMessageContext(AuthnRequest authnRequest, String bindingUri) {
