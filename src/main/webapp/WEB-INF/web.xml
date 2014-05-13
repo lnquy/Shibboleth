@@ -5,49 +5,13 @@
     <!-- Context config params -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>file:///${testbed.home}/system/conf/testbed-ldap.xml file:///${idp.home}/system/conf/global-system.xml file:///${idp.home}/conf/global-user.xml file:///${testbed.home}/system/conf/testbed-beans.xml</param-value>
+        <param-value>file:///${testbed.home}/system/conf/testbed-opensaml.xml file:///${testbed.home}/system/conf/testbed-ldap.xml file:///${testbed.home}/system/conf/testbed-beans.xml</param-value>
     </context-param>
 
     <!-- Listeners -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    
-    <!-- Filters and filter mappings -->
-    <filter>
-        <filter-name>CookieBufferingFilter</filter-name>
-        <filter-class>net.shibboleth.utilities.java.support.net.CookieBufferingFilter</filter-class>
-    </filter>
-    <filter>
-        <filter-name>DelegatingFilterProxy</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <init-param>
-            <param-name>targetBeanName</param-name>
-            <param-value>shibboleth.ClientStorageService</param-value>
-        </init-param>
-    </filter>
-    <filter>
-        <filter-name>RequestResponseContextFilter</filter-name>
-        <filter-class>net.shibboleth.utilities.java.support.net.RequestResponseContextFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>CookieBufferingFilter</filter-name>
-        <url-pattern>/idp/Shibboleth/SSO</url-pattern>
-        <url-pattern>/idp/SAML2/Unsolicited/SSO</url-pattern>
-        <url-pattern>/idp/SAML2/Redirect/SSO</url-pattern>
-        <url-pattern>/idp/SAML2/POST/SSO</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>DelegatingFilterProxy</filter-name>
-        <url-pattern>/idp/Shibboleth/SSO</url-pattern>
-        <url-pattern>/idp/SAML2/Unsolicited/SSO</url-pattern>
-        <url-pattern>/idp/SAML2/Redirect/SSO</url-pattern>
-        <url-pattern>/idp/SAML2/POST/SSO</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>RequestResponseContextFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
     
     <!-- Servlets and servlet mappings -->
 
@@ -65,38 +29,6 @@
     <servlet-mapping>
         <servlet-name>test</servlet-name>
         <url-pattern>/test/*</url-pattern>
-    </servlet-mapping>
-
-    <!-- The /idp app space -->
-    <servlet>
-        <servlet-name>idp</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>file:///${idp.home}/system/conf/mvc-beans.xml file:///${idp.home}/system/conf/webflow-config.xml</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>idp</servlet-name>
-        <url-pattern>/idp/*</url-pattern>
-    </servlet-mapping>
-    
-    <!-- Servlet for displaying IdP status. -->
-    <servlet>
-        <servlet-name>Status</servlet-name>
-        <servlet-class>net.shibboleth.idp.StatusServlet</servlet-class>
-        <!-- Space separated list of CIDR blocks allowed to access the status page -->
-        <init-param>
-            <param-name>AllowedIPs</param-name>
-            <param-value>127.0.0.1/32 ::1/128</param-value>
-        </init-param>
-        <load-on-startup>2</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Status</servlet-name>
-        <url-pattern>/idp/status</url-pattern>
     </servlet-mapping>
 
     <!-- The /sp app space -->

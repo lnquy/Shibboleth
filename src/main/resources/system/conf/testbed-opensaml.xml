@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+
+       default-init-method="initialize"
+       default-destroy-method="destroy">
+
+    <context:property-placeholder location="file:///${idp.home}/conf/idp.properties" />
+
+    <bean id="shibboleth.OpenSAMLConfig" class="net.shibboleth.idp.spring.OpenSAMLConfigBean"
+        depends-on="shibboleth.ParserPool" p:parserPool-ref="shibboleth.ParserPool" />
+
+    <bean id="shibboleth.ParserPool" class="net.shibboleth.utilities.java.support.xml.BasicParserPool" 
+            p:maxPoolSize="100"
+            p:coalescing="true"
+            p:ignoreComments="true"
+            p:ignoreElementContentWhitespace="true"
+            p:namespaceAware="true">
+        <property name="builderAttributes">
+            <map>
+                <entry>
+                    <key>
+                        <value>http://apache.org/xml/properties/security-manager</value>
+                    </key>
+                    <bean id="shibboleth.XercesSecurityManager" class="${idp.xml.securityManager}" />
+                </entry>
+            </map>
+        </property>
+        <property name="builderFeatures">
+            <map>
+                <entry>
+                    <key>
+                        <value>http://apache.org/xml/features/disallow-doctype-decl</value>
+                    </key>
+                    <util:constant static-field="java.lang.Boolean.TRUE"/>
+                </entry>
+                <entry>
+                    <key>
+                        <value>http://apache.org/xml/features/validation/schema/normalized-value</value>
+                    </key>
+                    <util:constant static-field="java.lang.Boolean.FALSE"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="shibboleth.BuilderFactory" factory-method="getBuilderFactory" class="org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport" depends-on="shibboleth.OpenSAMLConfig" />
+    <bean id="shibboleth.MarshallerFactory" factory-method="getMarshallerFactory" class="org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport" depends-on="shibboleth.OpenSAMLConfig" />
+    <bean id="shibboleth.UnmarshallerFactory" factory-method="getUnmarshallerFactory" class="org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport" depends-on="shibboleth.OpenSAMLConfig" />
+    
+    <bean id="shibboleth.VelocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean" >
+        <property name="overrideLogging" value="false"/>
+        <property name="velocityProperties">
+            <props>
+                <prop key="runtime.log.logsystem.class">
+                    net.shibboleth.utilities.java.support.velocity.Slf4JLogChute
+                </prop>
+                <prop key="input.encoding">UTF-8</prop>
+                <prop key="output.encoding">UTF-8</prop>
+                <prop key="resource.loader">classpath, string</prop>
+                <prop key="classpath.resource.loader.class">
+                    org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+                </prop>
+                <prop key="string.resource.loader.class">
+                    org.apache.velocity.runtime.resource.loader.StringResourceLoader
+                </prop>
+                <prop key="file.resource.loader.class">
+                    org.apache.velocity.runtime.resource.loader.FileResourceLoader
+                </prop>
+                <prop key="file.resource.loader.path">${idp.home}</prop>
+                <prop key="file.resource.loader.cache">false</prop>
+            </props>
+        </property>
+    </bean>
+    
+</beans>

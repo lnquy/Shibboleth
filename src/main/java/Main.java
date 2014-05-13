@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
@@ -43,7 +44,7 @@ public class Main {
             PathPropertySupport.setupIdPHomeProperties();
             PathPropertySupport.setupIdPProperties();
             PathPropertySupport.setupTestbedHomeProperty();
-            
+
             // Configure Jetty from jetty.xml.
             final Path pathToJettyXML =
                     Paths.get(System.getProperty(PathPropertySupport.IDP_HOME), "system", "conf", "jetty.xml");
@@ -51,16 +52,30 @@ public class Main {
             final XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
             final Server server = (Server) configuration.configure();
 
-            final WebAppContext webapp = new WebAppContext();
-            webapp.setContextPath("/");
-            server.setHandler(webapp);
+            // The SP and test webapps
+            final WebAppContext testbedWebapp = new WebAppContext();
+            testbedWebapp.setContextPath("/");
             if (protectionDomain.getCodeSource().getLocation().toString().endsWith(".war")) {
                 // Running from command line.
-                webapp.setWar(location.toExternalForm());
+                testbedWebapp.setWar(location.toExternalForm());
             } else {
                 // Running from Eclipse.
-                webapp.setWar("src/main/webapp");
+                testbedWebapp.setWar("src/main/webapp");
             }
+
+            // The IdP web app
+            // TODO support running from command line
+            final Path idpWebappPath =
+                    Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
+                            "java-identity-provider", "idp-war", "src", "main", "webapp");
+            final WebAppContext idpWebapp = new WebAppContext();
+            idpWebapp.setContextPath("/idp");
+            idpWebapp.setWar(idpWebappPath.toString());
+
+            final ContextHandlerCollection contexts = new ContextHandlerCollection();
+            contexts.addHandler(testbedWebapp);
+            contexts.addHandler(idpWebapp);
+            server.setHandler(contexts);
 
             server.start();
             server.join();
@@ -68,5 +83,5 @@ public class Main {
             e.printStackTrace();
         }
     }
-    
+
 }
