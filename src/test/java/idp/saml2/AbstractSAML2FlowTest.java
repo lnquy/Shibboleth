@@ -68,11 +68,11 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     @Qualifier("sp.Credential") @Autowired private Credential spCredential;
     
     private Assertion decryptAssertion(final EncryptedAssertion encrypted) throws DecryptionException {
-        final ChainingEncryptedKeyResolver chain = new ChainingEncryptedKeyResolver();
-        chain.getResolverChain().add(new InlineEncryptedKeyResolver());
-        chain.getResolverChain().add(new EncryptedElementTypeEncryptedKeyResolver());
+        //final ChainingEncryptedKeyResolver chain = new ChainingEncryptedKeyResolver();
+        //chain.getResolverChain().add(new InlineEncryptedKeyResolver());
+        //chain.getResolverChain().add(new EncryptedElementTypeEncryptedKeyResolver());
         final Decrypter decrypter =
-                new Decrypter(null, new StaticKeyInfoCredentialResolver(spCredential), chain);
+                new Decrypter(null, new StaticKeyInfoCredentialResolver(spCredential), new InlineEncryptedKeyResolver());
         return decrypter.decrypt(encrypted);
     }
 
