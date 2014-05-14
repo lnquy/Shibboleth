@@ -192,4 +192,5 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
 
         return messageContext;
     }
+    
 }

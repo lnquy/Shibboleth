@@ -37,6 +37,7 @@ import org.opensaml.saml.saml2.core.AuthnContext;
 import org.opensaml.saml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml.saml2.core.AuthnStatement;
 import org.opensaml.saml.saml2.core.Conditions;
+import org.opensaml.saml.saml2.core.EncryptedAssertion;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
@@ -44,6 +45,15 @@ import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.Subject;
 import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
+import org.opensaml.saml.saml2.encryption.Decrypter;
+import org.opensaml.saml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver;
+import org.opensaml.security.credential.Credential;
+import org.opensaml.xmlsec.encryption.support.ChainingEncryptedKeyResolver;
+import org.opensaml.xmlsec.encryption.support.DecryptionException;
+import org.opensaml.xmlsec.encryption.support.InlineEncryptedKeyResolver;
+import org.opensaml.xmlsec.keyinfo.impl.StaticKeyInfoCredentialResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.webflow.execution.FlowExecutionOutcome;
 import org.springframework.webflow.executor.FlowExecutionResult;
@@ -52,8 +62,19 @@ import org.testng.Assert;
 /**
  * Abstract SAML 2 flow test.
  */
-@ContextConfiguration({"/system/conf/testbed-beans.xml", })
+@ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/sp/testbed.xml"})
 public class AbstractSAML2FlowTest extends AbstractFlowTest {
+
+    @Qualifier("sp.Credential") @Autowired private Credential spCredential;
+    
+    private Assertion decryptAssertion(final EncryptedAssertion encrypted) throws DecryptionException {
+        final ChainingEncryptedKeyResolver chain = new ChainingEncryptedKeyResolver();
+        chain.getResolverChain().add(new InlineEncryptedKeyResolver());
+        chain.getResolverChain().add(new EncryptedElementTypeEncryptedKeyResolver());
+        final Decrypter decrypter =
+                new Decrypter(null, new StaticKeyInfoCredentialResolver(spCredential), chain);
+        return decrypter.decrypt(encrypted);
+    }
 
     /**
      * Top level validation of the {@link FlowExecutionResult}.
@@ -80,6 +101,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
      * 
      * @param result the flow execution result
      * @param flowId the flow ID
+     * @param encrypted whether the assertions are encrypted
      */
     public void validateResult(@Nullable final FlowExecutionResult result, @Nonnull final String flowId) {
 
@@ -98,6 +120,15 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
         assertStatus(response.getStatus());
 
+        if (!response.getEncryptedAssertions().isEmpty()) {
+            try {
+                response.getAssertions().add(decryptAssertion(response.getEncryptedAssertions().get(0)));
+                response.getEncryptedAssertions().clear();
+            } catch (DecryptionException e) {
+                Assert.fail(e.getMessage());
+            }
+        }
+        
         final List<Assertion> assertions = response.getAssertions();
         assertAssertions(assertions);
 
@@ -520,5 +551,5 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         Assert.assertTrue(attribute.getAttributeValues().get(0) instanceof XSString);
         Assert.assertEquals(((XSString) attribute.getAttributeValues().get(0)).getValue(), attributeValue);
     }
-
+    
 }
