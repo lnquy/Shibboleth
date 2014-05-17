@@ -15,9 +15,9 @@
     
     <bean id="testbed.IdGenerator" class="net.shibboleth.utilities.java.support.security.Type4UuidIdentifierGenerationStrategy" />
     
-    <bean id="testbed.GlobalSecurityConfiguration" factory-method="getGlobalXMLSecurityConfiguration" class="org.opensaml.xmlsec.SecurityConfigurationSupport" />
+    <bean id="testbed.KeyInfoCredentialResolver" class="org.opensaml.xmlsec.config.DefaultSecurityConfigurationBootstrap"
+        factory-method="buildBasicInlineKeyInfoCredentialResolver" />
     
-    <bean id="testbed.KeyInfoCredentialResolver" factory-method="getDefaultKeyInfoCredentialResolver" factory-bean="testbed.GlobalSecurityConfiguration" />
     
     
     <!-- Specific testbed-related beans -->
