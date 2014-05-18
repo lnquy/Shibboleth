@@ -141,6 +141,7 @@ public class Saml2Controller extends BaseSAMLController {
 		signingParameters.setSigningCredential(spCredential);
 		signingParameters.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256);
 		//signingParameters.setSignatureReferenceDigestMethod(SignatureConstants.ALGO_ID_DIGEST_SHA256);
+		signingParameters.setSignatureCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
 		SecurityParametersContext secParamsContext = messageContext.getSubcontext(SecurityParametersContext.class, true);
 		secParamsContext.setSignatureSigningParameters(signingParameters);
 		
