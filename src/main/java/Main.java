@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.ProtectionDomain;
+import java.util.Properties;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -42,14 +43,26 @@ public class Main {
             final URL location = protectionDomain.getCodeSource().getLocation();
 
             PathPropertySupport.setupIdPHomeProperties();
-            PathPropertySupport.setupIdPProperties();
             PathPropertySupport.setupTestbedHomeProperty();
 
-            // Configure Jetty from jetty.xml.
+            // Create Jetty configuration from jetty-base/etc/jetty.xml in the idp-distribution module.
             final Path pathToJettyXML =
-                    Paths.get(System.getProperty(PathPropertySupport.IDP_HOME), "system", "conf", "jetty.xml");
-            final Resource fileserver_xml = Resource.newResource(pathToJettyXML.toString());
-            final XmlConfiguration configuration = new XmlConfiguration(fileserver_xml.getInputStream());
+                    Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
+                            "java-identity-provider", "idp-distribution", "src", "main", "resources", "jetty-base",
+                            "etc", "jetty.xml");
+            final Resource jettyXML = Resource.newResource(pathToJettyXML.toString());
+            final XmlConfiguration configuration = new XmlConfiguration(jettyXML.getInputStream());
+
+            // Add properties to the Jetty configuration from conf/idp-properties in the idp-conf module.
+            final Path pathToIdPProperties =
+                    Paths.get(System.getProperty(PathPropertySupport.IDP_HOME), "conf", "idp.properties");
+            final Properties properties = new Properties();
+            properties.load(Resource.newResource(pathToIdPProperties.toFile().getAbsolutePath()).getInputStream());
+            for (String key : properties.stringPropertyNames()) {
+                configuration.getProperties().put(key, properties.getProperty(key));
+            }
+
+            // Configure the Jetty server (with both the XML and properties file configurations).
             final Server server = (Server) configuration.configure();
 
             // The SP and test webapps
