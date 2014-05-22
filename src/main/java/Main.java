@@ -45,19 +45,20 @@ public class Main {
             PathPropertySupport.setupIdPHomeProperties();
             PathPropertySupport.setupTestbedHomeProperty();
 
-            // Create Jetty configuration from jetty-base/etc/jetty.xml in the idp-distribution module.
-            final Path pathToJettyXML =
+            // Determine path to jetty-base in the idp-distribution module.
+            final Path pathToJettyBase =
                     Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
-                            "java-identity-provider", "idp-distribution", "src", "main", "resources", "jetty-base",
-                            "etc", "jetty.xml");
+                            "java-identity-provider", "idp-distribution", "src", "main", "resources", "jetty-base");
+
+            // Create Jetty configuration from jetty-base/etc/jetty.xml in the idp-distribution module.
+            final Path pathToJettyXML = pathToJettyBase.resolve(Paths.get("etc", "jetty.xml"));
             final Resource jettyXML = Resource.newResource(pathToJettyXML.toString());
             final XmlConfiguration configuration = new XmlConfiguration(jettyXML.getInputStream());
 
-            // Add properties to the Jetty configuration from conf/idp-properties in the idp-conf module.
-            final Path pathToIdPProperties =
-                    Paths.get(System.getProperty(PathPropertySupport.IDP_HOME), "conf", "idp.properties");
+            // Add properties to the Jetty configuration from jetty-base/start.d/idp.ini in the idp-distribution module.
+            final Path pathToIdPIni = pathToJettyBase.resolve(Paths.get("start.d", "idp.ini"));
             final Properties properties = new Properties();
-            properties.load(Resource.newResource(pathToIdPProperties.toFile().getAbsolutePath()).getInputStream());
+            properties.load(Resource.newResource(pathToIdPIni.toFile().getAbsolutePath()).getInputStream());
             for (String key : properties.stringPropertyNames()) {
                 configuration.getProperties().put(key, properties.getProperty(key));
             }
