@@ -104,7 +104,7 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** The end state output attribute expression which retrieves the profile request context. */
     @Nonnull public final static String END_STATE_OUTPUT_ATTR_EXPR =
-            "flowRequestContext.getConversationScope().get('org.opensaml.profile.context.ProfileRequestContext')";
+            "flowRequestContext.getConversationScope().get('" + ProfileRequestContext.BINDING_KEY + "')";
 
     /** The name of the end state flow output attribute containing the profile request context. */
     @Nonnull public final static String END_STATE_OUTPUT_ATTR_NAME = "ProfileRequestContext";

@@ -29,8 +29,7 @@
     
     <end-state id="end">
         <!-- TODO: Probably remove later. For tests, map the profile request context as an output attribute -->
-        <output name="ProfileRequestContext"
-            value="flowRequestContext.getConversationScope().get('org.opensaml.profile.context.ProfileRequestContext')" />
+        <output name="ProfileRequestContext" value="opensamlProfileRequestContext" />
     </end-state>
     
     <bean-import resource="beans.xml" />
