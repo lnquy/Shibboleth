@@ -197,7 +197,14 @@
             <artifactId>jetty-jsp</artifactId>
             <version>${jetty.version}</version>
             <scope>runtime</scope>
-        </dependency>        
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jaas</artifactId>
+            <version>${jetty.version}</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>net.shibboleth.utilities.jetty9</groupId>

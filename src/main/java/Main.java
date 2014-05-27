@@ -21,6 +21,8 @@ import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 import java.util.Properties;
 
+import org.eclipse.jetty.jaas.JAASLoginService;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.resource.Resource;
@@ -85,6 +87,16 @@ public class Main {
             final WebAppContext idpWebapp = new WebAppContext();
             idpWebapp.setContextPath("/idp");
             idpWebapp.setWar(idpWebappPath.toString());
+            
+            System.setProperty("java.security.auth.login.config",
+                    System.getProperty(PathPropertySupport.IDP_HOME) + "/" + properties.getProperty("jetty.jaas.path"));
+            final JAASLoginService jaasLogin = new JAASLoginService();
+            jaasLogin.setName("Web Login Service");
+            jaasLogin.setLoginModuleName("ShibUserPassAuth");
+            final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+            securityHandler.setStrict(false);
+            securityHandler.setLoginService(jaasLogin);
+            idpWebapp.setSecurityHandler(securityHandler);
 
             final ContextHandlerCollection contexts = new ContextHandlerCollection();
             contexts.addHandler(testbedWebapp);
