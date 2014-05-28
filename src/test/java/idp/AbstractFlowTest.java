@@ -18,6 +18,7 @@
 package idp;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,10 @@ import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.shibboleth.idp.authn.SubjectCanonicalizationFlowDescriptor;
+import net.shibboleth.idp.profile.logic.RelyingPartyIdPredicate;
+import net.shibboleth.idp.saml.nameid.impl.NameIDCanonicalization;
+import net.shibboleth.idp.saml.nameid.impl.NameIdentifierCanonicalization;
 import net.shibboleth.utilities.java.support.annotation.constraint.NonnullAfterInit;
 import net.shibboleth.utilities.java.support.net.HttpServletRequestResponseContext;
 import net.shibboleth.utilities.java.support.net.IPRange;
@@ -69,7 +74,10 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.unboundid.ldap.sdk.LDAPException;
+
 import common.InMemoryDirectory;
 import common.PathPropertySupport;
 
@@ -114,7 +122,13 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
 
     /** The flow ID for IP address based authn. */
     @Nonnull public final static String IP_ADDRESS_AUTHN_FLOW_ID = "authn/IPAddress";
+    
+    /** The name of the bean defining the SAML 1 Direct c14n descriptor. */
+    @Nonnull public final static String SAML1_DIRECT_C14N_BEAN_NAME = "c14n/SAML1Direct";
 
+    /** The name of the bean defining the SAML 2 Direct c14n descriptor. */
+    @Nonnull public final static String SAML2_DIRECT_C14N_BEAN_NAME = "c14n/SAML2Direct";
+    
     /** In-memory directory server. */
     @NonnullAfterInit protected InMemoryDirectory directoryServer;
 
@@ -311,4 +325,25 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
         map.put("jdoe", ipRanges);
     }
 
+    /**
+     * Configure Direct NameID c14n by overriding the activation condition attached to the Direct c14n descriptors.
+     */
+    @BeforeMethod public void overrideDirectNamePredicates() {
+        
+        Predicate<ProfileRequestContext> condition = Predicates.and(
+                new NameIdentifierCanonicalization.ActivationCondition(),
+                new RelyingPartyIdPredicate(Collections.singletonList(SP_ENTITY_ID)));
+        
+        SubjectCanonicalizationFlowDescriptor c14n =
+                applicationContext.getBean(SAML1_DIRECT_C14N_BEAN_NAME, SubjectCanonicalizationFlowDescriptor.class);
+        c14n.setActivationCondition(condition);
+
+        condition = Predicates.and(
+                new NameIDCanonicalization.ActivationCondition(),
+                new RelyingPartyIdPredicate(Collections.singletonList(SP_ENTITY_ID)));
+        
+        c14n = applicationContext.getBean(SAML2_DIRECT_C14N_BEAN_NAME, SubjectCanonicalizationFlowDescriptor.class);
+        c14n.setActivationCondition(condition);
+    }
+    
 }
