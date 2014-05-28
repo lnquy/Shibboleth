@@ -17,8 +17,8 @@
     <subflow-state id="C14N" subflow="c14n/saml">
         <input name="calledAsSubflow" value="true" />
         <transition on="proceed" to="TestAfterC14N" />
-        <transition on="InvalidSubjectCanonicalizationContext" to="end" />
-    </subflow-state>
+        <transition to="error"/>
+        </subflow-state>
 
     <action-state id="TestAfterC14N">
         <evaluate expression="TestAfterC14N" />
@@ -31,6 +31,8 @@
         <!-- TODO: Probably remove later. For tests, map the profile request context as an output attribute -->
         <output name="ProfileRequestContext" value="opensamlProfileRequestContext" />
     </end-state>
+    
+    <end-state id="error" />
     
     <bean-import resource="beans.xml" />
     
