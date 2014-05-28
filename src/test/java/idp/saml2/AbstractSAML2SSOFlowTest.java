@@ -38,7 +38,9 @@ import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
+import org.opensaml.saml.saml2.core.Subject;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SignatureSigningParameters;
@@ -109,7 +111,7 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
     }
 
     public AuthnRequest buildAuthnRequest(HttpServletRequest servletRequest) {
-        AuthnRequest authnRequest =
+        final AuthnRequest authnRequest =
                 (AuthnRequest) builderFactory.getBuilder(AuthnRequest.DEFAULT_ELEMENT_NAME).buildObject(
                         AuthnRequest.DEFAULT_ELEMENT_NAME);
 
@@ -118,18 +120,25 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
         authnRequest.setAssertionConsumerServiceURL(getAcsUrl(servletRequest));
         authnRequest.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 
-        Issuer issuer =
-                (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME)
-                        .buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+        final Issuer issuer =
+                (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
         issuer.setValue(AbstractFlowTest.SP_ENTITY_ID);
         authnRequest.setIssuer(issuer);
 
-        NameIDPolicy nameIDPolicy =
+        final NameIDPolicy nameIDPolicy =
                 (NameIDPolicy) builderFactory.getBuilder(NameIDPolicy.DEFAULT_ELEMENT_NAME).buildObject(
                         NameIDPolicy.DEFAULT_ELEMENT_NAME);
         nameIDPolicy.setAllowCreate(true);
         authnRequest.setNameIDPolicy(nameIDPolicy);
 
+        final Subject subject =
+                (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject(Subject.DEFAULT_ELEMENT_NAME);
+        final NameID nameID =
+                (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(NameID.DEFAULT_ELEMENT_NAME);
+        nameID.setValue("jdoe");
+        subject.setNameID(nameID);
+        authnRequest.setSubject(subject);
+        
         return authnRequest;
     }
 
