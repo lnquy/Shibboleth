@@ -8,7 +8,7 @@
     <action-state id="PopulateResolution">
         <evaluate expression="PopulateResolution" />
         <evaluate expression="ResolveAttributes" />
-        <evaluate expression="PopulateSAML1C14NDirect" />
+        <evaluate expression="PopulateSAML1C14NTransform" />
         <evaluate expression="'proceed'" />
 
         <transition on="proceed" to="C14N" />

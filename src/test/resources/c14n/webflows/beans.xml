@@ -18,11 +18,11 @@
         <bean id="ResolveAttributes" class="net.shibboleth.idp.profile.impl.ResolveAttributes" c:resolverService-ref="shibboleth.AttributeResolverService" scope="prototype" />
         <bean id="PopulateSAML2C14N" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:attributeName="transientId" />
         <bean id="PopulateSAML2C14NCrypto" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:attributeName="cryptoTransientId" />
-        <bean id="PopulateSAML2C14NDirect" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:attributeName="Principal" />
+        <bean id="PopulateSAML2C14NTransform" class = "idp.c14n.actions.SetupForSAML2C14N"  scope="prototype" p:attributeName="Principal" />
         <bean id="TestAfterC14N" class = "idp.c14n.actions.TestAfterC14N"  scope="prototype" />
 
         <bean id="PopulateSAML1C14N" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:attributeName="transientId" />
         <bean id="PopulateSAML1C14NCrypto" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:attributeName="cryptoTransientId" />
-        <bean id="PopulateSAML1C14NDirect" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:attributeName="Principal" />
+        <bean id="PopulateSAML1C14NTransform" class = "idp.c14n.actions.SetupForSAML1C14N"  scope="prototype" p:attributeName="Principal" />
 		
 </beans>

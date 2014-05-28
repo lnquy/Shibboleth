@@ -124,10 +124,10 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
     @Nonnull public final static String IP_ADDRESS_AUTHN_FLOW_ID = "authn/IPAddress";
     
     /** The name of the bean defining the SAML 1 Direct c14n descriptor. */
-    @Nonnull public final static String SAML1_DIRECT_C14N_BEAN_NAME = "c14n/SAML1Direct";
+    @Nonnull public final static String SAML1_TRANSFORM_C14N_BEAN_NAME = "c14n/SAML1Transform";
 
     /** The name of the bean defining the SAML 2 Direct c14n descriptor. */
-    @Nonnull public final static String SAML2_DIRECT_C14N_BEAN_NAME = "c14n/SAML2Direct";
+    @Nonnull public final static String SAML2_TRANSFORM_C14N_BEAN_NAME = "c14n/SAML2Transform";
     
     /** In-memory directory server. */
     @NonnullAfterInit protected InMemoryDirectory directoryServer;
@@ -335,14 +335,14 @@ public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests 
                 new RelyingPartyIdPredicate(Collections.singletonList(SP_ENTITY_ID)));
         
         SubjectCanonicalizationFlowDescriptor c14n =
-                applicationContext.getBean(SAML1_DIRECT_C14N_BEAN_NAME, SubjectCanonicalizationFlowDescriptor.class);
+                applicationContext.getBean(SAML1_TRANSFORM_C14N_BEAN_NAME, SubjectCanonicalizationFlowDescriptor.class);
         c14n.setActivationCondition(condition);
 
         condition = Predicates.and(
                 new NameIDCanonicalization.ActivationCondition(),
                 new RelyingPartyIdPredicate(Collections.singletonList(SP_ENTITY_ID)));
         
-        c14n = applicationContext.getBean(SAML2_DIRECT_C14N_BEAN_NAME, SubjectCanonicalizationFlowDescriptor.class);
+        c14n = applicationContext.getBean(SAML2_TRANSFORM_C14N_BEAN_NAME, SubjectCanonicalizationFlowDescriptor.class);
         c14n.setActivationCondition(condition);
     }
     

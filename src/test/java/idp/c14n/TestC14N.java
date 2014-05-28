@@ -52,11 +52,11 @@ public class TestC14N extends AbstractFlowTest {
         assertFlowExecutionOutcome(result.getOutcome());
     }
 
-    @Test public void testDirectNameID() {
+    @Test public void testTransformNameID() {
 
-        final FlowExecutionResult result = flowExecutor.launchExecution("directNameID", null, externalContext);
+        final FlowExecutionResult result = flowExecutor.launchExecution("transformNameID", null, externalContext);
 
-        assertFlowExecutionResult(result, "directNameID");
+        assertFlowExecutionResult(result, "transformNameID");
         assertFlowExecutionOutcome(result.getOutcome());
     }
 
@@ -78,11 +78,11 @@ public class TestC14N extends AbstractFlowTest {
         assertFlowExecutionOutcome(result.getOutcome());
     }
 
-    @Test public void testDirectNameIdentifier() {
+    @Test public void testTransformNameIdentifier() {
 
-        final FlowExecutionResult result = flowExecutor.launchExecution("directNameIdentifier", null, externalContext);
+        final FlowExecutionResult result = flowExecutor.launchExecution("transformNameIdentifier", null, externalContext);
 
-        assertFlowExecutionResult(result, "directNameIdentifier");
+        assertFlowExecutionResult(result, "transformNameIdentifier");
         assertFlowExecutionOutcome(result.getOutcome());
     }
     
