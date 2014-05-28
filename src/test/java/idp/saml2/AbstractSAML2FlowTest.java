@@ -19,6 +19,7 @@ package idp.saml2;
 
 import idp.AbstractFlowTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -50,6 +51,7 @@ import org.opensaml.saml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolv
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.encryption.support.ChainingEncryptedKeyResolver;
 import org.opensaml.xmlsec.encryption.support.DecryptionException;
+import org.opensaml.xmlsec.encryption.support.EncryptedKeyResolver;
 import org.opensaml.xmlsec.encryption.support.InlineEncryptedKeyResolver;
 import org.opensaml.xmlsec.keyinfo.impl.StaticKeyInfoCredentialResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +70,10 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     @Qualifier("sp.Credential") @Autowired private Credential spCredential;
     
     private Assertion decryptAssertion(final EncryptedAssertion encrypted) throws DecryptionException {
-        final ChainingEncryptedKeyResolver chain = new ChainingEncryptedKeyResolver();
-        chain.getResolverChain().add(new InlineEncryptedKeyResolver());
-        chain.getResolverChain().add(new EncryptedElementTypeEncryptedKeyResolver());
+        ArrayList<EncryptedKeyResolver> resolverChain = new ArrayList<>();
+        resolverChain.add(new InlineEncryptedKeyResolver());
+        resolverChain.add(new EncryptedElementTypeEncryptedKeyResolver());
+        final ChainingEncryptedKeyResolver chain = new ChainingEncryptedKeyResolver(resolverChain);
         final Decrypter decrypter =
                 new Decrypter(null, new StaticKeyInfoCredentialResolver(spCredential), chain);
         return decrypter.decrypt(encrypted);
