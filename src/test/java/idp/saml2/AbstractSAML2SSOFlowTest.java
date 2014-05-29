@@ -41,10 +41,17 @@ import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
 import org.opensaml.saml.saml2.core.Subject;
+import org.opensaml.saml.saml2.encryption.Encrypter;
+import org.opensaml.saml.saml2.encryption.Encrypter.KeyPlacement;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SignatureSigningParameters;
 import org.opensaml.xmlsec.context.SecurityParametersContext;
+import org.opensaml.xmlsec.encryption.support.DataEncryptionParameters;
+import org.opensaml.xmlsec.encryption.support.EncryptionConstants;
+import org.opensaml.xmlsec.encryption.support.EncryptionException;
+import org.opensaml.xmlsec.encryption.support.KeyEncryptionParameters;
+import org.opensaml.xmlsec.keyinfo.impl.X509KeyInfoGeneratorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +71,8 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
 
     @Autowired @Qualifier("testbed.IdGenerator") private IdentifierGenerationStrategy idGenerator;
 
+    @Qualifier("idp.Credential") @Autowired private Credential idpCredential;
+    
     @Qualifier("sp.Credential") @Autowired private Credential spCredential;
 
     @Autowired private VelocityEngine velocityEngine;
@@ -110,7 +119,7 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
         }
     }
 
-    public AuthnRequest buildAuthnRequest(HttpServletRequest servletRequest) {
+    public AuthnRequest buildAuthnRequest(HttpServletRequest servletRequest) throws EncryptionException {
         final AuthnRequest authnRequest =
                 (AuthnRequest) builderFactory.getBuilder(AuthnRequest.DEFAULT_ELEMENT_NAME).buildObject(
                         AuthnRequest.DEFAULT_ELEMENT_NAME);
@@ -131,17 +140,32 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
         nameIDPolicy.setAllowCreate(true);
         authnRequest.setNameIDPolicy(nameIDPolicy);
 
-        final Subject subject =
-                (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject(Subject.DEFAULT_ELEMENT_NAME);
         final NameID nameID =
                 (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(NameID.DEFAULT_ELEMENT_NAME);
         nameID.setValue("jdoe");
-        subject.setNameID(nameID);
+        
+        final Subject subject =
+                (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject(Subject.DEFAULT_ELEMENT_NAME);
+        subject.setEncryptedID(getEncrypter().encrypt(nameID));
         authnRequest.setSubject(subject);
         
         return authnRequest;
     }
 
+    public Encrypter getEncrypter() {
+        final DataEncryptionParameters encParams = new DataEncryptionParameters();
+        encParams.setAlgorithm(EncryptionConstants.ALGO_ID_BLOCKCIPHER_AES128);
+        final KeyEncryptionParameters kencParams = new KeyEncryptionParameters();
+        kencParams.setAlgorithm(EncryptionConstants.ALGO_ID_KEYTRANSPORT_RSAOAEP);
+        kencParams.setEncryptionCredential(idpCredential);
+        final X509KeyInfoGeneratorFactory generator = new X509KeyInfoGeneratorFactory();
+        generator.setEmitEntityCertificate(true);
+        kencParams.setKeyInfoGenerator(generator.newInstance());
+        final Encrypter encrypter = new Encrypter(encParams, kencParams);
+        encrypter.setKeyPlacement(KeyPlacement.PEER);
+        return encrypter;
+    }
+    
     public String getAcsUrl(HttpServletRequest servletRequest) {
         // TODO servlet context
         String acsPath = "/sp/SAML2/POST/ACS";

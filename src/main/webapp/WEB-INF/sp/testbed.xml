@@ -17,21 +17,28 @@
         <constructor-arg ref="testbed.sp.PrivateKey" />
         <property name="entityId" ref="testbed.sp.EntityID" />
     </bean>
-    
+
+    <!-- Used as a shortcut to do encryption to the IdP half. -->
+    <bean id="idp.Credential" class="org.opensaml.security.x509.BasicX509Credential" >
+        <constructor-arg ref="testbed.idp.X509Certificate" />
+        <property name="entityId" ref="testbed.idp.EntityID" />
+    </bean>
+
+    <!--
+    TODO: These aren't used at the moment, but we probably should do sig verification in the tests.
+     
     <bean id="sp.CredentialResolver" class="org.opensaml.security.credential.impl.CollectionCredentialResolver">
         <constructor-arg>
-            <util:set>
-                <bean class="org.opensaml.security.x509.BasicX509Credential" >
-                    <constructor-arg ref="testbed.idp.X509Certificate" />
-                    <property name="entityId" ref="testbed.idp.EntityID" />
-                </bean>
-            </util:set>
+            <util:list>
+                <ref bean="idp.Credential" />
+            </util:list>
         </constructor-arg>
     </bean>
-    
+
     <bean id="sp.SignatureTrustEngine" class="org.opensaml.xmlsec.signature.support.impl.ExplicitKeySignatureTrustEngine">
         <constructor-arg ref="sp.CredentialResolver" />
         <constructor-arg ref="testbed.KeyInfoCredentialResolver" />
     </bean>
+    -->
 
 </beans>
