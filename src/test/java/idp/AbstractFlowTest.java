@@ -84,7 +84,7 @@ import common.PathPropertySupport;
 /**
  * Abstract flow test.
  */
-@ContextConfiguration({"/system/conf/global-system.xml", "/conf/global-user.xml", "/system/conf/mvc-beans.xml",
+@ContextConfiguration({"/system/conf/global-system.xml", "/conf/global.xml", "/system/conf/mvc-beans.xml",
         "/system/conf/webflow-config.xml"})
 @WebAppConfiguration
 public abstract class AbstractFlowTest extends AbstractTestNGSpringContextTests {
