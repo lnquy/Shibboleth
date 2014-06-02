@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.namespace.QName;
 
 import net.shibboleth.idp.saml.xml.SAMLConstants;
 
@@ -56,6 +57,12 @@ import org.testng.Assert;
 @ContextConfiguration({"/system/conf/testbed-beans.xml", })
 public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
 
+    /** The expected status code.*/
+    protected QName statusCode = StatusCode.SUCCESS;
+    
+    /** The expected status message when an error occurs. */
+    protected String statusMessage = "An error occurred.";
+    
     /**
      * Top level validation of the {@link FlowExecutionResult}.
      * <p>
@@ -96,6 +103,11 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
         assertResponse(response);
         
         assertStatus(response.getStatus());
+        
+        // short circuit validation upon error
+        if (statusCode != StatusCode.SUCCESS) {
+            return;
+        }
 
         final List<Assertion> assertions = response.getAssertions();
         assertAssertions(assertions);
@@ -242,7 +254,10 @@ public abstract class AbstractSAML1FlowTest extends AbstractFlowTest {
     public void assertStatus(@Nullable final Status status) {
         Assert.assertNotNull(status);
         Assert.assertNotNull(status.getStatusCode());
-        Assert.assertEquals(status.getStatusCode().getValue(), StatusCode.SUCCESS);
+        Assert.assertEquals(status.getStatusCode().getValue(), statusCode);
+        if (statusCode != StatusCode.SUCCESS) {
+            Assert.assertEquals(status.getStatusMessage().getMessage(), statusMessage);
+        }
     }
 
     /**

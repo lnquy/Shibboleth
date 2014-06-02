@@ -29,6 +29,7 @@ import org.joda.time.DateTime;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AttributeQuery;
 import org.opensaml.saml.saml2.core.NameID;
+import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.Subject;
 import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
@@ -61,12 +62,38 @@ public class SAML2AttributeQueryFlowTest extends AbstractSAML2FlowTest {
     @Test public void testSAML2AttributeQueryFlow() throws Exception {
 
         buildRequest();
-        
+
+        request.setAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE,
+                new X509Certificate[] {certFactoryBean.getObject()});
+
         overrideEndStateOutput(FLOW_ID);
 
         final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
 
         validateResult(result, FLOW_ID);
+    }
+
+    /**
+     * Test the SAML 2 Attribute Query flow without an SP credential.
+     * 
+     * @throws Exception if an error occurs
+     */
+    @Test public void testSAML2AttributeQueryFlowNoCredential() throws Exception {
+        try {
+            // expect an error
+            statusCode = StatusCode.REQUESTER_URI;
+
+            buildRequest();
+
+            overrideEndStateOutput(FLOW_ID);
+
+            final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
+
+            validateResult(result, FLOW_ID);
+        } finally {
+            // reset expectation of success
+            statusCode = StatusCode.SUCCESS_URI;
+        }
     }
 
     /**
@@ -89,8 +116,7 @@ public class SAML2AttributeQueryFlowTest extends AbstractSAML2FlowTest {
                         parserPool.newDocument()));
 
         request.setMethod("POST");
-        request.setAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE,
-                new X509Certificate[] {certFactoryBean.getObject()});
+
         request.setContent(requestContent.getBytes("UTF-8"));
     }
 

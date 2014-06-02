@@ -31,6 +31,7 @@ import org.opensaml.saml.saml1.core.ConfirmationMethod;
 import org.opensaml.saml.saml1.core.NameIdentifier;
 import org.opensaml.saml.saml1.core.Request;
 import org.opensaml.saml.saml1.core.Response;
+import org.opensaml.saml.saml1.core.StatusCode;
 import org.opensaml.saml.saml1.core.Subject;
 import org.opensaml.saml.saml1.profile.SAML1ActionTestingSupport;
 import org.opensaml.security.messaging.ServletRequestX509CredentialAdapter;
@@ -61,12 +62,38 @@ public class SAML1AttributeQueryFlowTest extends AbstractSAML1FlowTest {
     @Test public void testSAML1AttributeQueryFlow() throws Exception {
 
         buildRequest();
-        
+
+        request.setAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE,
+                new X509Certificate[] {certFactoryBean.getObject()});
+
         overrideEndStateOutput(FLOW_ID);
 
         final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
 
         validateResult(result, FLOW_ID);
+    }
+
+    /**
+     * Test the SAML1 Attribute Query flow without an SP credential.
+     * 
+     * @throws Exception if an error occurs
+     */
+    @Test public void testSAML1AttributeQueryFlowNoCredential() throws Exception {
+        try {
+            // expect an error
+            statusCode = StatusCode.REQUESTER;
+
+            buildRequest();
+
+            overrideEndStateOutput(FLOW_ID);
+
+            final FlowExecutionResult result = flowExecutor.launchExecution(FLOW_ID, null, externalContext);
+
+            validateResult(result, FLOW_ID);
+        } finally {
+            // reset expectation of success
+            statusCode = StatusCode.SUCCESS;
+        }
     }
 
     /**
@@ -89,8 +116,6 @@ public class SAML1AttributeQueryFlowTest extends AbstractSAML1FlowTest {
                         parserPool.newDocument()));
 
         request.setMethod("POST");
-        request.setAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE,
-                new X509Certificate[] {certFactoryBean.getObject()});
         request.setContent(requestContent.getBytes("UTF-8"));
     }
 

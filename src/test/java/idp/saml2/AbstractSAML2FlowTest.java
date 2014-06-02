@@ -67,15 +67,23 @@ import org.testng.Assert;
 @ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/sp/testbed.xml"})
 public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
+    /** The expected status code. */
+    protected String statusCode = StatusCode.SUCCESS_URI;
+
+    /** The expected nested status code when an error occurs. */
+    protected String nestedStatusCode = StatusCode.REQUEST_DENIED_URI;
+
+    /** The expected status message when an error occurs. */
+    protected String statusMessage = "An error occurred.";
+
     @Qualifier("sp.Credential") @Autowired protected Credential spCredential;
-    
+
     private Assertion decryptAssertion(final EncryptedAssertion encrypted) throws DecryptionException {
         ArrayList<EncryptedKeyResolver> resolverChain = new ArrayList<>();
         resolverChain.add(new InlineEncryptedKeyResolver());
         resolverChain.add(new EncryptedElementTypeEncryptedKeyResolver());
         final ChainingEncryptedKeyResolver chain = new ChainingEncryptedKeyResolver(resolverChain);
-        final Decrypter decrypter =
-                new Decrypter(null, new StaticKeyInfoCredentialResolver(spCredential), chain);
+        final Decrypter decrypter = new Decrypter(null, new StaticKeyInfoCredentialResolver(spCredential), chain);
         return decrypter.decrypt(encrypted);
     }
 
@@ -123,6 +131,11 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
         assertStatus(response.getStatus());
 
+        // short circuit validation upon error
+        if (statusCode != StatusCode.SUCCESS_URI) {
+            return;
+        }
+
         if (!response.getEncryptedAssertions().isEmpty()) {
             try {
                 response.getAssertions().add(decryptAssertion(response.getEncryptedAssertions().get(0)));
@@ -131,7 +144,7 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
                 Assert.fail(e.getMessage());
             }
         }
-        
+
         final List<Assertion> assertions = response.getAssertions();
         assertAssertions(assertions);
 
@@ -281,7 +294,11 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
     public void assertStatus(@Nullable final Status status) {
         Assert.assertNotNull(status);
         Assert.assertNotNull(status.getStatusCode());
-        Assert.assertEquals(status.getStatusCode().getValue(), StatusCode.SUCCESS_URI);
+        Assert.assertEquals(status.getStatusCode().getValue(), statusCode);
+        if (statusCode != StatusCode.SUCCESS_URI) {
+            Assert.assertEquals(status.getStatusMessage().getMessage(), statusMessage);
+            Assert.assertEquals(status.getStatusCode().getStatusCode().getValue(), nestedStatusCode);
+        }
     }
 
     /**
@@ -554,5 +571,5 @@ public class AbstractSAML2FlowTest extends AbstractFlowTest {
         Assert.assertTrue(attribute.getAttributeValues().get(0) instanceof XSString);
         Assert.assertEquals(((XSString) attribute.getAttributeValues().get(0)).getValue(), attributeValue);
     }
-    
+
 }
