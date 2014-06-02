@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.net.UrlBuilder;
-import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 import org.joda.time.DateTime;
@@ -25,14 +24,11 @@ import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
-import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SignatureSigningParameters;
 import org.opensaml.xmlsec.context.SecurityParametersContext;
 import org.opensaml.xmlsec.signature.support.SignatureConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,14 +42,6 @@ import org.w3c.dom.Element;
 public class Saml2Controller extends BaseSAMLController {
 	
 	private Logger log = LoggerFactory.getLogger(Saml2Controller.class);
-	
-	@Autowired
-	@Qualifier("testbed.IdGenerator")
-	private IdentifierGenerationStrategy idGenerator;
-	
-	@Autowired
-	@Qualifier("sp.Credential")
-	private Credential spCredential;
 
 	@RequestMapping(value="/InitSSO/Redirect", method=RequestMethod.GET)
 	public void initSSORequestRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
