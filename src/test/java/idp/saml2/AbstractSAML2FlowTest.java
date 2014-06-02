@@ -67,7 +67,7 @@ import org.testng.Assert;
 @ContextConfiguration({"/system/conf/testbed-beans.xml", "file:src/main/webapp/WEB-INF/sp/testbed.xml"})
 public class AbstractSAML2FlowTest extends AbstractFlowTest {
 
-    @Qualifier("sp.Credential") @Autowired private Credential spCredential;
+    @Qualifier("sp.Credential") @Autowired protected Credential spCredential;
     
     private Assertion decryptAssertion(final EncryptedAssertion encrypted) throws DecryptionException {
         ArrayList<EncryptedKeyResolver> resolverChain = new ArrayList<>();

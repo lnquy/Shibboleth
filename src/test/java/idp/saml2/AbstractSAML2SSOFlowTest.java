@@ -27,10 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import net.shibboleth.utilities.java.support.net.SimpleUrlCanonicalizer;
 import net.shibboleth.utilities.java.support.net.UrlBuilder;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.Type4UuidIdentifierGenerationStrategy;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
-import org.opensaml.core.xml.XMLObjectBuilderFactory;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
@@ -56,26 +55,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
 
 /**
- *
+ * Abstract SAML 2 SSO flow test.
  */
-@ContextConfiguration({"file:src/main/webapp/WEB-INF/sp/testbed.xml"})
 public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
 
     /** Class logger. */
     @Nonnull protected final Logger log = LoggerFactory.getLogger(AbstractSAML2SSOFlowTest.class);
 
-    @Autowired private XMLObjectBuilderFactory builderFactory;
-
-    @Autowired @Qualifier("testbed.IdGenerator") private IdentifierGenerationStrategy idGenerator;
+    @Nonnull private IdentifierGenerationStrategy idGenerator = new Type4UuidIdentifierGenerationStrategy();
 
     @Qualifier("idp.Credential") @Autowired private Credential idpCredential;
-    
-    @Qualifier("sp.Credential") @Autowired private Credential spCredential;
-
-    @Autowired private VelocityEngine velocityEngine;
 
     public String getDestinationRedirect(HttpServletRequest servletRequest) {
         // TODO servlet context
@@ -130,7 +121,8 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
         authnRequest.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 
         final Issuer issuer =
-                (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+                (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME)
+                        .buildObject(Issuer.DEFAULT_ELEMENT_NAME);
         issuer.setValue(AbstractFlowTest.SP_ENTITY_ID);
         authnRequest.setIssuer(issuer);
 
@@ -141,14 +133,16 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
         authnRequest.setNameIDPolicy(nameIDPolicy);
 
         final NameID nameID =
-                (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(NameID.DEFAULT_ELEMENT_NAME);
+                (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME)
+                        .buildObject(NameID.DEFAULT_ELEMENT_NAME);
         nameID.setValue("jdoe");
-        
+
         final Subject subject =
-                (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject(Subject.DEFAULT_ELEMENT_NAME);
+                (Subject) builderFactory.getBuilder(Subject.DEFAULT_ELEMENT_NAME).buildObject(
+                        Subject.DEFAULT_ELEMENT_NAME);
         subject.setEncryptedID(getEncrypter().encrypt(nameID));
         authnRequest.setSubject(subject);
-        
+
         return authnRequest;
     }
 
@@ -165,7 +159,7 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
         encrypter.setKeyPlacement(KeyPlacement.PEER);
         return encrypter;
     }
-    
+
     public String getAcsUrl(HttpServletRequest servletRequest) {
         // TODO servlet context
         String acsPath = "/sp/SAML2/POST/ACS";
@@ -225,5 +219,5 @@ public abstract class AbstractSAML2SSOFlowTest extends AbstractSAML2FlowTest {
 
         return messageContext;
     }
-    
+
 }
