@@ -29,8 +29,6 @@ import org.joda.time.DateTime;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AttributeQuery;
 import org.opensaml.saml.saml2.core.NameID;
-import org.opensaml.saml.saml2.core.Response;
-import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.Subject;
 import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
@@ -94,13 +92,6 @@ public class SAML2AttributeQueryFlowTest extends AbstractSAML2FlowTest {
         request.setAttribute(ServletRequestX509CredentialAdapter.X509_CERT_REQUEST_ATTRIBUTE,
                 new X509Certificate[] {certFactoryBean.getObject()});
         request.setContent(requestContent.getBytes("UTF-8"));
-    }
-
-    // TODO why is there no issuer in the response ?
-    @Override public void assertResponse(@Nullable final Response response) {
-        Assert.assertNotNull(response);
-        // TODO Assert.assertEquals(response.getIssuer().getValue(), IDP_ENTITY_ID);
-        Assert.assertEquals(response.getStatus().getStatusCode().getValue(), StatusCode.SUCCESS_URI);
     }
 
     /**
