@@ -8,13 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.net.UrlBuilder;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
-import net.shibboleth.utilities.java.support.xml.ParserPool;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
-import org.apache.velocity.app.VelocityEngine;
 import org.joda.time.DateTime;
-import org.opensaml.core.xml.XMLObjectBuilderFactory;
-import org.opensaml.core.xml.io.MarshallerFactory;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.encoder.MessageEncodingException;
 import org.opensaml.saml.common.SAMLObject;
@@ -52,20 +48,8 @@ public class Saml2Controller extends BaseSAMLController {
 	private Logger log = LoggerFactory.getLogger(Saml2Controller.class);
 	
 	@Autowired
-	private XMLObjectBuilderFactory builderFactory;
-	
-	@Autowired
-	private MarshallerFactory marshallerFactory;
-	
-	@Autowired
 	@Qualifier("testbed.IdGenerator")
 	private IdentifierGenerationStrategy idGenerator;
-	
-	@Autowired
-	private VelocityEngine velocityEngine;
-	
-	@Autowired
-	private ParserPool parserPool;
 	
 	@Autowired
 	@Qualifier("sp.Credential")
