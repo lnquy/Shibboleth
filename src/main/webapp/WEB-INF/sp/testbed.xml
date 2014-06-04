@@ -18,12 +18,6 @@
         <property name="entityId" ref="testbed.sp.EntityID" />
     </bean>
 
-    <!-- Used as a shortcut to do encryption to the IdP half. -->
-    <bean id="idp.Credential" class="org.opensaml.security.x509.BasicX509Credential" >
-        <constructor-arg ref="testbed.idp.X509Certificate" />
-        <property name="entityId" ref="testbed.idp.EntityID" />
-    </bean>
-
     <!--
     TODO: These aren't used at the moment, but we probably should do sig verification in the tests.
      

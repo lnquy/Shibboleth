@@ -25,26 +25,6 @@
     <!-- TODO: for the file references, might be preferable to make these resolved as classpath resources,
          instead of relative filesystem references. -->
     
-    <bean id="testbed.idp.EntityID" class="java.lang.String">
-        <constructor-arg value="https://idp.example.org" />
-    </bean>
-    
-    <bean id="testbed.idp.PrivateKey" class="net.shibboleth.ext.spring.factory.PrivateKeyFactoryBean">
-        <property name="resource">
-            <bean class="org.springframework.core.io.FileSystemResource">
-                <constructor-arg value="${testbed.home}/creds/idp.key" />
-            </bean>
-        </property>
-    </bean>
-    
-    <bean id="testbed.idp.X509Certificate" class="net.shibboleth.ext.spring.factory.X509CertificateFactoryBean">
-        <property name="resource">
-            <bean class="org.springframework.core.io.FileSystemResource">
-                <constructor-arg value="${testbed.home}/creds/idp.crt" />
-            </bean>
-        </property>
-    </bean>
-    
     <bean id="testbed.sp.EntityID" class="java.lang.String">
         <constructor-arg value="https://sp.example.org" />
     </bean>
