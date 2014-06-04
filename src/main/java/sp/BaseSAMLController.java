@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.security.IdentifierGenerationStrategy;
+import net.shibboleth.utilities.java.support.security.Type4UuidIdentifierGenerationStrategy;
 import net.shibboleth.utilities.java.support.xml.ParserPool;
 
 import org.apache.velocity.app.VelocityEngine;
@@ -44,13 +45,13 @@ public abstract class BaseSAMLController {
 
     @Autowired protected MarshallerFactory marshallerFactory;
 
-    @Autowired @Qualifier("testbed.IdGenerator") protected IdentifierGenerationStrategy idGenerator;
+    protected IdentifierGenerationStrategy idGenerator = new Type4UuidIdentifierGenerationStrategy();
 
     @Autowired protected VelocityEngine velocityEngine;
 
     @Autowired protected ParserPool parserPool;
 
-    @Autowired @Qualifier("sp.Credential") protected Credential spCredential;
+    @Autowired @Qualifier("test.sp.Credential") protected Credential spCredential;
 
     protected MessageContext<SAMLObject> decodeInboundMessageContextPost(HttpServletRequest servletRequest)
             throws Exception {

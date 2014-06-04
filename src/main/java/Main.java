@@ -54,7 +54,6 @@ public class Main {
             final URL location = protectionDomain.getCodeSource().getLocation();
 
             PathPropertySupport.setupIdPHomeProperties();
-            PathPropertySupport.setupTestbedHomeProperty();
 
             // Determine path to jetty-base in the idp-distribution module.
             final Path pathToJettyBase =
