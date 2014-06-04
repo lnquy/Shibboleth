@@ -5,7 +5,7 @@
     <!-- Context config params -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>file:///${testbed.home}/system/conf/testbed-opensaml.xml file:///${testbed.home}/system/conf/testbed-ldap.xml file:///${testbed.home}/system/conf/testbed-beans.xml</param-value>
+        <param-value>file:///${testbed.home}/system/conf/testbed-opensaml.xml file:///${testbed.home}/system/conf/testbed-beans.xml</param-value>
     </context-param>
 
     <!-- Listeners -->
