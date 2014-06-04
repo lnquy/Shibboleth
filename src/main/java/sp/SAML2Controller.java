@@ -39,9 +39,9 @@ import org.w3c.dom.Element;
 
 @Controller
 @RequestMapping("/SAML2")
-public class Saml2Controller extends BaseSAMLController {
+public class SAML2Controller extends BaseSAMLController {
 	
-	private Logger log = LoggerFactory.getLogger(Saml2Controller.class);
+	private Logger log = LoggerFactory.getLogger(SAML2Controller.class);
 
 	@RequestMapping(value="/InitSSO/Redirect", method=RequestMethod.GET)
 	public void initSSORequestRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
