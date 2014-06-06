@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.net.UrlBuilder;
+import net.shibboleth.utilities.java.support.net.URLBuilder;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 
 import org.joda.time.DateTime;
@@ -186,7 +186,7 @@ public class SAML2Controller extends BaseSAMLController {
 		String destinationPath = "/idp/profile/SAML2/Redirect/SSO";
 		String baseUrl = getBaseUrl(servletRequest);
 		try {
-			UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
+			URLBuilder urlBuilder = new URLBuilder(baseUrl);
 			urlBuilder.setPath(destinationPath);
 			return urlBuilder.buildURL();
 		} catch (MalformedURLException e) {
@@ -200,7 +200,7 @@ public class SAML2Controller extends BaseSAMLController {
 		String destinationPath = "/idp/profile/SAML2/POST/SSO";
 		String baseUrl = getBaseUrl(servletRequest);
 		try {
-			UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
+			URLBuilder urlBuilder = new URLBuilder(baseUrl);
 			urlBuilder.setPath(destinationPath);
 			return urlBuilder.buildURL();
 		} catch (MalformedURLException e) {
@@ -214,7 +214,7 @@ public class SAML2Controller extends BaseSAMLController {
 		String acsPath = "/sp/SAML2/POST/ACS";
 		String baseUrl = getBaseUrl(servletRequest);
 		try {
-			UrlBuilder urlBuilder = new UrlBuilder(baseUrl);
+			URLBuilder urlBuilder = new URLBuilder(baseUrl);
 			urlBuilder.setPath(acsPath);
 			return urlBuilder.buildURL();
 		} catch (MalformedURLException e) {
@@ -227,7 +227,7 @@ public class SAML2Controller extends BaseSAMLController {
 		//TODO servlet context
 		String requestUrl = servletRequest.getRequestURL().toString();
 		try {
-			UrlBuilder urlBuilder = new UrlBuilder(requestUrl);
+			URLBuilder urlBuilder = new URLBuilder(requestUrl);
 			urlBuilder.setUsername(null);
 			urlBuilder.setPassword(null);
 			urlBuilder.setPath(null);
