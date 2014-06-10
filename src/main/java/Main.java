@@ -102,7 +102,6 @@ public class Main {
             jaasLogin.setName("Web Login Service");
             jaasLogin.setLoginModuleName("ShibUserPassAuth");
             final ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
-            securityHandler.setStrict(false);
             securityHandler.setLoginService(jaasLogin);
             idpWebapp.setSecurityHandler(securityHandler);
 
