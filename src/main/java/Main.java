@@ -73,6 +73,13 @@ public class Main {
                 configuration.getProperties().put(key, properties.getProperty(key));
             }
 
+            // The keystore path defined in jetty-base/start.d/idp.ini is relative to jetty.base, which is not correct
+            // for the testbed. So replace "../" with "${idp.home}/".
+            final String idpIniJettyKeystorePath = configuration.getProperties().get("jetty.keystore.path");
+            final String testbedJettyKeystorePath =
+                    idpIniJettyKeystorePath.replace("../", System.getProperty(PathPropertySupport.IDP_HOME) + "/");
+            configuration.getProperties().put("jetty.keystore.path", testbedJettyKeystorePath);
+
             // Configure the Jetty server (with both the XML and properties file configurations).
             final Server server = (Server) configuration.configure();
 
