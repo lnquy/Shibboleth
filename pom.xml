@@ -179,19 +179,17 @@
         </dependency>
 
         <!-- Provided scope -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <scope>provided</scope>
-        </dependency>
+        <!-- Override Servlet API 3.0.1 with Servlet 3.1.0 for Jetty 9.1+  -->
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
-            <artifactId>jsp-api</artifactId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version><!--$NO-MVN-MAN-VER$ -->
             <scope>provided</scope>
         </dependency>
 
