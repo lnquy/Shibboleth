@@ -29,7 +29,7 @@
                     <key>
                         <value>http://apache.org/xml/properties/security-manager</value>
                     </key>
-                    <bean id="shibboleth.XercesSecurityManager" class="${idp.xml.securityManager}" />
+                    <bean id="shibboleth.XercesSecurityManager" class="${idp.xml.securityManager:com.sun.org.apache.xerces.internal.util.SecurityManager}" />
                 </entry>
             </map>
         </property>
