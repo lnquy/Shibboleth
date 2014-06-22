@@ -7,6 +7,16 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath:/system/conf/testbed-opensaml.xml classpath:/test/test-beans.xml</param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>contextInitializerClasses</param-name>
+        <param-value>net.shibboleth.ext.spring.context.IdPPropertiesApplicationContextInitializer</param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>net.shibboleth.ext.spring.context.DeferPlaceholderFileSystemXmlWebApplicationContext</param-value>
+    </context-param>
 
     <!-- Listeners -->
     <listener>
