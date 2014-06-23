@@ -21,9 +21,6 @@ import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 import java.util.Properties;
 
-import net.shibboleth.idp.test.InMemoryDirectory;
-import net.shibboleth.idp.test.flows.AbstractFlowTest;
-
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.server.Server;
@@ -31,7 +28,6 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import org.springframework.core.io.ClassPathResource;
 
 import common.PathPropertySupport;
 
@@ -43,11 +39,6 @@ public class Main {
      */
     public static void main(String[] args) {
         try {
-            // Start in-memory directory server.
-            final InMemoryDirectory directoryServer =
-                    new InMemoryDirectory(new ClassPathResource(AbstractFlowTest.LDIF_FILE));
-            directoryServer.start();
-
             // Hack. If protection domain location ends with ".war", then assume we are running from a CLI, otherwise
             // assume we are running from within Eclipse.
             final ProtectionDomain protectionDomain = Main.class.getProtectionDomain();

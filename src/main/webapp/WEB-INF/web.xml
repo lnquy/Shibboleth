@@ -5,7 +5,7 @@
     <!-- Context config params, /test/test-beans.xml is from idp-conf/src/test/resources -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:/system/conf/testbed-opensaml.xml classpath:/test/test-beans.xml</param-value>
+        <param-value>classpath:/system/conf/testbed-ldap.xml classpath:/system/conf/testbed-opensaml.xml classpath:/test/test-beans.xml</param-value>
     </context-param>
     
     <context-param>

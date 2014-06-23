@@ -1,0 +1,21 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+
+       default-init-method="initialize"
+       default-destroy-method="destroy">
+    
+    <!-- Specific testbed-related beans -->
+
+    <!-- The test ldif file /test/test-ldap.ldif is from idp-conf/src/test/resources -->
+    <bean id="testbed.DirectoryService" class="net.shibboleth.idp.test.InMemoryDirectory" init-method="start" destroy-method="stop">
+        <constructor-arg value="classpath:/test/test-ldap.ldif" />
+    </bean>
+
+</beans>
