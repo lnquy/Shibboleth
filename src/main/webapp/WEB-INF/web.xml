@@ -10,7 +10,7 @@
     
     <context-param>
         <param-name>contextInitializerClasses</param-name>
-        <param-value>net.shibboleth.ext.spring.context.IdPPropertiesApplicationContextInitializer</param-value>
+        <param-value>net.shibboleth.idp.spring.IdPPropertiesApplicationContextInitializer</param-value>
     </context-param>
     
     <context-param>
