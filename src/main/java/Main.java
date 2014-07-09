@@ -44,7 +44,9 @@ public class Main {
             final ProtectionDomain protectionDomain = Main.class.getProtectionDomain();
             final URL location = protectionDomain.getCodeSource().getLocation();
 
-            PathPropertySupport.setupIdPHomeProperties();
+            // Set idp.home to "classpath:" so test credentials in idp-conf/src/test/resources can be found.
+            // PathPropertySupport.setupIdPHomeProperties();
+            System.setProperty("idp.home", "classpath:");
 
             // Determine path to jetty-base in the idp-distribution module.
             final Path pathToJettyBase =
@@ -65,10 +67,14 @@ public class Main {
             }
 
             // The keystore path defined in jetty-base/start.d/idp.ini is relative to jetty.base, which is not correct
-            // for the testbed. So replace "../" with "${idp.home}/".
+            // for the testbed. So replace "../" with path to idp-conf/src/test/resources
+            final Path pathToIdPConfTestResources =
+                    Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
+                            "java-identity-provider", "idp-conf", "src", "test", "resources");
             final String idpIniJettyKeystorePath = configuration.getProperties().get("jetty.keystore.path");
             final String testbedJettyKeystorePath =
-                    idpIniJettyKeystorePath.replace("../", System.getProperty(PathPropertySupport.IDP_HOME) + "/");
+                    idpIniJettyKeystorePath
+                            .replace("../", pathToIdPConfTestResources.toAbsolutePath().toString() + "/");
             configuration.getProperties().put("jetty.keystore.path", testbedJettyKeystorePath);
 
             // Configure the Jetty server (with both the XML and properties file configurations).
