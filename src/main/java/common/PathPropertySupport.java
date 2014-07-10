@@ -40,8 +40,6 @@ public class PathPropertySupport {
     /**
      * Set the 'idp.home' system property if not already set, and preserve the unnormalized
      * form in idp.home.raw
-     * 
-     * @return the 'idp.home' property
      */
     public static void setupIdPHomeProperties() {
 
@@ -57,8 +55,6 @@ public class PathPropertySupport {
 
     /**
      * Set the 'testbed.home' system property if not already set.
-     * 
-     * @return the 'testbed.home' system property
      */
     public static void setupTestbedHomeProperty() {
         
@@ -74,7 +70,6 @@ public class PathPropertySupport {
     /**
      * Set system properties sourced from 'idp.properties' file.
      * 
-     * @param idpHome 'idp.home' path
      * @return the properties
      * @throws FileNotFoundException
      * @throws IOException
