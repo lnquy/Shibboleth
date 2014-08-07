@@ -131,7 +131,7 @@
         <dependency>
             <groupId>net.shibboleth.ext</groupId>
             <artifactId>spring-extensions</artifactId>
-            <version>1.2-SNAPSHOT</version>
+            <version>${spring-extensions.version}</version>
         </dependency>
 
         <dependency>
