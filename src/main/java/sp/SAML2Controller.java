@@ -119,11 +119,11 @@ public class SAML2Controller extends BaseSAMLController {
     @RequestMapping(value="/InitSLO/POST", method=RequestMethod.GET)
     public void initSLORequestPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
         LogoutRequest logoutRequest = buildLogoutRequest(servletRequest);
-        logoutRequest.setDestination(getDestinationRedirect(servletRequest, "SLO"));
+        logoutRequest.setDestination(getDestinationPost(servletRequest, "SLO"));
         MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(logoutRequest,
                 buildIdpSloEndpoint(SAMLConstants.SAML2_POST_BINDING_URI, logoutRequest.getDestination()));
         SAMLMessageSecuritySupport.signMessage(messageContext);
-        encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+        encodeOutboundMessageContextPost(messageContext, servletResponse);
     }
 
 	@RequestMapping(value="/POST/ACS", method=RequestMethod.POST)
