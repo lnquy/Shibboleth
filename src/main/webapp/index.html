@@ -15,6 +15,31 @@
 <li><a href="sp/SAML2/InitSSO/ForceAuthn">Init SAML 2 SSO, Redirect Binding, ForceAuthn Request</a></li>
 <li><a href="idp/profile/SAML2/Unsolicited/SSO?providerId=https://sp.example.org&shire=https://localhost:8443/sp/SAML2/POST/ACS&target=MyRelayState">IdP-initiated (Unsolicited) SAML 2 SSO</a></li>
 <li><a href="idp/profile/Shibboleth/SSO?providerId=https://sp.example.org&shire=https://localhost:8443/sp/SAML1/POST/ACS&target=MyRelayState">IdP-initiated (Unsolicited) SAML 1 SSO</a></li>
+
+<li>
+<form action="sp/SAML2/InitSLO/Redirect" method="GET">
+    <p>Init SAML 2 Logout, Redirect Binding with transient ID:
+    <input type="text" name="transientID" size="60"/>
+    </p>
+</form>
+</li>
+
+<li>
+<form action="sp/SAML2/InitSLO/Async" method="GET">
+    <p>Init SAML 2 Logout, Async, Redirect Binding with transient ID:
+    <input type="text" name="transientID" size="60"/>
+    </p>
+</form>
+</li>
+
+<li>
+<form action="sp/SAML2/InitSLO/POST" method="GET">
+    <p>Init SAML 2 Logout, Async, POST Binding with transient ID:
+    <input type="text" name="transientID" size="60"/>
+    </p>
+</form>
+</li>
+
 </ul>
 
 </body>

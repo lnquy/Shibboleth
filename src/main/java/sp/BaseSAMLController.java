@@ -31,6 +31,7 @@ import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.decoder.MessageDecodingException;
 import org.opensaml.saml.common.SAMLObject;
 import org.opensaml.saml.saml2.binding.decoding.impl.HTTPPostDecoder;
+import org.opensaml.saml.saml2.binding.decoding.impl.HTTPRedirectDeflateDecoder;
 import org.opensaml.security.credential.Credential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,4 +72,24 @@ public abstract class BaseSAMLController {
             decoder.destroy();
         }
     }
+
+    protected MessageContext<SAMLObject> decodeInboundMessageContextRedirect(HttpServletRequest servletRequest)
+            throws Exception {
+        HTTPRedirectDeflateDecoder decoder = new HTTPRedirectDeflateDecoder();
+        try {
+            decoder.setHttpServletRequest(servletRequest);
+            decoder.setParserPool(parserPool);
+            decoder.initialize();
+
+            decoder.decode();
+
+            return decoder.getMessageContext();
+        } catch (ComponentInitializationException | MessageDecodingException e) {
+            log.error("Error decoding inbound message context", e);
+            throw e;
+        } finally {
+            decoder.destroy();
+        }
+    }
+
 }

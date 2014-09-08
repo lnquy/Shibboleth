@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.net.URLBuilder;
@@ -17,12 +18,20 @@ import org.opensaml.saml.common.messaging.SAMLMessageSecuritySupport;
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.ext.saml2aslo.Asynchronous;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostEncoder;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
+import org.opensaml.saml.saml2.common.Extensions;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
+import org.opensaml.saml.saml2.core.LogoutRequest;
+import org.opensaml.saml.saml2.core.LogoutResponse;
+import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
+import org.opensaml.saml.saml2.core.RequestAbstractType;
 import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.metadata.Endpoint;
+import org.opensaml.saml.saml2.metadata.SingleLogoutService;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.xmlsec.SignatureSigningParameters;
 import org.opensaml.xmlsec.context.SecurityParametersContext;
@@ -46,16 +55,18 @@ public class SAML2Controller extends BaseSAMLController {
 	@RequestMapping(value="/InitSSO/Redirect", method=RequestMethod.GET)
 	public void initSSORequestRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
 		AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
-		authnRequest.setDestination(getDestinationRedirect(servletRequest));
-		MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+		authnRequest.setDestination(getDestinationRedirect(servletRequest, "SSO"));
+		MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest,
+		        buildIdpSsoEndpoint(SAMLConstants.SAML2_REDIRECT_BINDING_URI, authnRequest.getDestination()));
 		encodeOutboundMessageContextRedirect(messageContext, servletResponse);
 	}
 
 	@RequestMapping(value="/InitSSO/POST", method=RequestMethod.GET)
 	public void initSsoRequestPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
 		AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
-		authnRequest.setDestination(getDestinationPost(servletRequest));
-		MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_POST_BINDING_URI);
+		authnRequest.setDestination(getDestinationPost(servletRequest, "SSO"));
+		MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest,
+		        buildIdpSsoEndpoint(SAMLConstants.SAML2_POST_BINDING_URI, authnRequest.getDestination()));
 		SAMLMessageSecuritySupport.signMessage(messageContext);
 		encodeOutboundMessageContextPost(messageContext, servletResponse);
 	}
@@ -63,51 +74,130 @@ public class SAML2Controller extends BaseSAMLController {
     @RequestMapping(value="/InitSSO/Passive", method=RequestMethod.GET)
     public void initSSORequestPassive(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
         AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
-        authnRequest.setDestination(getDestinationRedirect(servletRequest));
+        authnRequest.setDestination(getDestinationRedirect(servletRequest, "SSO"));
         authnRequest.setIsPassive(true);
-        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest,
+                buildIdpSsoEndpoint(SAMLConstants.SAML2_REDIRECT_BINDING_URI, authnRequest.getDestination()));
         encodeOutboundMessageContextRedirect(messageContext, servletResponse);
     }
 
     @RequestMapping(value="/InitSSO/ForceAuthn", method=RequestMethod.GET)
     public void initSSORequestForceAuthn(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
         AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
-        authnRequest.setDestination(getDestinationRedirect(servletRequest));
+        authnRequest.setDestination(getDestinationRedirect(servletRequest, "SSO"));
         authnRequest.setForceAuthn(true);
-        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest, SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest,
+                buildIdpSsoEndpoint(SAMLConstants.SAML2_REDIRECT_BINDING_URI, authnRequest.getDestination()));
         encodeOutboundMessageContextRedirect(messageContext, servletResponse);
     }
     
+    @RequestMapping(value="/InitSLO/Redirect", method=RequestMethod.GET)
+    public void initSLORequestRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        LogoutRequest logoutRequest = buildLogoutRequest(servletRequest);
+        logoutRequest.setDestination(getDestinationRedirect(servletRequest, "SLO"));
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(logoutRequest,
+                buildIdpSloEndpoint(SAMLConstants.SAML2_REDIRECT_BINDING_URI, logoutRequest.getDestination()));
+        encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+    }
+
+    @RequestMapping(value="/InitSLO/Async", method=RequestMethod.GET)
+    public void initSLORequestAsync(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        LogoutRequest logoutRequest = buildLogoutRequest(servletRequest);
+        logoutRequest.setDestination(getDestinationRedirect(servletRequest, "SLO"));
+        
+        final QName extQName = new QName(SAMLConstants.SAML20P_NS, Extensions.LOCAL_NAME, SAMLConstants.SAML20P_PREFIX);
+        final Extensions exts = (Extensions) builderFactory.getBuilder(extQName).buildObject(extQName);
+        logoutRequest.setExtensions(exts);
+        exts.getUnknownXMLObjects().add(
+                builderFactory.getBuilder(Asynchronous.DEFAULT_ELEMENT_NAME).buildObject(Asynchronous.DEFAULT_ELEMENT_NAME));
+        
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(logoutRequest,
+                buildIdpSloEndpoint(SAMLConstants.SAML2_REDIRECT_BINDING_URI, logoutRequest.getDestination()));
+        encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+    }
+    
+    @RequestMapping(value="/InitSLO/POST", method=RequestMethod.GET)
+    public void initSLORequestPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        LogoutRequest logoutRequest = buildLogoutRequest(servletRequest);
+        logoutRequest.setDestination(getDestinationRedirect(servletRequest, "SLO"));
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(logoutRequest,
+                buildIdpSloEndpoint(SAMLConstants.SAML2_POST_BINDING_URI, logoutRequest.getDestination()));
+        SAMLMessageSecuritySupport.signMessage(messageContext);
+        encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+    }
+
 	@RequestMapping(value="/POST/ACS", method=RequestMethod.POST)
 	public ResponseEntity<String> handleSSOResponsePOST(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
-		MessageContext<SAMLObject> messageContext = decodeInboundMessageContextPost(servletRequest);
+		final MessageContext<SAMLObject> messageContext = decodeInboundMessageContextPost(servletRequest);
 		
 		if (!(messageContext.getMessage() instanceof Response)) {
 			log.error("Inbound message was not a SAML 2 Response");
 			return new ResponseEntity<String>("Inbound message was not a SAML 2 Response", HttpStatus.BAD_REQUEST);
 		}
 		
-		Response response = (Response) messageContext.getMessage();
-		Element responseElement = response.getDOM();
-		String formattedMessage = SerializeSupport.prettyPrintXML(responseElement);
+		final Response response = (Response) messageContext.getMessage();
+		final Element responseElement = response.getDOM();
+		final String formattedMessage = SerializeSupport.prettyPrintXML(responseElement);
 		
 		//TODO instead of returning plain text via a ResponseEntity, add a JSP view that looks good
 		
-		HttpHeaders headers = new HttpHeaders();
+		final HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "text/plain");
 		
 		return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
 	}
 
-	private MessageContext<SAMLObject> buildOutboundMessageContext(AuthnRequest authnRequest, String bindingUri) {
+    @RequestMapping(value="/Redirect/SLO", method=RequestMethod.GET)
+    public ResponseEntity<String> handleSLOResponseRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        final MessageContext<SAMLObject> messageContext = decodeInboundMessageContextRedirect(servletRequest);
+        
+        if (!(messageContext.getMessage() instanceof LogoutResponse)) {
+            log.error("Inbound message was not a SAML 2 LogoutResponse");
+            return new ResponseEntity<String>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
+        }
+        
+        final LogoutResponse response = (LogoutResponse) messageContext.getMessage();
+        final Element responseElement = response.getDOM();
+        final String formattedMessage = SerializeSupport.prettyPrintXML(responseElement);
+        
+        //TODO instead of returning plain text via a ResponseEntity, add a JSP view that looks good
+        
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "text/plain");
+        
+        return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
+    }
+	
+    @RequestMapping(value="/POST/SLO", method=RequestMethod.POST)
+    public ResponseEntity<String> handleSLOResponsePOST(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        final MessageContext<SAMLObject> messageContext = decodeInboundMessageContextPost(servletRequest);
+        
+        if (!(messageContext.getMessage() instanceof LogoutResponse)) {
+            log.error("Inbound message was not a SAML 2 LogoutResponse");
+            return new ResponseEntity<String>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
+        }
+        
+        final LogoutResponse response = (LogoutResponse) messageContext.getMessage();
+        final Element responseElement = response.getDOM();
+        final String formattedMessage = SerializeSupport.prettyPrintXML(responseElement);
+        
+        //TODO instead of returning plain text via a ResponseEntity, add a JSP view that looks good
+        
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "text/plain");
+        
+        return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
+    }
+    
+	private MessageContext<SAMLObject> buildOutboundMessageContext(RequestAbstractType request, Endpoint endpoint) {
 		MessageContext<SAMLObject> messageContext = new MessageContext<>();
-		messageContext.setMessage(authnRequest);
+		messageContext.setMessage(request);
 		
 		SAMLPeerEntityContext peerContext = messageContext.getSubcontext(SAMLPeerEntityContext.class, true);
 		peerContext.setEntityId(getIdpEntityId());
 		
 		SAMLEndpointContext endpointContext = peerContext.getSubcontext(SAMLEndpointContext.class, true);
-		endpointContext.setEndpoint(buildIdpSsoEndpoint(bindingUri, authnRequest.getDestination()));
+		endpointContext.setEndpoint(endpoint);
 		
 		SignatureSigningParameters signingParameters = new SignatureSigningParameters();
 		signingParameters.setSigningCredential(spCredential);
@@ -156,34 +246,65 @@ public class SAML2Controller extends BaseSAMLController {
 	}
 	
 	private SingleSignOnService buildIdpSsoEndpoint(String binding, String destination) {
-		SingleSignOnService ssoEndpoint = (SingleSignOnService) builderFactory.getBuilder(SingleSignOnService.DEFAULT_ELEMENT_NAME).buildObject(SingleSignOnService.DEFAULT_ELEMENT_NAME);
+		final SingleSignOnService ssoEndpoint = (SingleSignOnService) builderFactory.getBuilder(
+		        SingleSignOnService.DEFAULT_ELEMENT_NAME).buildObject(SingleSignOnService.DEFAULT_ELEMENT_NAME);
 		ssoEndpoint.setBinding(binding);
 		ssoEndpoint.setLocation(destination);
 		return ssoEndpoint;
 	}
 
+    private SingleLogoutService buildIdpSloEndpoint(String binding, String destination) {
+        final SingleLogoutService sloEndpoint = (SingleLogoutService) builderFactory.getBuilder(
+                SingleLogoutService.DEFAULT_ELEMENT_NAME).buildObject(SingleLogoutService.DEFAULT_ELEMENT_NAME);
+        sloEndpoint.setBinding(binding);
+        sloEndpoint.setLocation(destination);
+        return sloEndpoint;
+    }
+	
 	private AuthnRequest buildAuthnRequest(HttpServletRequest servletRequest) {
-		AuthnRequest authnRequest = (AuthnRequest) builderFactory.getBuilder(AuthnRequest.DEFAULT_ELEMENT_NAME).buildObject(AuthnRequest.DEFAULT_ELEMENT_NAME);
+		final AuthnRequest authnRequest = (AuthnRequest) builderFactory.getBuilder(
+		        AuthnRequest.DEFAULT_ELEMENT_NAME).buildObject(AuthnRequest.DEFAULT_ELEMENT_NAME);
 		
 		authnRequest.setID(idGenerator.generateIdentifier());
 		authnRequest.setIssueInstant(new DateTime());
 		authnRequest.setAssertionConsumerServiceURL(getAcsUrl(servletRequest));
 		authnRequest.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 		
-		Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+		final Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
 		issuer.setValue(getSpEntityId());
 		authnRequest.setIssuer(issuer);
 		
-		NameIDPolicy nameIDPolicy = (NameIDPolicy) builderFactory.getBuilder(NameIDPolicy.DEFAULT_ELEMENT_NAME).buildObject(NameIDPolicy.DEFAULT_ELEMENT_NAME);
+		final NameIDPolicy nameIDPolicy = (NameIDPolicy) builderFactory.getBuilder(NameIDPolicy.DEFAULT_ELEMENT_NAME).buildObject(NameIDPolicy.DEFAULT_ELEMENT_NAME);
 		nameIDPolicy.setAllowCreate(true);
 		authnRequest.setNameIDPolicy(nameIDPolicy);
 		
 		return authnRequest;
 	}
 
-	private String getDestinationRedirect(HttpServletRequest servletRequest) {
+	   private LogoutRequest buildLogoutRequest(HttpServletRequest servletRequest) {
+	        final LogoutRequest logoutRequest = (LogoutRequest) builderFactory.getBuilder(
+	                LogoutRequest.DEFAULT_ELEMENT_NAME).buildObject(LogoutRequest.DEFAULT_ELEMENT_NAME);
+	        
+	        logoutRequest.setID(idGenerator.generateIdentifier());
+	        logoutRequest.setIssueInstant(new DateTime());
+	        
+	        final Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+	        issuer.setValue(getSpEntityId());
+	        logoutRequest.setIssuer(issuer);
+	        
+	        final NameID nameID = (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(NameID.DEFAULT_ELEMENT_NAME);
+	        nameID.setValue(servletRequest.getParameter("transientID"));
+	        nameID.setFormat(NameID.TRANSIENT);
+	        nameID.setSPNameQualifier(getSpEntityId());
+	        nameID.setNameQualifier(getIdpEntityId());
+	        logoutRequest.setNameID(nameID);
+	        
+	        return logoutRequest;
+	    }
+
+	private String getDestinationRedirect(HttpServletRequest servletRequest, String profile) {
 		//TODO servlet context
-		String destinationPath = "/idp/profile/SAML2/Redirect/SSO";
+		String destinationPath = "/idp/profile/SAML2/Redirect/" + profile;
 		String baseUrl = getBaseUrl(servletRequest);
 		try {
 			URLBuilder urlBuilder = new URLBuilder(baseUrl);
@@ -195,9 +316,9 @@ public class SAML2Controller extends BaseSAMLController {
 		}
 	}
 	
-	private String getDestinationPost(HttpServletRequest servletRequest) {
+	private String getDestinationPost(HttpServletRequest servletRequest, String profile) {
 		//TODO servlet context
-		String destinationPath = "/idp/profile/SAML2/POST/SSO";
+		String destinationPath = "/idp/profile/SAML2/POST/" + profile;
 		String baseUrl = getBaseUrl(servletRequest);
 		try {
 			URLBuilder urlBuilder = new URLBuilder(baseUrl);
