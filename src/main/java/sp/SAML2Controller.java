@@ -28,8 +28,9 @@ import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.LogoutResponse;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
-import org.opensaml.saml.saml2.core.RequestAbstractType;
 import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.Status;
+import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.metadata.Endpoint;
 import org.opensaml.saml.saml2.metadata.SingleLogoutService;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
@@ -126,6 +127,25 @@ public class SAML2Controller extends BaseSAMLController {
         encodeOutboundMessageContextPost(messageContext, servletResponse);
     }
 
+    @RequestMapping(value="/FinishSLO/Redirect", method=RequestMethod.GET)
+    public void finishSLOResponseRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        LogoutResponse logoutResponse = buildLogoutResponse(servletRequest);
+        logoutResponse.setDestination(getDestinationRedirect(servletRequest, "SLO"));
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(logoutResponse,
+                buildIdpSloEndpoint(SAMLConstants.SAML2_REDIRECT_BINDING_URI, logoutResponse.getDestination()));
+        encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+    }
+
+    @RequestMapping(value="/FinishSLO/POST", method=RequestMethod.GET)
+    public void finishSLOResponsePost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        LogoutResponse logoutResponse = buildLogoutResponse(servletRequest);
+        logoutResponse.setDestination(getDestinationPost(servletRequest, "SLO"));
+        MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(logoutResponse,
+                buildIdpSloEndpoint(SAMLConstants.SAML2_POST_BINDING_URI, logoutResponse.getDestination()));
+        SAMLMessageSecuritySupport.signMessage(messageContext);
+        encodeOutboundMessageContextPost(messageContext, servletResponse);
+    }
+    
 	@RequestMapping(value="/POST/ACS", method=RequestMethod.POST)
 	public ResponseEntity<String> handleSSOResponsePOST(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
 		final MessageContext<SAMLObject> messageContext = decodeInboundMessageContextPost(servletRequest);
@@ -189,9 +209,9 @@ public class SAML2Controller extends BaseSAMLController {
         return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
     }
     
-	private MessageContext<SAMLObject> buildOutboundMessageContext(RequestAbstractType request, Endpoint endpoint) {
+	private MessageContext<SAMLObject> buildOutboundMessageContext(SAMLObject message, Endpoint endpoint) {
 		MessageContext<SAMLObject> messageContext = new MessageContext<>();
-		messageContext.setMessage(request);
+		messageContext.setMessage(message);
 		
 		SAMLPeerEntityContext peerContext = messageContext.getSubcontext(SAMLPeerEntityContext.class, true);
 		peerContext.setEntityId(getIdpEntityId());
@@ -281,27 +301,53 @@ public class SAML2Controller extends BaseSAMLController {
 		return authnRequest;
 	}
 
-	   private LogoutRequest buildLogoutRequest(HttpServletRequest servletRequest) {
-	        final LogoutRequest logoutRequest = (LogoutRequest) builderFactory.getBuilder(
-	                LogoutRequest.DEFAULT_ELEMENT_NAME).buildObject(LogoutRequest.DEFAULT_ELEMENT_NAME);
-	        
-	        logoutRequest.setID(idGenerator.generateIdentifier());
-	        logoutRequest.setIssueInstant(new DateTime());
-	        
-	        final Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
-	        issuer.setValue(getSpEntityId());
-	        logoutRequest.setIssuer(issuer);
-	        
-	        final NameID nameID = (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(NameID.DEFAULT_ELEMENT_NAME);
-	        nameID.setValue(servletRequest.getParameter("transientID"));
-	        nameID.setFormat(NameID.TRANSIENT);
-	        nameID.setSPNameQualifier(getSpEntityId());
-	        nameID.setNameQualifier(getIdpEntityId());
-	        logoutRequest.setNameID(nameID);
-	        
-	        return logoutRequest;
-	    }
+    private LogoutRequest buildLogoutRequest(HttpServletRequest servletRequest) {
+        final LogoutRequest logoutRequest = (LogoutRequest) builderFactory.getBuilder(
+                LogoutRequest.DEFAULT_ELEMENT_NAME).buildObject(LogoutRequest.DEFAULT_ELEMENT_NAME);
+        
+        logoutRequest.setID(idGenerator.generateIdentifier());
+        logoutRequest.setIssueInstant(new DateTime());
+        
+        final Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+        issuer.setValue(getSpEntityId());
+        logoutRequest.setIssuer(issuer);
+        
+        final NameID nameID = (NameID) builderFactory.getBuilder(NameID.DEFAULT_ELEMENT_NAME).buildObject(NameID.DEFAULT_ELEMENT_NAME);
+        nameID.setValue(servletRequest.getParameter("transientID"));
+        nameID.setFormat(NameID.TRANSIENT);
+        nameID.setSPNameQualifier(getSpEntityId());
+        nameID.setNameQualifier(getIdpEntityId());
+        logoutRequest.setNameID(nameID);
+        
+        return logoutRequest;
+    }
 
+    private LogoutResponse buildLogoutResponse(HttpServletRequest servletRequest) {
+        final LogoutResponse logoutResponse = (LogoutResponse) builderFactory.getBuilder(
+                LogoutResponse.DEFAULT_ELEMENT_NAME).buildObject(LogoutResponse.DEFAULT_ELEMENT_NAME);
+        
+        logoutResponse.setID(idGenerator.generateIdentifier());
+        logoutResponse.setIssueInstant(new DateTime());
+        
+        final Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+        issuer.setValue(getSpEntityId());
+        logoutResponse.setIssuer(issuer);
+        
+        final Status status = (Status) builderFactory.getBuilder(Status.DEFAULT_ELEMENT_NAME).buildObject(Status.DEFAULT_ELEMENT_NAME);
+        logoutResponse.setStatus(status);
+        
+        final StatusCode code = (StatusCode) builderFactory.getBuilder(StatusCode.DEFAULT_ELEMENT_NAME).buildObject(StatusCode.DEFAULT_ELEMENT_NAME);
+        status.setStatusCode(code);
+        final String param = servletRequest.getParameter("success");
+        if (param != null && "1".equals(param)) {
+            code.setValue(StatusCode.SUCCESS_URI);
+        } else {
+            code.setValue(StatusCode.RESPONDER_URI);
+        }
+        
+        return logoutResponse;
+    }
+    
 	private String getDestinationRedirect(HttpServletRequest servletRequest, String profile) {
 		//TODO servlet context
 		String destinationPath = "/idp/profile/SAML2/Redirect/" + profile;
