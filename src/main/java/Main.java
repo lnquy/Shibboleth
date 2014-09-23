@@ -71,11 +71,11 @@ public class Main {
             final Path pathToIdPConfTestResources =
                     Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
                             "java-identity-provider", "idp-conf", "src", "test", "resources");
-            final String idpIniJettyKeystorePath = configuration.getProperties().get("jetty.keystore.path");
+            final String idpIniJettyKeystorePath = configuration.getProperties().get("jetty.backchannel.keystore.path");
             final String testbedJettyKeystorePath =
                     idpIniJettyKeystorePath
                             .replace("../", pathToIdPConfTestResources.toAbsolutePath().toString() + "/");
-            configuration.getProperties().put("jetty.keystore.path", testbedJettyKeystorePath);
+            configuration.getProperties().put("jetty.backchannel.keystore.path", testbedJettyKeystorePath);
 
             // Configure the Jetty server (with both the XML and properties file configurations).
             final Server server = (Server) configuration.configure();
