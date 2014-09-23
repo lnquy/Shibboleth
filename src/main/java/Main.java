@@ -66,16 +66,21 @@ public class Main {
                 configuration.getProperties().put(key, properties.getProperty(key));
             }
 
-            // The keystore path defined in jetty-base/start.d/idp.ini is relative to jetty.base, which is not correct
+            // The keystore paths defined in jetty-base/start.d/idp.ini is relative to jetty.base, which is not correct
             // for the testbed. So replace "../" with path to idp-conf/src/test/resources
             final Path pathToIdPConfTestResources =
                     Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
                             "java-identity-provider", "idp-conf", "src", "test", "resources");
-            final String idpIniJettyKeystorePath = configuration.getProperties().get("jetty.backchannel.keystore.path");
-            final String testbedJettyKeystorePath =
-                    idpIniJettyKeystorePath
+            final String idpIniJettyBackchannelKeystorePath = configuration.getProperties().get("jetty.backchannel.keystore.path");
+            final String testbedJettyBackchannelKeystorePath =
+                    idpIniJettyBackchannelKeystorePath
                             .replace("../", pathToIdPConfTestResources.toAbsolutePath().toString() + "/");
-            configuration.getProperties().put("jetty.backchannel.keystore.path", testbedJettyKeystorePath);
+            configuration.getProperties().put("jetty.backchannel.keystore.path", testbedJettyBackchannelKeystorePath);
+            final String idpIniJettyBrowserKeystorePath = configuration.getProperties().get("jetty.browser.keystore.path");
+            final String testbedJettyBrowserKeystorePath =
+                    idpIniJettyBrowserKeystorePath
+                            .replace("../", pathToIdPConfTestResources.toAbsolutePath().toString() + "/");
+            configuration.getProperties().put("jetty.browser.keystore.path", testbedJettyBrowserKeystorePath);
 
             // Configure the Jetty server (with both the XML and properties file configurations).
             final Server server = (Server) configuration.configure();
