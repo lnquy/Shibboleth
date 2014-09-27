@@ -340,9 +340,9 @@ public class SAML2Controller extends BaseSAMLController {
         status.setStatusCode(code);
         final String param = servletRequest.getParameter("success");
         if (param != null && "1".equals(param)) {
-            code.setValue(StatusCode.SUCCESS_URI);
+            code.setValue(StatusCode.SUCCESS);
         } else {
-            code.setValue(StatusCode.RESPONDER_URI);
+            code.setValue(StatusCode.RESPONDER);
         }
         
         return logoutResponse;
