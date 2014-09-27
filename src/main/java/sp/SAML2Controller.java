@@ -21,7 +21,7 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.ext.saml2aslo.Asynchronous;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostEncoder;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
-import org.opensaml.saml.saml2.common.Extensions;
+import org.opensaml.saml.saml2.core.Extensions;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.LogoutRequest;
@@ -106,8 +106,8 @@ public class SAML2Controller extends BaseSAMLController {
         LogoutRequest logoutRequest = buildLogoutRequest(servletRequest);
         logoutRequest.setDestination(getDestinationRedirect(servletRequest, "SLO"));
         
-        final QName extQName = new QName(SAMLConstants.SAML20P_NS, Extensions.LOCAL_NAME, SAMLConstants.SAML20P_PREFIX);
-        final Extensions exts = (Extensions) builderFactory.getBuilder(extQName).buildObject(extQName);
+        final Extensions exts = (Extensions) builderFactory.getBuilder(Extensions.DEFAULT_ELEMENT_NAME)
+                .buildObject(Extensions.DEFAULT_ELEMENT_NAME);
         logoutRequest.setExtensions(exts);
         exts.getUnknownXMLObjects().add(
                 builderFactory.getBuilder(Asynchronous.DEFAULT_ELEMENT_NAME).buildObject(Asynchronous.DEFAULT_ELEMENT_NAME));
