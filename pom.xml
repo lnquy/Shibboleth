@@ -95,6 +95,12 @@
 
         <dependency>
             <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-cas-impl</artifactId>
+            <version>${idp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
             <artifactId>idp-saml-impl</artifactId>
             <version>${idp.version}</version>
         </dependency>
