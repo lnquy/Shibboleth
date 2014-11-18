@@ -16,7 +16,6 @@
     <!-- The test ldif file /test/test-ldap.ldif is from idp-conf/src/test/resources -->
     <bean id="testbed.DirectoryService" class="net.shibboleth.idp.test.InMemoryDirectory" init-method="start" destroy-method="stop">
         <constructor-arg index="0" value="classpath:/test/test-ldap.ldif" />
-        <constructor-arg index="1" value="classpath:/test/test-ldap.keystore" />
     </bean>
 
 </beans>
