@@ -23,7 +23,7 @@
         <!-- TODO tz These paths are fragile. -->
         <idp.home>${project.basedir}/../java-identity-provider/idp-conf/src/main/resources</idp.home>
         <app.home>${project.basedir}/src/main/resources</app.home>
-        <spring-extensions.version>5.0-SNAPSHOT</spring-extensions.version>
+        <spring-extensions.version>6.0-SNAPSHOT</spring-extensions.version>
      </properties>
 
     <repositories>
