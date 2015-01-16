@@ -4,7 +4,6 @@ import java.net.MalformedURLException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.namespace.QName;
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.net.URLBuilder;
@@ -21,8 +20,8 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.ext.saml2aslo.Asynchronous;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostEncoder;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
-import org.opensaml.saml.saml2.core.Extensions;
 import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.Extensions;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.LogoutResponse;
@@ -63,7 +62,7 @@ public class SAML2Controller extends BaseSAMLController {
 	}
 
 	@RequestMapping(value="/InitSSO/POST", method=RequestMethod.GET)
-	public void initSsoRequestPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+	public void initSSORequestPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
 		AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
 		authnRequest.setDestination(getDestinationPost(servletRequest, "SSO"));
 		MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest,
@@ -71,7 +70,7 @@ public class SAML2Controller extends BaseSAMLController {
 		SAMLMessageSecuritySupport.signMessage(messageContext);
 		encodeOutboundMessageContextPost(messageContext, servletResponse);
 	}
-
+	
     @RequestMapping(value="/InitSSO/Passive", method=RequestMethod.GET)
     public void initSSORequestPassive(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
         AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
@@ -90,6 +89,31 @@ public class SAML2Controller extends BaseSAMLController {
         MessageContext<SAMLObject> messageContext = buildOutboundMessageContext(authnRequest,
                 buildIdpSsoEndpoint(SAMLConstants.SAML2_REDIRECT_BINDING_URI, authnRequest.getDestination()));
         encodeOutboundMessageContextRedirect(messageContext, servletResponse);
+    }
+    
+    @RequestMapping(value = "/InitSSO/POST/Passive", method = RequestMethod.GET) public void initSSORequestPostPassive(
+            HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
+        AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
+        authnRequest.setDestination(getDestinationPost(servletRequest, "SSO"));
+        authnRequest.setIsPassive(true);
+        MessageContext<SAMLObject> messageContext =
+                buildOutboundMessageContext(authnRequest,
+                        buildIdpSsoEndpoint(SAMLConstants.SAML2_POST_BINDING_URI, authnRequest.getDestination()));
+        SAMLMessageSecuritySupport.signMessage(messageContext);
+        encodeOutboundMessageContextPost(messageContext, servletResponse);
+    }
+    
+    @RequestMapping(value = "/InitSSO/POST/ForceAuthn", method = RequestMethod.GET) public void
+            initSSORequestPostForceAuthn(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
+                    throws Exception {
+        AuthnRequest authnRequest = buildAuthnRequest(servletRequest);
+        authnRequest.setDestination(getDestinationPost(servletRequest, "SSO"));
+        authnRequest.setForceAuthn(true);
+        MessageContext<SAMLObject> messageContext =
+                buildOutboundMessageContext(authnRequest,
+                        buildIdpSsoEndpoint(SAMLConstants.SAML2_POST_BINDING_URI, authnRequest.getDestination()));
+        SAMLMessageSecuritySupport.signMessage(messageContext);
+        encodeOutboundMessageContextPost(messageContext, servletResponse);
     }
     
     @RequestMapping(value="/InitSLO/Redirect", method=RequestMethod.GET)
