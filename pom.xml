@@ -15,15 +15,15 @@
 
     <properties>
         <idp.groupId>net.shibboleth.idp</idp.groupId>
-        <idp.version>3.0-SNAPSHOT</idp.version>
+        <idp.version>3.1-SNAPSHOT</idp.version>
         <opensaml.groupId>org.opensaml</opensaml.groupId>
-        <opensaml.version>3.0-SNAPSHOT</opensaml.version>
+        <opensaml.version>3.1-SNAPSHOT</opensaml.version>
         <!-- The assembly-directory is where the testbed is built before being archived. -->
         <assembly-directory>${project.build.directory}/${project.artifactId}-${project.version}-distribution</assembly-directory>
         <!-- TODO tz These paths are fragile. -->
         <idp.home>${project.basedir}/../java-identity-provider/idp-conf/src/main/resources</idp.home>
         <app.home>${project.basedir}/src/main/resources</app.home>
-        <spring-extensions.version>5.0-SNAPSHOT</spring-extensions.version>
+        <spring-extensions.version>5.1-SNAPSHOT</spring-extensions.version>
      </properties>
 
     <repositories>
