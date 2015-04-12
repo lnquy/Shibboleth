@@ -51,7 +51,7 @@ public class Main {
             // Determine path to jetty-base in the idp-distribution module.
             final Path pathToJettyBase =
                     Paths.get(Paths.get("").toAbsolutePath().getParent().toAbsolutePath().toString(),
-                            "java-identity-provider", "idp-distribution", "src", "main", "resources", "jetty-base");
+                            "java-identity-provider", "idp-distribution", "src", "main", "resources", "embedded", "jetty-base");
 
             // Create Jetty configuration from jetty-base/etc/jetty.xml in the idp-distribution module.
             final Path pathToJettyXML = pathToJettyBase.resolve(Paths.get("etc", "jetty.xml"));
