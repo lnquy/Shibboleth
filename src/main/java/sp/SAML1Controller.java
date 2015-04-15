@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
 @RequestMapping("/SAML1")
 public class SAML1Controller extends BaseSAMLController {
     
-    private Logger log = LoggerFactory.getLogger(SAML1Controller.class);
+    private final Logger log = LoggerFactory.getLogger(SAML1Controller.class);
     
     @RequestMapping(value="/POST/ACS", method=RequestMethod.POST)
     public ResponseEntity<String> handleSSOResponsePOST(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
@@ -48,7 +48,7 @@ public class SAML1Controller extends BaseSAMLController {
         
         if (!(messageContext.getMessage() instanceof Response)) {
             log.error("Inbound message was not a SAML 1 Response");
-            return new ResponseEntity<String>("Inbound message was not a SAML 1 Response", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Inbound message was not a SAML 1 Response", HttpStatus.BAD_REQUEST);
         }
         
         Response response = (Response) messageContext.getMessage();
@@ -60,7 +60,7 @@ public class SAML1Controller extends BaseSAMLController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "text/plain");
         
-        return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
+        return new ResponseEntity<>(formattedMessage, headers, HttpStatus.OK);
     }
 
 }

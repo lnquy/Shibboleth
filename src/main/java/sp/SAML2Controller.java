@@ -50,7 +50,7 @@ import org.w3c.dom.Element;
 @RequestMapping("/SAML2")
 public class SAML2Controller extends BaseSAMLController {
 	
-	private Logger log = LoggerFactory.getLogger(SAML2Controller.class);
+	private final Logger log = LoggerFactory.getLogger(SAML2Controller.class);
 
 	@RequestMapping(value="/InitSSO/Redirect", method=RequestMethod.GET)
 	public void initSSORequestRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
@@ -176,7 +176,7 @@ public class SAML2Controller extends BaseSAMLController {
 		
 		if (!(messageContext.getMessage() instanceof Response)) {
 			log.error("Inbound message was not a SAML 2 Response");
-			return new ResponseEntity<String>("Inbound message was not a SAML 2 Response", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>("Inbound message was not a SAML 2 Response", HttpStatus.BAD_REQUEST);
 		}
 		
 		final Response response = (Response) messageContext.getMessage();
@@ -188,7 +188,7 @@ public class SAML2Controller extends BaseSAMLController {
 		final HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "text/plain");
 		
-		return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
+		return new ResponseEntity<>(formattedMessage, headers, HttpStatus.OK);
 	}
 
     @RequestMapping(value="/Redirect/SLO", method=RequestMethod.GET)
@@ -197,7 +197,7 @@ public class SAML2Controller extends BaseSAMLController {
         
         if (!(messageContext.getMessage() instanceof LogoutResponse)) {
             log.error("Inbound message was not a SAML 2 LogoutResponse");
-            return new ResponseEntity<String>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
         }
         
         final LogoutResponse response = (LogoutResponse) messageContext.getMessage();
@@ -209,7 +209,7 @@ public class SAML2Controller extends BaseSAMLController {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "text/plain");
         
-        return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
+        return new ResponseEntity<>(formattedMessage, headers, HttpStatus.OK);
     }
 	
     @RequestMapping(value="/POST/SLO", method=RequestMethod.POST)
@@ -218,7 +218,7 @@ public class SAML2Controller extends BaseSAMLController {
         
         if (!(messageContext.getMessage() instanceof LogoutResponse)) {
             log.error("Inbound message was not a SAML 2 LogoutResponse");
-            return new ResponseEntity<String>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
         }
         
         final LogoutResponse response = (LogoutResponse) messageContext.getMessage();
@@ -230,7 +230,7 @@ public class SAML2Controller extends BaseSAMLController {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "text/plain");
         
-        return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
+        return new ResponseEntity<>(formattedMessage, headers, HttpStatus.OK);
     }
     
 	private MessageContext<SAMLObject> buildOutboundMessageContext(SAMLObject message, Endpoint endpoint) {
