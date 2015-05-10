@@ -49,12 +49,12 @@
             <groupId>${idp.groupId}</groupId>
             <artifactId>idp-conf</artifactId>
             <version>${idp.version}</version>
-            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>${idp.groupId}</groupId>
             <artifactId>idp-conf</artifactId>
             <version>${idp.version}</version>
+            <type>test-jar</type>
         </dependency>
 
         <dependency>
@@ -201,6 +201,13 @@
         </dependency>
 
         <!-- Runtime scope -->
+        <dependency>
+            <groupId>${idp.groupId}</groupId>
+            <artifactId>idp-consent</artifactId>
+            <version>${idp.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <dependency>
             <groupId>${idp.groupId}</groupId>
             <artifactId>idp-ui</artifactId>
