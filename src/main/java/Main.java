@@ -105,8 +105,11 @@ public class Main {
             idpWebapp.setContextPath("/idp");
             idpWebapp.setWar(idpWebappPath.toString());
             
-            System.setProperty("java.security.auth.login.config",
-                    System.getProperty(PathPropertySupport.IDP_HOME) + "/" + properties.getProperty("jetty.jaas.path"));
+            final String idpJaasConfigPath = configuration.getProperties().get("jetty.jaas.path");
+            final String testbedJaasConfigPath = pathToIdPConfTestResources.toAbsolutePath().toString()
+                    + "/" + idpJaasConfigPath;
+            System.setProperty("java.security.auth.login.config", testbedJaasConfigPath);
+            
             final JAASLoginService jaasLogin = new JAASLoginService();
             jaasLogin.setName("Web Login Service");
             jaasLogin.setLoginModuleName("ShibUserPassAuth");
