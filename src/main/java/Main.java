@@ -29,8 +29,6 @@ import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
-import common.PathPropertySupport;
-
 /** Start Jetty */
 public class Main {
 
@@ -46,7 +44,7 @@ public class Main {
 
             // Set idp.home to "classpath:" so test credentials in idp-conf/src/test/resources can be found.
             // PathPropertySupport.setupIdPHomeProperties();
-            System.setProperty("idp.home", "classpath:");
+            System.setProperty("idp.home", "classpath*:");
 
             // Determine path to jetty-base in the idp-distribution module.
             final Path pathToJettyBase =
