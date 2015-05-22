@@ -23,11 +23,17 @@ import java.util.Properties;
 
 import org.eclipse.jetty.jaas.JAASLoginService;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
+
+import ch.qos.logback.access.jetty.RequestLogImpl;
 
 /** Start Jetty */
 public class Main {
@@ -103,6 +109,15 @@ public class Main {
             idpWebapp.setContextPath("/idp");
             idpWebapp.setWar(idpWebappPath.toString());
             
+            // Optionally enable logback-access logging as well as the TeeFilter.
+            boolean enableLogging = false;
+            
+            if (enableLogging) {
+                // TeeFilter.
+                final Path override = Paths.get("src", "main", "resources", "system", "conf", "web-override.xml");
+                idpWebapp.setOverrideDescriptor(override.toString());
+            }
+            
             final String idpJaasConfigPath = configuration.getProperties().get("jetty.jaas.path");
             final String testbedJaasConfigPath = pathToIdPConfTestResources.toAbsolutePath().toString()
                     + "/" + idpJaasConfigPath;
@@ -115,11 +130,23 @@ public class Main {
             securityHandler.setLoginService(jaasLogin);
             idpWebapp.setSecurityHandler(securityHandler);
 
+            final HandlerCollection handlers = new HandlerCollection();
             final ContextHandlerCollection contexts = new ContextHandlerCollection();
+            handlers.setHandlers(new Handler[] {contexts, new DefaultHandler()});
+
             contexts.addHandler(testbedWebapp);
             contexts.addHandler(idpWebapp);
-            server.setHandler(contexts);
 
+            if (enableLogging) {
+                final RequestLogImpl requestLog = new RequestLogImpl();
+                requestLog.setResource("/system/conf/logback-access.xml");
+                final RequestLogHandler requestLogHandler = new RequestLogHandler();
+                requestLogHandler.setRequestLog(requestLog);
+                handlers.addHandler(requestLogHandler);
+            }
+
+            server.setHandler(handlers);
+            
             server.start();
             server.join();
         } catch (final Exception e) {
