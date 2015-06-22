@@ -47,6 +47,36 @@
 <li><a href="sp/SAML2/FinishSLO/POST?success=1">SAML 2 LogoutResponse, POST Binding, Success</a>
 <li><a href="sp/SAML2/FinishSLO/POST?success=0">SAML 2 LogoutResponse, POST Binding, Failure</a>
 
+<p>Local storage tests require 'idp.views = %{idp.home}/views,%{idp.home}/views-test' in conf/idp.properties</p>
+<li>
+<form action="idp/profile/test/local-storage/read" method="GET">
+    <p>Read from local storage</p>
+    <p>key:
+    <input id="localStorageKey" type="text" name="localStorageKey" size="60"/>
+    </p>
+    <p>version:
+    <input id="localStorageVersion" type="text" name="localStorageVersion" size="10"/>
+    </p>
+    <input type="submit" value="Submit">
+</form>
+</li>
+
+<li>
+<form action="idp/profile/test/local-storage/write" method="GET">
+    <p>Write from local storage</p>
+    <p>key:
+    <input id="localStorageKey" type="text" name="localStorageKey" size="60"/>
+    </p>
+    <p>value:
+    <input id="localStorageValue" type="text" name="localStorageValue" size="60"/>
+    </p>
+    <p>version:
+    <input id="localStorageVersion" type="text" name="localStorageVersion" size="10"/>
+    </p>
+    <input type="submit" value="Submit">
+</form>
+</li>
+
 </ul>
 
 </body>
