@@ -55,15 +55,15 @@
     <input id="localStorageKey" type="text" name="localStorageKey" size="60"/>
     </p>
     <p>version:
-    <input id="localStorageVersion" type="text" name="localStorageVersion" size="10"/>
+    <input id="localStorageVersion" type="text" name="localStorageVersion" size="10" value="0" />
     </p>
-    <input type="submit" value="Submit">
+    <input type="submit" value="Read">
 </form>
 </li>
 
 <li>
 <form action="idp/profile/test/local-storage/write" method="GET">
-    <p>Write from local storage</p>
+    <p>Write to local storage</p>
     <p>key:
     <input id="localStorageKey" type="text" name="localStorageKey" size="60"/>
     </p>
@@ -73,7 +73,7 @@
     <p>version:
     <input id="localStorageVersion" type="text" name="localStorageVersion" size="10"/>
     </p>
-    <input type="submit" value="Submit">
+    <input type="submit" value="Write">
 </form>
 </li>
 
