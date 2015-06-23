@@ -48,31 +48,38 @@
 <li><a href="sp/SAML2/FinishSLO/POST?success=0">SAML 2 LogoutResponse, POST Binding, Failure</a>
 
 <p>Local storage tests require 'idp.views = %{idp.home}/views,%{idp.home}/views-test' in conf/idp.properties</p>
-<li>
+<li>Read from local storage
 <form action="idp/profile/test/local-storage/read" method="GET">
-    <p>Read from local storage</p>
-    <p>key:
-    <input id="localStorageKey" type="text" name="localStorageKey" size="60"/>
-    </p>
-    <p>version:
-    <input id="localStorageVersion" type="text" name="localStorageVersion" size="10" value="0" />
-    </p>
+    <table>
+        <tr>
+            <td>key</td>
+            <td><input name="localStorageKey" type="text" size="30" value="shib_idp_ls" /></td>
+        </tr>
+        <tr>
+            <td>version</td>
+            <td><input name="localStorageVersion" type="text" size="10" value="0" /></td>
+        </tr>
+    </table>
     <input type="submit" value="Read">
 </form>
 </li>
 
-<li>
+<li>Write to local storage
 <form action="idp/profile/test/local-storage/write" method="GET">
-    <p>Write to local storage</p>
-    <p>key:
-    <input id="localStorageKey" type="text" name="localStorageKey" size="60"/>
-    </p>
-    <p>value:
-    <input id="localStorageValue" type="text" name="localStorageValue" size="60"/>
-    </p>
-    <p>version:
-    <input id="localStorageVersion" type="text" name="localStorageVersion" size="10"/>
-    </p>
+    <table>
+        <tr>
+            <td>key</td>
+            <td><input name="localStorageKey" type="text" size="30" value="shib_idp_ls" /></td>
+        </tr>
+        <tr>
+            <td>version</td>
+            <td><input name="localStorageVersion" type="text" size="10" value="1" /></td>
+        </tr>
+        <tr>
+            <td>value</td>
+            <td><input name="localStorageValue" type="text" size="60"/></td>
+        </tr>
+    </table>
     <input type="submit" value="Write">
 </form>
 </li>
