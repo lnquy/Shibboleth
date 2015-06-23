@@ -45,9 +45,12 @@ public class Main {
             final ProtectionDomain protectionDomain = Main.class.getProtectionDomain();
             final URL location = protectionDomain.getCodeSource().getLocation();
 
-            // Set idp.home to "classpath:" so test credentials in idp-conf/src/test/resources can be found.
-            // PathPropertySupport.setupIdPHomeProperties();
-            System.setProperty("idp.home", "classpath*:");
+            // Set idp.home to "classpath:" so test files in idp-conf/src/test/resources can be found.
+            System.setProperty("idp.home", "classpath:");
+
+            // After all this discussion, is this really needed? Doesn't seem to be to get test flows to run.
+            // Set idp.webflows to "classpath*:/flows" so flows in multiple locations can be found.
+            //System.setProperty("idp.webflows", "classpath*:/flows");
 
             // Determine path to jetty-base in the idp-distribution module.
             final Path pathToJettyBase =
