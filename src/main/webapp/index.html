@@ -47,7 +47,55 @@
 <li><a href="sp/SAML2/FinishSLO/POST?success=1">SAML 2 LogoutResponse, POST Binding, Success</a>
 <li><a href="sp/SAML2/FinishSLO/POST?success=0">SAML 2 LogoutResponse, POST Binding, Failure</a>
 
-<p>Local storage tests require 'idp.views = %{idp.home}/views,%{idp.home}/views-test' in conf/idp.properties</p>
+<li>
+<select onChange="window.location.href=this.value">
+    <option value="sp/sp1/SAML2">SP1</option>
+    <option value="sp/sp1/SAML2/InitSSO/Redirect">SP1 Init SAML 2 SSO, Redirect Binding</option>
+    <option value="sp/sp1/SAML2/InitSSO/Passive">SP1 Init SAML 2 SSO, Redirect Binding, Passive Request</option>
+    <option value="sp/sp1/SAML2/InitSSO/ForceAuthn">SP1 Init SAML 2 SSO, Redirect Binding, ForceAuthn Request</option>
+    <option value="sp/sp1/SAML2/InitSSO/POST">SP1 Init SAML 2 SSO, POST Binding</option>
+    <option value="sp/sp1/SAML2/InitSSO/POST/Passive">SP1 Init SAML 2 SSO, POST Binding, Passive Request</option>
+    <option value="sp/sp1/SAML2/InitSSO/POST/ForceAuthn">SP1 Init SAML 2 SSO, POST Binding, ForceAuthn Request</option>
+    <option value="idp/profile/SAML2/Unsolicited/SSO?providerId=https://sp1.example.org&shire=https://localhost:8443/sp/sp1/SAML2/POST/ACS&target=MyRelayState">SP1 IdP-initiated (Unsolicited) SAML 2 SSO</option>
+    <option value="idp/profile/Shibboleth/SSO?providerId=https://sp1.example.org&shire=https://localhost:8443/sp/sp1/SAML1/POST/ACS&target=MyRelayState">SP1 IdP-initiated (Unsolicited) SAML 1 SSO</option>
+    <option value="sp/sp1/SAML2/FinishSLO/Redirect?success=1">SP1 SAML 2 LogoutResponse, Redirect Binding, Success</option>
+    <option value="sp/sp1/SAML2/FinishSLO/Redirect?success=0">SP1 SAML 2 LogoutResponse, Redirect Binding, Failure</option>
+    <option value="sp/sp1/SAML2/FinishSLO/POST?success=1">SP1 SAML 2 LogoutResponse, POST Binding, Success</option>
+    <option value="sp/sp1/SAML2/FinishSLO/POST?success=0">SP1 SAML 2 LogoutResponse, POST Binding, Failure</option>
+</select>
+<li>
+<select onChange="window.location.href=this.value">
+    <option value="sp/sp2/SAML2">SP2</option>
+    <option value="sp/sp2/SAML2/InitSSO/Redirect">SP2 Init SAML 2 SSO, Redirect Binding</option>
+    <option value="sp/sp2/SAML2/InitSSO/Passive">SP2 Init SAML 2 SSO, Redirect Binding, Passive Request</option>
+    <option value="sp/sp2/SAML2/InitSSO/ForceAuthn">SP2 Init SAML 2 SSO, Redirect Binding, ForceAuthn Request</option>
+    <option value="sp/sp2/SAML2/InitSSO/POST">SP2 Init SAML 2 SSO, POST Binding</option>
+    <option value="sp/sp2/SAML2/InitSSO/POST/Passive">SP2 Init SAML 2 SSO, POST Binding, Passive Request</option>
+    <option value="sp/sp2/SAML2/InitSSO/POST/ForceAuthn">SP2 Init SAML 2 SSO, POST Binding, ForceAuthn Request</option>
+    <option value="idp/profile/SAML2/Unsolicited/SSO?providerId=https://sp2.example.org&shire=https://localhost:8443/sp/sp2/SAML2/POST/ACS&target=MyRelayState">SP2 IdP-initiated (Unsolicited) SAML 2 SSO</option>
+    <option value="idp/profile/Shibboleth/SSO?providerId=https://sp2.example.org&shire=https://localhost:8443/sp/sp2/SAML1/POST/ACS&target=MyRelayState">SP2 IdP-initiated (Unsolicited) SAML 1 SSO</option>
+    <option value="sp/sp2/SAML2/FinishSLO/Redirect?success=1">SP2 SAML 2 LogoutResponse, Redirect Binding, Success</option>
+    <option value="sp/sp2/SAML2/FinishSLO/Redirect?success=0">SP2 SAML 2 LogoutResponse, Redirect Binding, Failure</option>
+    <option value="sp/sp2/SAML2/FinishSLO/POST?success=1">SP2 SAML 2 LogoutResponse, POST Binding, Success</option>
+    <option value="sp/sp2/SAML2/FinishSLO/POST?success=0">SP2 SAML 2 LogoutResponse, POST Binding, Failure</option>
+</select>
+<li>
+<select onChange="window.location.href=this.value">
+    <option value="sp/sp3/SAML2">SP3</option>
+    <option value="sp/sp3/SAML2/InitSSO/Redirect">SP3 Init SAML 2 SSO, Redirect Binding</option>
+    <option value="sp/sp3/SAML2/InitSSO/Passive">SP3 Init SAML 2 SSO, Redirect Binding, Passive Request</option>
+    <option value="sp/sp3/SAML2/InitSSO/ForceAuthn">SP3 Init SAML 2 SSO, Redirect Binding, ForceAuthn Request</option>
+    <option value="sp/sp3/SAML2/InitSSO/POST">SP3 Init SAML 2 SSO, POST Binding</option>
+    <option value="sp/sp3/SAML2/InitSSO/POST/Passive">SP3 Init SAML 2 SSO, POST Binding, Passive Request</option>
+    <option value="sp/sp3/SAML2/InitSSO/POST/ForceAuthn">SP3 Init SAML 2 SSO, POST Binding, ForceAuthn Request</option>
+    <option value="idp/profile/SAML2/Unsolicited/SSO?providerId=https://sp3.example.org&shire=https://localhost:8443/sp/sp3/SAML2/POST/ACS&target=MyRelayState">SP3 IdP-initiated (Unsolicited) SAML 2 SSO</option>
+    <option value="idp/profile/Shibboleth/SSO?providerId=https://sp3.example.org&shire=https://localhost:8443/sp/sp3/SAML1/POST/ACS&target=MyRelayState">SP3 IdP-initiated (Unsolicited) SAML 1 SSO</option>
+    <option value="sp/sp3/SAML2/FinishSLO/Redirect?success=1">SP3 SAML 2 LogoutResponse, Redirect Binding, Success</option>
+    <option value="sp/sp3/SAML2/FinishSLO/Redirect?success=0">SP3 SAML 2 LogoutResponse, Redirect Binding, Failure</option>
+    <option value="sp/sp3/SAML2/FinishSLO/POST?success=1">SP3 SAML 2 LogoutResponse, POST Binding, Success</option>
+    <option value="sp/sp3/SAML2/FinishSLO/POST?success=0">SP3 SAML 2 LogoutResponse, POST Binding, Failure</option>
+</select>
+
 <li>Read from local storage
 <form action="idp/profile/test/local-storage/read" method="GET">
     <table>
@@ -83,6 +131,7 @@
     <input type="submit" value="Write">
 </form>
 </li>
+<p><small>Local storage tests require 'idp.views = %{idp.home}/views,%{idp.home}/views-test' in conf/idp.properties</small></p>
 
 </ul>
 
