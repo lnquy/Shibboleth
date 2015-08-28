@@ -108,9 +108,8 @@ public class Main {
             idpWebapp.setContextPath("/idp");
             idpWebapp.setWar(idpWebappPath.toString());
             
-            // Uncomment along with request log handler to enable TeeFilter.
-            // final Path override = Paths.get("src", "main", "resources", "system", "conf", "web-override.xml");
-            // idpWebapp.setOverrideDescriptor(override.toString());
+            final Path override = Paths.get("src", "main", "resources", "system", "conf", "web-override.xml");
+            idpWebapp.setOverrideDescriptor(override.toString());
             
             final String idpJaasConfigPath = configuration.getProperties().get("jetty.jaas.path");
             final String testbedJaasConfigPath = pathToIdPConfTestResources.toAbsolutePath().toString()
