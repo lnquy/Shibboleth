@@ -18,12 +18,7 @@
     </filter-mapping>
      -->
 
-    
-    <!--
-    Uncomment to enable interacting with storage services via HTTP. 
-    -->
-    <!-- The /storage app space -->
-    <!--
+    <!-- The /storage app space. Interact with storage services via HTTP. -->
     <servlet>
         <servlet-name>storage</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -33,11 +28,10 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>storage</servlet-name>
         <url-pattern>/storage/*</url-pattern>
     </servlet-mapping>
-    -->
 
 </web-app>

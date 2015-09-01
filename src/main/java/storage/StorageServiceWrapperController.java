@@ -23,9 +23,6 @@ import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.json.Json;
-import javax.json.stream.JsonGenerator;
-import javax.json.stream.JsonGeneratorFactory;
 
 import org.opensaml.storage.StorageRecord;
 import org.opensaml.storage.StorageSerializer;
@@ -55,12 +52,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 
  * To create :
  * <p>
- * curl -X POST -dvalue=value 'http://localhost:8080/idp/storage/shibboleth.StorageService/create/context/key'
+ * curl -X POST -dvalue=value 'http://localhost:8080/idp/storage/create/shibboleth.StorageService/context/key'
+ * <p>
+ * or
+ * <p>
+ * curl-X POST -dvalue=value 'http://localhost:8080/idp/storage/create?storageServiceId=shibboleth.StorageService&context=context&key=key'
  * <p>
  * 
  * To read :
  * <p>
- * curl 'http://localhost:8080/idp/storage/shibboleth.StorageService/read/context/key'
+ * curl 'http://localhost:8080/idp/storage/read/shibboleth.StorageService/context/key'
+ * <p>
+ * or
+ * <p>
+ * curl 'http://localhost:8080/idp/storage/read?storageServiceId=shibboleth.StorageService&context=context&key=key'
  * <p>
  * 
  * To list storage services :
@@ -74,9 +79,6 @@ public class StorageServiceWrapperController {
     /** Class logger. */
     @Nonnull private final Logger log = LoggerFactory.getLogger(StorageServiceWrapperController.class);
 
-    /** JSON generator factory. */
-    @Nonnull private final JsonGeneratorFactory generatorFactory;
-
     /** Storage record serializer. */
     @Nonnull private final StorageSerializer<StorageRecord> serializer;
 
@@ -84,13 +86,12 @@ public class StorageServiceWrapperController {
     @Autowired private ApplicationContext appContext;
 
     public StorageServiceWrapperController() {
-        log.debug("StorageServiceWrapperController construtor");
-
-        final Map<String, String> generatorConfig = new HashMap<>();
-        generatorConfig.put(JsonGenerator.PRETTY_PRINTING, "true");
-        generatorFactory = Json.createGeneratorFactory(generatorConfig);
-
         serializer = new SimpleStorageRecordSerializer();
+    }
+
+    static protected ResponseEntity<String> seleniumFriendlyResponse(
+            @Nonnull final HttpStatus status) {
+        return new ResponseEntity<String>(status.getReasonPhrase(), status);
     }
 
     @Nullable
@@ -134,40 +135,46 @@ public class StorageServiceWrapperController {
             @Nonnull final String value) {
         try {
             final StorageService storageService = getStorageService(storageServiceId);
+            if (storageService == null) {
+                log.debug("Unable to find storage service with id '{}'", storageServiceId);
+                return seleniumFriendlyResponse(HttpStatus.BAD_REQUEST);
+            }
 
             log.debug("Creating in '{}' with context '{}' and key '{}'", storageServiceId, context, key);
             boolean success = storageService.create(context, key, value, null);
             log.debug("Create '{}' in '{}' with context '{}' and key '{}'", success, storageServiceId, context, key);
+            
             if (success) {
-                return new ResponseEntity<String>(HttpStatus.CREATED);
+                return seleniumFriendlyResponse(HttpStatus.CREATED);
             } else {
-                return new ResponseEntity<String>(HttpStatus.CONFLICT);
+                return seleniumFriendlyResponse(HttpStatus.CONFLICT);
             }
 
         } catch (IOException e) {
-            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+            log.debug("An error occurred", e);
+            return seleniumFriendlyResponse(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @RequestMapping(
-            value = "/{storageServiceId}/create/{context}/{key}",
+            value = "/create/{storageServiceId}/{context}/{key}",
             method = RequestMethod.POST)
     public ResponseEntity<String> createFromPathVariables(
-            @PathVariable final String storageServiceId,
-            @PathVariable final String context,
-            @PathVariable final String key,
-            @RequestParam("value") String value) throws Exception {
+            @PathVariable @Nonnull final String storageServiceId,
+            @PathVariable @Nonnull final String context,
+            @PathVariable @Nonnull final String key,
+            @RequestParam @Nonnull final String value) throws Exception {
         return create(storageServiceId, context, key, value);
     }
-
+    
     @RequestMapping(
-            value = "/{storageServiceId}/create",
+            value = "/create",
             method = RequestMethod.POST)
     public ResponseEntity<String> createFromRequestParams(
-            @PathVariable final String storageServiceId,
-            @RequestParam final String context,
-            @RequestParam final String key,
-            @RequestParam("value") String value) throws Exception {
+            @RequestParam @Nonnull final String storageServiceId,
+            @RequestParam @Nonnull final String context,
+            @RequestParam @Nonnull final String key,
+            @RequestParam @Nonnull final String value) throws Exception {
         return create(storageServiceId, context, key, value);
     }
 
@@ -177,26 +184,31 @@ public class StorageServiceWrapperController {
             @Nonnull final String key) {
         try {
             final StorageService storageService = getStorageService(storageServiceId);
+            if (storageService == null) {
+                log.debug("Unable to find storage service with id '{}'", storageServiceId);
+                return seleniumFriendlyResponse(HttpStatus.BAD_REQUEST);
+            }
 
             log.debug("Reading from '{}' with context '{}' and key '{}'", storageServiceId, context, key);
             final StorageRecord record = storageService.read(context, key);
             log.debug("Read '{}' from '{}' with context '{}' and key '{}'", record, storageServiceId, context, key);
 
             if (record == null) {
-                return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+                return seleniumFriendlyResponse(HttpStatus.NOT_FOUND);
             } else {
+                final String serializedStorageRecord = serializer.serialize(record);
                 final HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                final String serializedStorageRecord = serializer.serialize(record);
                 return new ResponseEntity<String>(serializedStorageRecord, httpHeaders, HttpStatus.OK);
             }
         } catch (IOException e) {
-            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+            log.debug("An error occurred", e);
+            return seleniumFriendlyResponse(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @RequestMapping(
-            value = "/{storageServiceId}/read/{context}/{key}",
+            value = "/read/{storageServiceId}/{context}/{key}",
             method = RequestMethod.GET,
             produces = {"application/json"})
     public ResponseEntity<String> readFromPathVariables(
@@ -207,13 +219,13 @@ public class StorageServiceWrapperController {
     }
 
     @RequestMapping(
-            value = "/{storageServiceId}/read",
+            value = "/read",
             method = RequestMethod.GET,
             produces = {"application/json"})
     public ResponseEntity<String> readFromRequestParams(
-            @PathVariable @Nonnull final String storageServiceId,
-            @RequestParam("context") @Nonnull final String context,
-            @RequestParam("key") @Nonnull final String key) throws IOException {
+            @RequestParam @Nonnull final String storageServiceId,
+            @RequestParam @Nonnull final String context,
+            @RequestParam @Nonnull final String key) throws IOException {
         return read(storageServiceId, context, key);
     }
 

@@ -95,7 +95,7 @@
     <option value="sp/sp3/SAML2/FinishSLO/POST?success=1">SP3 SAML 2 LogoutResponse, POST Binding, Success</option>
     <option value="sp/sp3/SAML2/FinishSLO/POST?success=0">SP3 SAML 2 LogoutResponse, POST Binding, Failure</option>
 </select>
-
+<!-- Disable local storage prior to removal.
 <li>Read from local storage
 <form action="idp/profile/test/local-storage/read" method="GET">
     <table>
@@ -132,6 +132,53 @@
 </form>
 </li>
 <p><small>Local storage tests require 'idp.views = %{idp.home}/views,%{idp.home}/views-test' in conf/idp.properties</small></p>
+-->
+
+<li><a href="idp/storage/">List storage services</a></li>
+<li><a href="idp/profile/test/client-storage/read">Initialize client storage</a></li>
+<li><a href="idp/profile/test/client-storage/write">Persist client storage</a></li>
+<li>Read from client storage
+<form id="client-storage-read" action="idp/storage/read" method="GET">
+    <table>
+        <tr>
+            <td>storageServiceId</td>
+            <td><input name="storageServiceId" type="text" size="50" value="shibboleth.ClientPersistentStorageService" /></td>
+        </tr>
+        <tr>
+            <td>context</td>
+            <td><input name="context" type="text" size="30" /></td>
+        </tr>
+        <tr>
+            <td>key</td>
+            <td><input name="key" type="text" size="30" /></td>
+        </tr>
+    </table>
+    <input type="submit" value="Read">
+</form>
+</li>
+<li>Create client storage
+<form id="client-storage-create" action="idp/storage/create" method="POST">
+    <table>
+        <tr>
+            <td>storageServiceId</td>
+            <td><input name="storageServiceId" type="text" size="50" value="shibboleth.ClientPersistentStorageService" /></td>
+        </tr>
+        <tr>
+            <td>context</td>
+            <td><input name="context" type="text" size="30" /></td>
+        </tr>
+        <tr>
+            <td>key</td>
+            <td><input name="key" type="text" size="30" /></td>
+        </tr>
+        <tr>
+            <td>value</td>
+            <td><input name="value" type="text" size="30" /></td>
+        </tr>
+    </table>
+    <input type="submit" value="Create">
+</form>
+</li> 
 
 </ul>
 
