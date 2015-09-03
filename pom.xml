@@ -267,4 +267,16 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- Build a jar in addition to a war. -->
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
