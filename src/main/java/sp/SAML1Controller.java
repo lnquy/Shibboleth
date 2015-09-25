@@ -54,6 +54,7 @@ public class SAML1Controller extends BaseSAMLController {
         Response response = (Response) messageContext.getMessage();
         Element responseElement = response.getDOM();
         String formattedMessage = SerializeSupport.prettyPrintXML(responseElement);
+        log.trace("Returning response" + System.lineSeparator() + "{}", formattedMessage);
         
         //TODO instead of returning plain text via a ResponseEntity, add a JSP view that looks good
         
