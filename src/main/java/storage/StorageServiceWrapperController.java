@@ -91,7 +91,7 @@ public class StorageServiceWrapperController {
 
     static protected ResponseEntity<String> seleniumFriendlyResponse(
             @Nonnull final HttpStatus status) {
-        return new ResponseEntity<String>(status.getReasonPhrase(), status);
+        return new ResponseEntity<>(status.getReasonPhrase(), status);
     }
 
     @Nullable
@@ -199,7 +199,7 @@ public class StorageServiceWrapperController {
                 final String serializedStorageRecord = serializer.serialize(record);
                 final HttpHeaders httpHeaders = new HttpHeaders();
                 httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-                return new ResponseEntity<String>(serializedStorageRecord, httpHeaders, HttpStatus.OK);
+                return new ResponseEntity<>(serializedStorageRecord, httpHeaders, HttpStatus.OK);
             }
         } catch (IOException e) {
             log.debug("An error occurred", e);

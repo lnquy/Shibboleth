@@ -490,7 +490,7 @@ public class SAML2Controller extends BaseSAMLController {
         final String formattedMessage = builder.toString();
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "text/plain");
-        return new ResponseEntity<String>(formattedMessage, headers, HttpStatus.OK);
+        return new ResponseEntity<>(formattedMessage, headers, HttpStatus.OK);
     }
 
 }
