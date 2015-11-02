@@ -209,9 +209,10 @@ public class SAML2Controller extends BaseSAMLController {
     public ResponseEntity<String> handleSLOResponseRedirect(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
         final MessageContext<SAMLObject> messageContext = decodeInboundMessageContextRedirect(servletRequest);
         
-        if (!(messageContext.getMessage() instanceof LogoutResponse)) {
-            log.error("Inbound message was not a SAML 2 LogoutResponse");
-            return new ResponseEntity<>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
+        if (messageContext.getMessage() instanceof LogoutRequest) {
+            servletRequest.setAttribute("success", "1");
+            finishSLOResponseRedirect(servletRequest, servletResponse);
+            return null;
         }
         
         final LogoutResponse response = (LogoutResponse) messageContext.getMessage();
@@ -230,9 +231,10 @@ public class SAML2Controller extends BaseSAMLController {
     public ResponseEntity<String> handleSLOResponsePOST(HttpServletRequest servletRequest, HttpServletResponse servletResponse) throws Exception {
         final MessageContext<SAMLObject> messageContext = decodeInboundMessageContextPost(servletRequest);
         
-        if (!(messageContext.getMessage() instanceof LogoutResponse)) {
-            log.error("Inbound message was not a SAML 2 LogoutResponse");
-            return new ResponseEntity<>("Inbound message was not a SAML 2 LogoutResponse", HttpStatus.BAD_REQUEST);
+        if (messageContext.getMessage() instanceof LogoutRequest) {
+            servletRequest.setAttribute("success", "1");
+            finishSLOResponsePost(servletRequest, servletResponse);
+            return null;
         }
         
         final LogoutResponse response = (LogoutResponse) messageContext.getMessage();
@@ -376,7 +378,14 @@ public class SAML2Controller extends BaseSAMLController {
         
         final StatusCode code = (StatusCode) builderFactory.getBuilder(StatusCode.DEFAULT_ELEMENT_NAME).buildObject(StatusCode.DEFAULT_ELEMENT_NAME);
         status.setStatusCode(code);
-        final String param = servletRequest.getParameter("success");
+        String param = servletRequest.getParameter("success");
+        if (param == null) {
+            final Object attr = servletRequest.getAttribute("success");
+            if (attr != null) {
+                param = (String) attr;
+            }
+        }
+        
         if (param != null && "1".equals(param)) {
             code.setValue(StatusCode.SUCCESS);
         } else {
