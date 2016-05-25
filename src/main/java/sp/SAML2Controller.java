@@ -22,6 +22,7 @@ import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.ext.saml2aslo.Asynchronous;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostEncoder;
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder;
+import org.opensaml.saml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Extensions;
 import org.opensaml.saml.saml2.core.Issuer;
@@ -29,6 +30,7 @@ import org.opensaml.saml.saml2.core.LogoutRequest;
 import org.opensaml.saml.saml2.core.LogoutResponse;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.core.NameIDPolicy;
+import org.opensaml.saml.saml2.core.RequestedAuthnContext;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
@@ -330,13 +332,25 @@ public class SAML2Controller extends BaseSAMLController {
 		authnRequest.setAssertionConsumerServiceURL(getAcsUrl(servletRequest));
 		authnRequest.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 		
-		final Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+		final Issuer issuer = (Issuer) builderFactory.getBuilder(
+		        Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
 		issuer.setValue(getSpEntityId(servletRequest));
 		authnRequest.setIssuer(issuer);
 		
-		final NameIDPolicy nameIDPolicy = (NameIDPolicy) builderFactory.getBuilder(NameIDPolicy.DEFAULT_ELEMENT_NAME).buildObject(NameIDPolicy.DEFAULT_ELEMENT_NAME);
+		final NameIDPolicy nameIDPolicy = (NameIDPolicy) builderFactory.getBuilder(
+		        NameIDPolicy.DEFAULT_ELEMENT_NAME).buildObject(NameIDPolicy.DEFAULT_ELEMENT_NAME);
 		nameIDPolicy.setAllowCreate(true);
 		authnRequest.setNameIDPolicy(nameIDPolicy);
+		
+		if (servletRequest.getParameter("classRef") != null) {
+            final AuthnContextClassRef ref = (AuthnContextClassRef) builderFactory.getBuilder(
+                    AuthnContextClassRef.DEFAULT_ELEMENT_NAME).buildObject(AuthnContextClassRef.DEFAULT_ELEMENT_NAME);
+            ref.setAuthnContextClassRef(servletRequest.getParameter("classRef"));
+	        final RequestedAuthnContext rac = (RequestedAuthnContext) builderFactory.getBuilder(
+	                RequestedAuthnContext.DEFAULT_ELEMENT_NAME).buildObject(RequestedAuthnContext.DEFAULT_ELEMENT_NAME);
+	        rac.getAuthnContextClassRefs().add(ref);
+	        authnRequest.setRequestedAuthnContext(rac);
+		}
 		
 		return authnRequest;
 	}
@@ -348,7 +362,8 @@ public class SAML2Controller extends BaseSAMLController {
         logoutRequest.setID(idGenerator.generateIdentifier());
         logoutRequest.setIssueInstant(new DateTime());
         
-        final Issuer issuer = (Issuer) builderFactory.getBuilder(Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
+        final Issuer issuer = (Issuer) builderFactory.getBuilder(
+                Issuer.DEFAULT_ELEMENT_NAME).buildObject(Issuer.DEFAULT_ELEMENT_NAME);
         issuer.setValue(getSpEntityId(servletRequest));
         logoutRequest.setIssuer(issuer);
         
