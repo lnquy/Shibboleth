@@ -200,6 +200,7 @@
             <artifactId>idp-example-jetty-base</artifactId>
             <version>${idp-example-jetty-base.version}</version>
             <scope>provided</scope>
+            <type>tar.gz</type>
         </dependency>
 
         <!-- Runtime scope -->
